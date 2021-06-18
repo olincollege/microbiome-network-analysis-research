@@ -1,14 +1,17 @@
 # Network Analysis Properties
 
 import networkx as nx
-from networkx.algorithms import community # This part of networkx, for community detection, needs to be imported separately.
+import networkx.algorithms.community as nx_comm # This part of networkx, for community detection, needs to be imported separately.
 from operator import itemgetter
 
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
+
 import pandas as pd
 import numpy as np
+
+from collections import Counter
 
 def get_network_from_adjm(df_adjm, name=""):
     """
@@ -27,18 +30,19 @@ def get_network_from_adjm(df_adjm, name=""):
     degree_dict = dict(G.degree(G.nodes()))
     nx.set_node_attributes(G, degree_dict, 'degree')
 
-
     # eigenvalue centrality
     if (name != "3M"): # power iteration fails to converge within 100 iterations
         eigenvector_dict = nx.eigenvector_centrality(G)
         nx.set_node_attributes(G, eigenvector_dict, 'eigenvector_centrality')
+    else:
+        nx.set_node_attributes(G, "N/A", 'eigenvector_centrality')
 
     # betweenness centrality
     betweenness_dict = nx.betweenness_centrality(G)
     nx.set_node_attributes(G, betweenness_dict, 'betweenness')
 
     # calculate modules
-    communities = community.greedy_modularity_communities(G)
+    communities = nx_comm.greedy_modularity_communities(G)
     M = len(communities)
     modularity_dict = {}
     for i,c in enumerate(communities):
@@ -83,82 +87,82 @@ def get_network_from_adjm(df_adjm, name=""):
         among_module_connectivity_dict[i] = 1 - sum_k
     nx.set_node_attributes(G, among_module_connectivity_dict, 'among_module_connectivity')
 
+    # node roles
+    zt=2.5
+    Pt=0.62
+    node_roles_dict = {}
+    for i in G.nodes():
+        zi = G.nodes[i]['within_module_connectivity']
+        Pi = G.nodes[i]['among_module_connectivity']
+        if zi <= zt and Pi <= Pt:
+            node_roles_dict[i] = "peripheral_node"
+        elif zi <= zt and Pi > Pt:
+            node_roles_dict[i] = "connector_node"
+        elif zi > zt and Pi <= Pt:
+            node_roles_dict[i] = "module_hub_node"
+        else:
+            node_roles_dict[i] = "network_hub_node"
+    nx.set_node_attributes(G, node_roles_dict, 'node_role')
+
     return G
 
 
-def get_node_roles(G, zt=2.5, Pt=0.62, verbose=False):
+def networks_attributes_to_csv(Gs, filename):
+    """
+    Gs: list of Graphs
+    """
+    names = [G.name for G in Gs]
+    df = pd.DataFrame(index=names)
+
+    for G in Gs:
+        df.loc[G.name, "number_of_nodes"] = len(G.nodes)
+
+        df.loc[G.name, "number_of_edges"] = len(G.edges)
+
+        df.loc[G.name, "density"] = nx.density(G)
+
+        df.loc[G.name, "transitivity"] = nx.transitivity(G)
+
+        df.loc[G.name, "network_is_connected"] = nx.is_connected(G)
+
+        # network diameter of largest component
+        # use nx.connected_components to get the list of components
+        components = nx.connected_components(G)
+        largest_component = max(components, key=len)
+        subgraph = G.subgraph(largest_component)
+        # Then calculate the diameter of the subgraph, just like you did with density.
+        df.loc[G.name, "network_diameter_of_largest_component"] = nx.diameter(subgraph)
+        
+        # modularity
+        communities = nx_comm.greedy_modularity_communities(G)
+        df.loc[G.name, "modularity_score"] = nx_comm.modularity(G, communities)
+        df.loc[G.name, "number_of_modules"] = len(communities)
+
+        # number of node roles
+        node_role_counts = Counter(dict(G.nodes(data="node_role")).values())
+        df.loc[G.name, "number_of_peripheral_node"] = node_role_counts["peripheral_node"]
+        df.loc[G.name, "number_of_connector_node"] = node_role_counts["connector_node"]
+        df.loc[G.name, "number_of_module_hub_node"] = node_role_counts["module_hub_node"]
+        df.loc[G.name, "number_of_network_hub_node"] = node_role_counts["network_hub_node"]
+
+    return df
+
+
+def nodes_attributes_to_csv(G, filename):
     """
     G: networkx graph
-    zt: threshold for within-module connectivity
-    Pt: threshold for among-module connectivity
+    filename: csv to save to
     """
+    attributes = set([k for n in G.nodes for k in G.nodes[n].keys()])
+    df = pd.DataFrame(index=G.nodes, columns=attributes)
+    for i in G.nodes:
+        for a in attributes:
+            df.loc[i, a] = G.nodes[i][a]
+    
+    print(f"saving to {filename}")
+    df.to_csv(filename)
 
-    peripheral_nodes = []
-    connector_nodes = []
-    module_hub_nodes = []
-    network_hub_nodes = []
-
-    for i in G.nodes():
-        zi = G.nodes[i]['within_module_connectivity']
-        Pi = G.nodes[i]['among_module_connectivity']        
-        if zi <= zt and Pi <= Pt:
-            peripheral_nodes.append((i, zi, Pi))
-        elif zi <= zt and Pi > Pt:
-            connector_nodes.append((i, zi, Pi))
-        elif zi > zt and Pi <= Pt:
-            module_hub_nodes.append((i, zi, Pi))
-        else:
-            network_hub_nodes.append((i, zi, Pi))
-
-    if (verbose):
-        print("---")
-        print("# peripheral nodes:", len(peripheral_nodes))
-        print("# connector nodes:", len(connector_nodes))
-        print("# module hub nodes:", len(module_hub_nodes))
-        print("# network hub nodes:", len(network_hub_nodes))
-        print("total number of nodes:", len(G.nodes))
-
-    node_roles = {
-        "peripheral_nodes": peripheral_nodes,
-        "connector_nodes": connector_nodes,
-        "module_hub_nodes": module_hub_nodes,
-        "network_hub_nodes": network_hub_nodes
-    }
-
-    return node_roles
-
-
-def get_network_attribute_summary(G):
-    """
-    G: networkx graph
-    """
-    # general info
-    print(nx.info(G))
-
-    # density
-    density = nx.density(G)
-    print("Network density:", density)
-
-    # transitivity
-    triadic_closure = nx.transitivity(G)
-    print("Triadic closure:", triadic_closure)
-
-    # diameter
-    # If your Graph has more than one component, this will return False:
-    is_connected = nx.is_connected(G)
-    print("Network is connected:", is_connected)
-
-    # Next, use nx.connected_components to get the list of components,
-    # then use the max() command to find the largest one:
-    components = nx.connected_components(G)
-    largest_component = max(components, key=len)
-
-    # Create a "subgraph" of just the largest component
-    # Then calculate the diameter of the subgraph, just like you did with density.
-    subgraph = G.subgraph(largest_component)
-    diameter = nx.diameter(subgraph)
-    print("Network diameter of largest component:", diameter)
-
+    return df
 
 
 def display_sorted_property(G, attribute="degree"):
@@ -214,20 +218,79 @@ def visualize_network(G, layout="default"):
     plt.title(f"{G.name} {layout} layout")
 
 
-def network_to_csv(G, filename):
-    """
+def get_leading_eigengenes(G, df_counts_rel_stan, set_node_module_membership=False):
+    """ 
     G: networkx graph
-    filename: csv to save to
+    df_counts_rel_stan: pandas dataframe of relative abundance counts 
+        standardized to have 0 mean and 1 variance
     """
-    attributes = set([k for n in G.nodes for k in G.nodes[n].keys()])
-    df = pd.DataFrame(index=G.nodes, columns=attributes)
-    for i in G.nodes:
-        for a in attributes:
-            df.loc[i, a] = G.nodes[i][a]
+
+    sample_names = list(df_counts_rel_stan.index)
+    num_samples = len(sample_names)
+
+    communities = nx_comm.greedy_modularity_communities(G)
+    num_modules = len(communities)
+
+    leading_eigenvalues = {}
+    leading_eigenvalues_explained_variance = {}
+    leading_eigenvector = {}
+
+    df = pd.DataFrame()
+    eigengenes = np.zeros((num_modules, num_samples), dtype=np.float64)
+
+    node_module_membership_dict = {}
+    for i, module_OTUs in enumerate(communities):
+        df_X_b = df_counts_rel_stan.loc[:, list(module_OTUs)].T
+        X_b = df_X_b.to_numpy(dtype=np.float64)
+        u, s, vh = np.linalg.svd(X_b)
+
+        # arrange the singular values in decreasing order
+        idx = s.argsort()[::-1]
+        eigenValues = s[idx]
+        eigenVectors = vh[:,idx]
+
+        # leading eigengene info
+        df.loc[i, "leading_eigenvalue"] = eigenValues[0]
+        df.loc[i, "leading_eigenvalues_percentage_explained_variance"] = np.square(eigenValues[0]) / np.sum(np.square(eigenValues)) * 100
+        leading_eigengene = eigenVectors[:, 0].T
+        eigengenes[i, :] = leading_eigengene
+
+        # calculate module membership
+        if (set_node_module_membership):            
+            for OTU in module_OTUs:
+                assert G.nodes[OTU]["modularity"] == i, f"{OTU} modularity {G.nodes[OTU]['modularity']} does not match {i}!"
+
+                OTU_profile = df_counts_rel_stan.loc[:, OTU].values
+                node_module_membership_dict[OTU] = np.corrcoef(OTU_profile, leading_eigengene)[0, 1] # pearson correlation
     
-    print(f"saving to {filename}")
-    df.to_csv(filename)
+    if (set_node_module_membership):
+        print(f"setting node_module_membership for {G.name} graph")
+        nx.set_node_attributes(G, node_module_membership_dict, 'node_module_membership')
+
+    df_eigengenes = pd.DataFrame(eigengenes, columns=sample_names)
+
+    return df, df_eigengenes
+
+
+
+    
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+    
