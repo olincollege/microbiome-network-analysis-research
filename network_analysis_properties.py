@@ -31,11 +31,13 @@ def get_network_from_adjm(df_adjm, name=""):
     nx.set_node_attributes(G, degree_dict, 'degree')
 
     # eigenvalue centrality
-    if (name != "3M"): # power iteration fails to converge within 100 iterations
+    if (name != "3M"):
         eigenvector_dict = nx.eigenvector_centrality(G)
-        nx.set_node_attributes(G, eigenvector_dict, 'eigenvector_centrality')
     else:
-        nx.set_node_attributes(G, "N/A", 'eigenvector_centrality')
+        # power iteration fails to converge within 100 iterations
+        # use alternate implementation
+        eigenvector_dict = nx.eigenvector_centrality_numpy(G)
+    nx.set_node_attributes(G, eigenvector_dict, 'eigenvector_centrality')
 
     # betweenness centrality
     betweenness_dict = nx.betweenness_centrality(G)
