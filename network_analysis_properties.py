@@ -258,12 +258,20 @@ color_rgba_transparent = [hex_to_rgba(c, alpha=0.8) for c in color_list]
 cmap_transparent = ListedColormap(color_rgba_transparent, name='cmap_transparent')
 
 
+# special_colors = {
+#     "opitutus spp.": "black",                    # ???
+#     "eubacterium sp.": 'lime',                   # cellulose degrader
+#     "magnetospirillum sp.": 'lime',              # cellulose degrader
+#     "pleomorphomonas oryzae": "blue",            # nitrogen fixer
+#     "rhodopseudomonas palustris": "blue",        # nitrogen fixer
+# }
+
 special_colors = {
-    "opitutus spp.": "black",                    # ???
-    "eubacterium sp.": 'lime',                   # cellulose degrader
-    "magnetospirillum sp.": 'lime',              # cellulose degrader
-    "pleomorphomonas oryzae": "blue",            # nitrogen fixer
-    "rhodopseudomonas palustris": "blue",        # nitrogen fixer
+    "opitutus spp.": "black",                       # ???
+    "eubacterium sp.": 'green',                     # cellulose degrader
+    "magnetospirillum sp.": 'lime',                 # cellulose degrader
+    "pleomorphomonas oryzae": "blue",               # nitrogen fixer
+    "rhodopseudomonas palustris": "darkviolet",     # nitrogen fixer
 }
 
 
