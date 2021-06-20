@@ -6,7 +6,8 @@ from operator import itemgetter
 
 import matplotlib.pyplot as plt
 from matplotlib import cm
-
+from matplotlib.colors import ListedColormap
+from matplotlib import ticker
 
 import pandas as pd
 import numpy as np
@@ -183,41 +184,185 @@ def display_sorted_property(G, attribute="degree"):
     ax.set_xlabel(f"{attribute}")
 
 
+def hex_to_rgba(value, alpha=1.0):
+    value = value.lstrip('#')
+    lv = len(value)
+    ret = [int(value[i:i + lv // 3], 16)/256 for i in range(0, lv, lv // 3)]
+    ret.append(alpha)
+    return ret
+
+
+def remap(x, oMin, oMax, nMin, nMax):
+    #range check
+    if oMin == oMax:
+        print("Warning: Zero input range")
+        return None
+
+    if nMin == nMax:
+        print("Warning: Zero output range")
+        return None
+
+    #check reversed input range
+    reverseInput = False
+    oldMin = min( oMin, oMax )
+    oldMax = max( oMin, oMax )
+    if not oldMin == oMin:
+        reverseInput = True
+
+    #check reversed output range
+    reverseOutput = False   
+    newMin = min( nMin, nMax )
+    newMax = max( nMin, nMax )
+    if not newMin == nMin :
+        reverseOutput = True
+
+    portion = (x-oldMin)*(newMax-newMin)/(oldMax-oldMin)
+    if reverseInput:
+        portion = (oldMax-x)*(newMax-newMin)/(oldMax-oldMin)
+
+    result = portion + newMin
+    if reverseOutput:
+        result = newMax - portion
+    
+    return result
+
+
 color_list = [
-    "#e377c2",    # pink
-    "#f7b6d2",    # light pink
     "#d62728",    # red
-    "#ff9896",    # light red
+    "#ffb0b0",    # light red
+    "#ff00e6",    # pink
+    "#ffb0f3",    # light pink
     "#ff7f0e",    # orange
     "#ffbb78",    # light orange
-    "#bcbd22",    # mossy green 
-    "#dbdb8d",    # light mossy green
     "#8c564b",    # brown
     "#c49c94",    # light brown
+    "#9467bd",    # purple
+    "#c5b0d5",    # light purple
+    "#bcbd22",    # mossy green 
+    "#dbdb8d",    # light mossy green
     "#2ca02c",    # green
     "#98df8a",    # light green
     "#1f77b4",    # dark blue
     "#aec7e8",    # light blue
-    "#9467bd",    # purple
-    "#c5b0d5",    # light purple
     "#17becf",    # sky blue
-    "#9edae5"     # light sky blue
+    "#9edae5",    # light sky blue
     "#7f7f7f",    # gray
     "#c7c7c7",    # light gray
 ]
 
-def visualize_network(G, layout="default"):
+
+color_rgba = [hex_to_rgba(c, alpha=1.0) for c in color_list]
+cmap = ListedColormap(color_rgba, name='cmap')
+
+color_rgba_transparent = [hex_to_rgba(c, alpha=0.8) for c in color_list]
+cmap_transparent = ListedColormap(color_rgba_transparent, name='cmap_transparent')
+
+
+special_colors = {
+    "opitutus spp.": "black",                    # ???
+    "eubacterium sp.": 'lime',                   # cellulose degrader
+    "magnetospirillum sp.": 'lime',              # cellulose degrader
+    "pleomorphomonas oryzae": "blue",            # nitrogen fixer
+    "rhodopseudomonas palustris": "blue",        # nitrogen fixer
+}
+
+
+def visualize_network(G, layout="spring"):
     # list of 20 colors
     colors = []
     for i in G.nodes():
         colors.append(color_list[G.nodes[i]["modularity"]])
 
+    vmin = 0
+    vmax = len(color_list)
+
     plt.figure()
-    if layout == "circular":
+
+    if layout == "spring":
+        # equivalent to fruchterman_reingold_layout
+        nx.draw(G, pos=nx.spring_layout(G), node_color=colors)
+    elif layout == "circular":
         nx.draw_circular(G, node_color=colors)
     else:
         nx.draw(G, node_color=colors)
+
+    # add color bar
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
+    sm._A = []
+    cb = plt.colorbar(sm)
+    tick_locator = ticker.MaxNLocator(nbins=5)
+    cb.locator = tick_locator
+    cb.update_ticks()
+    cb.ax.invert_yaxis()
+
     plt.title(f"{G.name} {layout} layout")
+
+
+def visualize_network_fancy(G):
+    """
+    Draw special nodes and regular nodes separately
+    """
+    vmin = 0
+    vmax = len(color_list)
+    
+    # equivalent to fruchterman_reingold_layout
+    layout = nx.spring_layout(G)
+    
+    special_node_list = []
+    special_modularity = []
+    special_eigenvector_centrality = []
+    special_edge_color_list = []
+    
+    regular_node_list = []
+    regular_modularity = []
+    regular_eigenvector_centrality = []
+    
+    # list of 20 colors
+    for i in G.nodes():
+        if i in special_colors.keys():
+            special_node_list.append(i)
+            print(f"special {i} in module {G.nodes[i]['modularity']}")
+            special_modularity.append(cmap(G.nodes[i]["modularity"]))
+            special_eigenvector_centrality.append(G.nodes[i]["eigenvector_centrality"])
+            special_edge_color_list.append(special_colors[i])
+        else:
+            regular_node_list.append(i)
+            regular_modularity.append(cmap_transparent(G.nodes[i]["modularity"]))
+            regular_eigenvector_centrality.append(G.nodes[i]["eigenvector_centrality"])
+    
+    # print("special_modularity:", special_modularity)
+    
+    # scale node sizes
+    sp_sz_min = min(special_eigenvector_centrality)
+    sp_sz_max = max(special_eigenvector_centrality)
+    special_node_size = [remap(sz, sp_sz_min, sp_sz_max, 160, 600) for sz in special_eigenvector_centrality]
+        
+    re_sz_min = min(regular_eigenvector_centrality)
+    re_sz_max = max(regular_eigenvector_centrality)
+    regular_node_size = [remap(sz, re_sz_min, re_sz_max, 160, 600) for sz in regular_eigenvector_centrality]
+    
+    print(f"{G.name}: specials {len(special_edge_color_list)} | eigenvector centrality min: {min(sp_sz_min, re_sz_min)} | max: {min(sp_sz_max, re_sz_max)})")
+
+    fig = plt.figure(figsize=(15, 15))
+
+    nx.draw_networkx(G, with_labels=False, node_size=regular_node_size, \
+        pos=layout,nodelist=regular_node_list, node_color=regular_modularity)
+    special_nodes = nx.draw_networkx_nodes(G, node_size=special_node_size, \
+        pos=layout,nodelist=special_node_list, node_color=special_modularity)
+
+    # make special nodes have special outlines
+    special_nodes.set_edgecolor(special_edge_color_list)
+    
+    # add color bar
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
+    sm._A = []
+    cb = plt.colorbar(sm)
+    tick_locator = ticker.MaxNLocator(nbins=5)
+    cb.locator = tick_locator
+    cb.update_ticks()
+    cb.ax.invert_yaxis()
+
+    plt.title(f"{G.name} Network")
 
 
 def get_leading_eigengenes(G, df_counts_rel_stan, set_node_module_membership=False):
