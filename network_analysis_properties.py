@@ -148,6 +148,8 @@ def networks_attributes_to_csv(Gs, filename):
         df.loc[G.name, "number_of_module_hub_node"] = node_role_counts["module_hub_node"]
         df.loc[G.name, "number_of_network_hub_node"] = node_role_counts["network_hub_node"]
 
+    df.to_csv(filename)
+
     return df
 
 
@@ -355,6 +357,7 @@ def visualize_network_fancy(G):
 
     nx.draw_networkx(G, with_labels=False, node_size=regular_node_size, \
         pos=layout,nodelist=regular_node_list, node_color=regular_modularity)
+
     special_nodes = nx.draw_networkx_nodes(G, node_size=special_node_size, \
         pos=layout,nodelist=special_node_list, node_color=special_modularity)
 
