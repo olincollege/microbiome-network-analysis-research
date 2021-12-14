@@ -1,0 +1,665 @@
+---
+title: "Analysis of PCA on CLR"
+output: html_notebook
+author: Gati Aher
+date: 12/7/2021
+---
+
+Goal: Follow Professor Nicholas Ollberding's [Introduction to the Statistical Analysis of Microbiome Data in R](https://www.nicholas-ollberding.com/post/introduction-to-the-statistical-analysis-of-microbiome-data-in-r/)
+
+* The diverse goals and technical variation of metagenomic research projects does not allow for a standard “analytic pipeline” for microbiome data analysis. 
+* Approaching the analysis of microbiome data with a single workflow in mind is generally not a great idea, as there is no “one size fits all” solution for the assorted set of questions one might want to answer. 
+
+However, you may be surprised to find that projects on very different topics often have overarching analytic aims such as:
+* Describing the microbial community composition of a set of samples
+* Estimating within- and between-sample diversity
+* Identifying differentially abundant taxa
+* Predicting a response from a set of taxonomic features
+* Assessing microbial network structures and patterns of co-occurance
+* Exploring the phylogenetic relatedness of a set of organisms
+
+The publicly available data used in this session are from [Giloteaux et. al. Reduced diversity and altered composition of the gut microbiome in individuals with myalgic encephalomyelitis/chronic fatigue syndrome](https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-016-0171-4) published in Microbiome (2016). The metadata, OTU table, and taxonomy files were obtained from the QIIME2 tutorial [Differential abundance analysis with gneiss](https://docs.qiime2.org/2019.4/tutorials/gneiss/) (accessed on 06/13/2019). The data from the Giloteaux et. al. 2016 paper has been saved as a phyloseq object in Ben Callahan's [DADA2 tutorial](http://benjjneb.github.io/dada2/tutorial.html)
+
+Our focus will be on examining differences in the microbiota of patients with chronic fatigue syndrome versus healthy controls. We will examine:
+* Taxonomic relative abundance
+* Hierarchal clustering
+* Alpha-diversity
+* Beta-diversity
+* Differential abundance testing
+* Predicting class labels
+
+ToDo: fix sample metadata?
+
+# Install Packages
+
+```{r}
+.cran_packages <- c("tidyverse", "cowplot", "picante", "vegan", "HMP", "dendextend", "rms", "devtools")
+.inst <- .cran_packages %in% installed.packages()
+if(any(!.inst)) {
+  install.packages(.cran_packages[!.inst])
+}
+```
+
+```{r}
+.bioc_packages <- c("phyloseq", "DESeq2", "microbiome", "metagenomeSeq", "ALDEx2")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install(.bioc_packages, version = "3.14")
+```
+
+```{r}
+devtools::install_github("adw96/breakaway")
+devtools::install_github("malucalle/selbal")
+```
+
+# Loading Required Packages
+
+```{r}
+library(tidyverse); packageVersion("tidyverse")                 
+```
+```{r}
+library(phyloseq); packageVersion("phyloseq")                    
+```
+```{r}
+library(DESeq2); packageVersion("DESeq2")
+```
+```{r}
+library(microbiome); packageVersion("microbiome")
+```
+```{r}
+library(vegan); packageVersion("vegan")
+```
+```{r}
+library(picante); packageVersion("picante")
+```
+```{r}
+library(ALDEx2); packageVersion("ALDEx2")
+```
+```{r}
+library(metagenomeSeq); packageVersion("metagenomeSeq")
+```
+```{r}
+library(HMP); packageVersion("HMP")                
+```
+```{r}
+library(dendextend); packageVersion("dendextend")
+```
+```{r}
+library(selbal); packageVersion("selbal")                    
+```
+```{r}
+library(rms); packageVersion("rms")
+```
+```{r}
+library(breakaway); packageVersion("breakaway")
+```
+```{r}
+library(metacoder); packageVersion("metacoder")
+```
+```{r}
+library(taxa); packageVersion("taxa")
+```
+# Initialization
+
+```{r}
+# ggplot2 package theme set
+theme_set(theme_bw())
+```
+
+
+# Reading in Phyloseq Data Object
+
+```{r}
+ps <- readRDS("../data/r/phyloseq.rds")
+ps
+```
+
+```{r}
+ps %>% 
+  sample_data %>%
+  dplyr::count(carbon)
+```
+
+```{r}
+ps_cellulose <- readRDS("../data/r/phyloseq_cellulose.rds")
+ps_cellulose
+```
+
+# Visualize Relative Abundances
+
+```{r}
+#Get count of class
+table(phyloseq::tax_table(ps)[, "class"])
+```
+
+```{r}
+#Get count of species
+table(phyloseq::tax_table(ps)[, "order"])
+```
+
+
+```{r}
+#Convert to relative abundance
+ps_rel_abund = phyloseq::transform_sample_counts(ps, function(x){x / sum(x)})
+phyloseq::otu_table(ps)[1:5, 1:5]
+phyloseq::otu_table(ps_rel_abund)[1:5, 1:5]
+```
+
+```{r}
+# Plot class
+phyloseq::plot_bar(ps_rel_abund, fill = "class") +
+  geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap(~factor(group, levels=c("C0C", "1C", "2C", "1G", "2G", "3G", "1M", "2M", "3M")), scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+```{r}
+# Plot species
+phyloseq::plot_bar(ps_rel_abund, fill = "order") +
+  geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap(~factor(group, levels=c("C0C", "1C", "2C", "1G", "2G", "3G", "1M", "2M", "3M")), scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+
+```{r}
+# Agglomerate to x-level and rename
+ps_cellulose_phylum <- phyloseq::tax_glom(ps_cellulose, "class")
+phyloseq::taxa_names(ps_cellulose_phylum) <- phyloseq::tax_table(ps_cellulose_phylum)[, "class"]
+phyloseq::otu_table(ps_cellulose_phylum)[1:5, 1:5]
+
+# Melt and plot
+phyloseq::psmelt(ps_cellulose_phylum) %>%
+ggplot(data = ., aes(x = group, y = Abundance)) +
+  geom_boxplot(outlier.shape  = NA) +
+  geom_jitter(aes(color = day), height = 0, width = .2) +
+  labs(x = "", y = "Abundance\n") +
+  facet_wrap(~ OTU, scales = "free")
+```
+One way to formally test for a difference in the phylum-level abundance is to conduct a multivariate test for differences in the overall composition between groups of samples. This type of test can be implemented using the [HMP package](https://cran.r-project.org/web/packages/HMP/index.html) (Xdc.sevsample function) described in the paper [Hypothesis Testing and Power Calculations for Taxonomic-Based Human Microbiome Data](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0052078) by La Rosa et. al.
+
+* [Dirichlet-Multinomial distribution](https://en.wikipedia.org/wiki/Dirichlet-multinomial_distribution) is assumed for the data
+* null hypothesis testing is conducted by testing for a difference in the location (mean distribution of each taxa) across groups accounting for the overdispersion in the count data.
+* The authors describe this test as analogous to a two sample t-test, but instead we are evaluating whether taxa frequencies observed in both groups of metagenomic samples are equal (null hypothesis)
+* Here we are performing the test on bacterial phyla, but it could be performed at any taxonomic level including OTUs. The authors recommend that rare taxa be pooled into a single group to improve testing.
+
+```{r}
+#Subset groups
+cellulose <- phyloseq::subset_samples(ps_cellulose_phylum, series == "sC")
+malate <- phyloseq::subset_samples(ps_cellulose_phylum, series == "sM")
+glucose <- phyloseq::subset_samples(ps_cellulose_phylum, series == "sG")
+
+#Output OTU tables
+cellulose_otu <- data.frame(phyloseq::otu_table(cellulose))
+malate_otu <- data.frame(phyloseq::otu_table(malate))
+glucose_otu <- data.frame(phyloseq::otu_table(glucose))
+
+#Group rare phyla
+cellulose_otu <- cellulose_otu %>%
+  t(.) %>%
+  as.data.frame(.) # %>%
+  # mutate(Other = actinobacteria) %>%
+  # dplyr::select(-actinobacteria)
+
+malate_otu <- malate_otu %>%
+  t(.) %>%
+  as.data.frame(.) #%>%
+  # mutate(Other = actinobacteria) %>%
+  # dplyr::select(-actinobacteria)
+
+glucose_otu <- glucose_otu %>%
+  t(.) %>%
+  as.data.frame(.) #%>%
+  # mutate(Other = actinobacteria) %>%
+  # dplyr::select(-actinobacteria)
+
+#HMP test
+group_data_cm <- list(cellulose_otu, malate_otu)
+(xdc <- HMP::Xdc.sevsample(group_data_cm)) 
+
+group_data_cg <- list(cellulose_otu, glucose_otu)
+(xdc <- HMP::Xdc.sevsample(group_data_cg)) 
+```
+
+```{r}
+(1 - pchisq(-43.26548, 13))
+(1 - pchisq(-99.97403, 13))
+```
+For both cellulose vs. returned malate and cellulose vs. returned glucuse, the HMP test fails to reject the null hypothesis of no difference in the distribution in the distribution of the phyla between groups.
+
+# Hierarchial Clustering
+
+Another early step in many microbiome projects to examine how samples cluster on some measure of taxonomic (dis)similarity. There are MANY ways to do perform such clustering. Here I present just one approach that I assume many of you are familiar with. We will perform hierarchal clustering of samples based on their Bray-Curtis dissimilarity.
+* as two samples share fewer taxa, the number increases
+* 0 for samples that have the exact same composition
+* 1 for those sharing no taxa.
+
+It is also worth remembering that this is a measure of dissimilarity (it is not a true distance measure).
+
+We will use the popular [vegan package](https://www.rdocumentation.org/packages/vegan/versions/2.4-2) for community ecology to compute the Bray-Curtis dissimilarity for all samples. Then we will apply Ward’s clustering and color code the sample names to assess the extent to which the samples from the control and chronic fatigue participants cluster. At a high-level, Ward’s clustering finds the pair of clusters at each iteration that minimalizes the increase in total variance.
+
+```{r}
+#Extract OTU table and compute BC
+ps_rel_otu <- data.frame(phyloseq::otu_table(ps_rel_abund))
+ps_rel_otu <- t(ps_rel_otu)
+bc_dist <- vegan::vegdist(ps_rel_otu, method = "bray")
+as.matrix(bc_dist)[1:5, 1:5]
+```
+
+```{r}
+#Save as dendrogram
+ward <- as.dendrogram(hclust(bc_dist, method = "ward.D2"))
+#Provide color codes
+meta <- data.frame(phyloseq::sample_data(ps_rel_abund))
+colorCode <- c(sC = "green", sM = "orange", sG = "blue")
+labels_colors(ward) <- colorCode[meta$series][order.dendrogram(ward)]
+#Plot
+par(cex = 0.4)
+plot(ward)
+```
+# Beta Diversity
+
+* Employ a compositional data analysis approach and involves working with log-ratios.
+* At a high-level compositional data (i.e. data that carry only relative information and are constrained by a unit sum) exist in a restricted subspace of the Euclidian geometry referred to as the D-1 simplex (I know this doesn’t feel high-level). 
+* Due to this constraint, these data fail to meet many of the assumptions of our favorite statistical methods developed for unconstrained random variables.
+* Working with ratios of compositional elements lets us transform these data to the Euclidian space and apply our favorite methods (so we don’t need to work in the simplex). 
+* Working with their logarithms makes them easier to interpret. 
+
+There are different types of log-ratio “transformations” including the additive log-ratio, centered log-ratio, and isometric log-ratio transforms. Below are some great resources for learning more about compositional data analysis:
+
+*[Understanding sequencing data as compositions: an outlook and review](https://academic.oup.com/bioinformatics/article/34/16/2870/4956011) by Quinn et. al. in Bioinformatics (2018)
+
+*[Statistical Analysis of Microbiome Data with R - Ch. 10](https://www.springer.com/us/book/9789811315336?gclid=Cj0KCQjw3uboBRDCARIsAO2XcYAphJ23am-AoIBh18HoW-WpAd8TwbQUEhc_DJV9gM-zWYtXe0-6l8saAkNHEALw_wcB)
+
+*[Applied Compositional Data Analysis](https://www.springer.com/gp/book/9783319964201) by Filzmoser, Hron, and Templ (2018)
+
+*[Analyzing Compositional Data with R](https://www.springer.com/gp/book/9783642368080) by Boogaart and Tolosana-Delgado (2013)
+
+Below we generate a beta-diversity ordination using the Aitchison distance
+* This is simply applying PCA to the centered log-ratio (CLR) transformed counts 
+* We will use the microbiome package to do this and assign a pseudocount of 1 to facilitate the transformation (since the log of zero is undefined)
+* There are alternative/better approaches than using a pseudocount (we will examine one in the next section)
+
+```{r}
+#CLR transform
+(ps_clr <- microbiome::transform(ps, "clr"))
+phyloseq::otu_table(ps)[1:5, 1:5]
+phyloseq::otu_table(ps_clr)[1:5, 1:5]
+```
+We can see that the values are now no longer counts, but rather the dominance (or lack thereof) for each taxa relative to the geometric mean of all taxa on the logarithmic scale (any log base could be used and often log2 or log10 may aid in interpretation).
+
+PCA does. It identifies latent variables referred to as principal components (PC) that capture as much of the information as possible…where information is the amount of variation in the data. We can then focus on those PCs that are most interesting (i.e. explain the most variation; give us the best lower-dimensional mapping). Given we can only visualize our samples in 2- or 3-dimenstional space, most microbiome studies only plot the data using either the first couple of PCs. A more though introduction to PCA can be found in the textbook An [Introduction to Statistical Learning](http://www-bcf.usc.edu/~gareth/ISL/) by James, Witten, Hastie, and Tibshirani (2013).
+
+```{r}
+#PCA via phyloseq
+ord_clr <- phyloseq::ordinate(ps_clr, "RDA")
+#Plot scree plot
+phyloseq::plot_scree(ord_clr) + 
+  geom_bar(stat="identity", fill = "blue") +
+  labs(x = "\nAxis", y = "Proportion of Variance\n")
+```
+
+```{r}
+# Examine eigenvalues and % prop. variance explained
+head(ord_clr$CA$eig)   
+sapply(ord_clr$CA$eig[1:5], function(x) x / sum(ord_clr$CA$eig))
+```
+
+```{r}
+#Scale axes and plot ordination
+clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
+clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
+phyloseq::plot_ordination(ps, ord_clr, type="samples", color="group") + 
+  geom_point(size = 2) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2)
+```
+
+
+```{r}
+#Scale axes and plot ordination
+clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
+clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
+phyloseq::plot_ordination(ps, ord_clr, type="samples", color="transfer") + 
+  geom_point(size = 2) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2)
+```
+
+```{r}
+#Scale axes and plot ordination
+clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
+clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
+phyloseq::plot_ordination(ps, ord_clr, type="samples", color="day") + 
+  geom_point(size = 2) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2)
+```
+# Pretty CLR + PCA Plot
+
+```{r}
+# make data frame
+clr_pca.data <- data.frame(PC1=ord_clr$CA$u[,1], PC2=ord_clr$CA$u[,2])
+meta <- data.frame(phyloseq::sample_data(ps))
+clr_pca.data <- merge(clr_pca.data, meta, by="row.names")
+clr_pca.data$day <- as.factor(clr_pca.data$day)
+
+# plot
+clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
+clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
+ggplot(clr_pca.data, aes(x = PC1, y = PC2)) + 
+  theme_classic() + 
+  geom_point(
+    mapping = aes(colour = day, shape = carbon),
+    size = 3,
+    alpha = 5/6
+  ) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2) +
+  scale_color_manual(values = c(
+  "3" = "#03045e",
+  "5" = "#0077b6",
+  "7" = "#00b4d8",
+  "10" = "#90e0ef",
+  "20" = "#caf0f8"
+)) +
+  xlab(sprintf("PC 1 [%s%%]", round(100 * clr1, 2))) +
+  ylab(sprintf("PC 2 [%s%%]", round(100 * clr2, 2)))
+```
+
+Check clustering dendogram for patterns
+
+```{r}
+ps_clr_otu <- data.frame(phyloseq::otu_table(ps_clr))
+ps_clr_otu <- t(ps_clr_otu)
+bc_dist_clr <- vegan::vegdist(ps_clr_otu,  method = "euclidean")
+#Save as dendrogram
+ward <- as.dendrogram(hclust(bc_dist_clr, method = "ward.D2"))
+#Provide color codes
+meta <- data.frame(phyloseq::sample_data(ps_rel_abund))
+colorCode <- c(sC = "green", sM = "orange", sG = "blue")
+labels_colors(ward) <- colorCode[meta$series][order.dendrogram(ward)]
+#Plot
+par(cex = 0.4)
+plot(ward)
+```
+Check that results are robust to sub-sampling only samples on cellulose
+
+```{r}
+(ps_cellulose_clr <- microbiome::transform(ps_cellulose, "clr"))
+#PCA via phyloseq
+ord_cellulose_clr <- phyloseq::ordinate(ps_cellulose_clr, "RDA")
+#Plot scree plot
+phyloseq::plot_scree(ord_cellulose_clr) + 
+  geom_bar(stat="identity", fill = "blue") +
+  labs(x = "\nAxis", y = "Proportion of Variance\n")
+
+# make data frame
+clr_pca.data <- data.frame(PC1=ord_cellulose_clr$CA$u[,1], PC2=ord_cellulose_clr$CA$u[,2])
+meta <- data.frame(phyloseq::sample_data(ps))
+clr_pca.data <- merge(clr_pca.data, meta, by="row.names")
+clr_pca.data$day <- as.factor(clr_pca.data$day)
+
+# plot
+clr1 <- ord_cellulose_clr$CA$eig[1] / sum(ord_cellulose_clr$CA$eig)
+clr2 <- ord_cellulose_clr$CA$eig[2] / sum(ord_cellulose_clr$CA$eig)
+ggplot(clr_pca.data, aes(x = PC1, y = PC2)) + 
+  theme_classic() + 
+  geom_point(
+    mapping = aes(colour = day, shape = carbon),
+    size = 3,
+    alpha = 5/6
+  ) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2) +
+  scale_color_manual(values = c(
+  "3" = "#03045e",
+  "5" = "#0077b6",
+  "7" = "#00b4d8",
+  "10" = "#90e0ef",
+  "20" = "#caf0f8"
+)) +
+  xlab(sprintf("PC 1 [%s%%]", round(100 * clr1, 2))) +
+  ylab(sprintf("PC 2 [%s%%]", round(100 * clr2, 2)))
+```
+```{r}
+(ps_cellulose_clr <- microbiome::transform(ps_cellulose, "clr"))
+#PCA via phyloseq
+ord_cellulose_clr <- phyloseq::ordinate(ps_cellulose_clr, "RDA")
+#Plot scree plot
+phyloseq::plot_scree(ord_cellulose_clr) + 
+  geom_bar(stat="identity", fill = "blue") +
+  labs(x = "\nAxis", y = "Proportion of Variance\n")
+
+# make data frame
+clr_pca.data <- data.frame(PC1=ord_cellulose_clr$CA$u[,1], PC2=ord_cellulose_clr$CA$u[,2])
+meta <- data.frame(phyloseq::sample_data(ps))
+clr_pca.data <- merge(clr_pca.data, meta, by="row.names")
+clr_pca.data$day <- as.factor(clr_pca.data$day)
+
+# plot
+clr1 <- ord_cellulose_clr$CA$eig[1] / sum(ord_cellulose_clr$CA$eig)
+clr2 <- ord_cellulose_clr$CA$eig[2] / sum(ord_cellulose_clr$CA$eig)
+ggplot(clr_pca.data, aes(x = PC1, y = PC2)) + 
+  theme_classic() + 
+  geom_point(
+    mapping = aes(colour = day, shape = group),
+    size = 3,
+    alpha = 5/6
+  ) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2) +
+  scale_color_manual(values = c(
+  "3" = "#03045e",
+  "5" = "#0077b6",
+  "7" = "#00b4d8",
+  "10" = "#90e0ef",
+  "20" = "#caf0f8"
+)) +
+  scale_shape_manual(values = c(
+  "1C" = 16,
+  "2C" = 10,
+  "2G" = 18,
+  "3G" = 9,
+  "2M" = 15,
+  "3M" = 12
+)) +
+  xlab(sprintf("PC 1 [%s%%]", round(100 * clr1, 2))) +
+  ylab(sprintf("PC 2 [%s%%]", round(100 * clr2, 2)))
+```
+
+
+
+
+
+# Compare With PCA on Bray-Curtis
+
+```{r}
+#PCA via phyloseq
+ord_bc <- phyloseq::ordinate(ps_rel_abund, "PCoA", "bray")
+bc_pca.data <- data.frame(PC1=ord_bc$vectors[,1], PC2=ord_bc$vectors[,2])
+meta <- data.frame(phyloseq::sample_data(ps_rel_abund))
+(bc_pca.data <- merge(bc_pca.data, meta, by="row.names"))
+bc_pca.data$day <- as.factor(bc_pca.data$day)
+#Plot scree plot
+phyloseq::plot_scree(ord_bc) + 
+  geom_bar(stat="identity", fill = "blue") +
+  labs(x = "\nAxis", y = "Proportion of Variance\n")
+```
+
+```{r}
+# Examine eigenvalues and % prop. variance explained
+head(ord_bc$values$Eigenvalues)   
+sapply(ord_bc$values$Eigenvalues[1:5], function(x) x / sum(ord_bc$values$Eigenvalues))
+```
+
+```{r}
+clr1 <- ord_bc$values$Eigenvalues[1] / sum(ord_bc$values$Eigenvalues)
+clr2 <- ord_bc$values$Eigenvalues[2] / sum(ord_bc$values$Eigenvalues)
+ggplot(bc_pca.data, aes(x = PC1, y = PC2)) + 
+  theme_classic() + 
+  geom_point(
+    mapping = aes(colour = day, shape = carbon),
+    size = 2,
+    alpha = 5/6
+  ) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2) +
+  scale_color_manual(values = c(
+  "3" = "#03045e",
+  "5" = "#0077b6",
+  "7" = "#00b4d8",
+  "10" = "#90e0ef",
+  "20" = "#caf0f8"
+)) +
+  xlab(sprintf("PC 1 [%s%%]", round(100 * clr1, 2))) +
+  ylab(sprintf("PC 2 [%s%%]", round(100 * clr2, 2)))
+```
+
+```{r}
+# Generate distance matrix
+ps_cellulose_rel_abund <- phyloseq::subset_samples(ps_rel_abund, carbon =="cellulose")
+ps_cellulose_rel_abund <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_cellulose_rel_abund) > 0, ps_cellulose_rel_abund)
+ord_bc_cellulose <- phyloseq::ordinate(ps_cellulose_rel_abund, "PCoA", "bray")
+bc_pca_cellulose.data <- data.frame(PC1=ord_bc_cellulose$vectors[,1], PC2=ord_bc_cellulose$vectors[,2])
+meta <- data.frame(phyloseq::sample_data(ps_cellulose_rel_abund))
+(bc_pca_cellulose.data <- merge(bc_pca_cellulose.data, meta, by="row.names"))
+bc_pca_cellulose.data$day <- as.factor(bc_pca_cellulose.data$day)
+#Plot scree plot
+phyloseq::plot_scree(ord_bc_cellulose) + 
+  geom_bar(stat="identity", fill = "blue") +
+  labs(x = "\nAxis", y = "Proportion of Variance\n")
+```
+
+```{r}
+# plot
+clr1 <- ord_bc_cellulose$values$Eigenvalues[1] / sum(ord_bc_cellulose$values$Eigenvalues)
+clr2 <- ord_bc_cellulose$values$Eigenvalues[2] / sum(ord_bc_cellulose$values$Eigenvalues)
+ggplot(bc_pca_cellulose.data, aes(x = PC1, y = PC2)) + 
+  theme_classic() + 
+  geom_point(
+    mapping = aes(colour = day, shape = carbon),
+    size = 3,
+    alpha = 5/6
+  ) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2) +
+  scale_color_manual(values = c(
+  "3" = "#03045e",
+  "5" = "#0077b6",
+  "7" = "#00b4d8",
+  "10" = "#90e0ef",
+  "20" = "#caf0f8"
+)) +
+  xlab(sprintf("PC 1 [%s%%]", round(100 * clr1, 2))) +
+  ylab(sprintf("PC 2 [%s%%]", round(100 * clr2, 2)))
+```
+
+```{r}
+# plot
+clr1 <- ord_bc_cellulose$values$Eigenvalues[1] / sum(ord_bc_cellulose$values$Eigenvalues)
+clr2 <- ord_bc_cellulose$values$Eigenvalues[2] / sum(ord_bc_cellulose$values$Eigenvalues)
+ggplot(bc_pca_cellulose.data, aes(x = PC1, y = PC2)) + 
+  theme_classic() + 
+  geom_point(
+    mapping = aes(colour = day, shape = group),
+    size = 3,
+    alpha = 5/6
+  ) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2) +
+  scale_color_manual(values = c(
+  "3" = "#03045e",
+  "5" = "#0077b6",
+  "7" = "#00b4d8",
+  "10" = "#90e0ef",
+  "20" = "#caf0f8"
+)) +
+  scale_shape_manual(values = c(
+  "1C" = 16,
+  "2C" = 10,
+  "2G" = 18,
+  "3G" = 9,
+  "2M" = 15,
+  "3M" = 12
+)) +
+  xlab(sprintf("PC 1 [%s%%]", round(100 * clr1, 2))) +
+  ylab(sprintf("PC 2 [%s%%]", round(100 * clr2, 2)))
+```
+
+
+# PERMANOVA
+
+The first two principal components do not explain that much variation, so [permutational multivariate analysis of variance](http://cc.oulu.fi/~jarioksa/softhelp/vegan/html/adonis.html) (PERMANOVA) can be used to test whether the samples cluster beyond that expected by sampling variability.  
+* It does this by partitioning the sums of squares for the within- and between-cluster components using the concept of centroids. 
+* Many permutations of the data (i.e. random shuffling) are used to generate the null distribution. 
+* The test from ADONIS can be confounded by differences in dispersion (or spread)…so we want to check this as well.
+
+```{r}
+# Change sample day 20 to 10 (so low number does not affect test)
+PERMANOVA_sample_data <-sample_data(ps_cellulose_clr)
+PERMANOVA_sample_data$day[PERMANOVA_sample_data$day == 20] <- 10
+PERMANOVA_sample_data$day
+```
+
+
+
+```{r}
+# Generate distance matrix
+clr_cellulose_dist_matrix <- phyloseq::distance(ps_cellulose_clr, method = "euclidean")
+
+#ADONIS test
+vegan::adonis(clr_cellulose_dist_matrix ~ PERMANOVA_sample_data$day, strata = PERMANOVA_sample_data$group)
+vegan::adonis(clr_cellulose_dist_matrix ~ PERMANOVA_sample_data$day)
+```
+
+```{r}
+#Dispersion test and plot
+(dispr_cellulose <- vegan::betadisper(clr_cellulose_dist_matrix, PERMANOVA_sample_data$day))
+
+plot(dispr_cellulose, main = "Ordination Centroids and Dispersion Labeled: Aitchison Distance", sub = "")
+
+boxplot(dispr_cellulose, main = "", xlab = "")
+
+permutest(dispr_cellulose)
+```
+```{r}
+# Generate distance matrix
+ps_cellulose_rel_otu <- data.frame(phyloseq::otu_table(ps_cellulose_rel_abund))
+ps_cellulose_rel_otu <- t(ps_cellulose_rel_otu)
+bc_cellulose_dist_matrix <- vegan::vegdist(ps_cellulose_rel_otu, method = "bray")
+
+#ADONIS test
+vegan::adonis(bc_cellulose_dist_matrix ~ PERMANOVA_sample_data$day, strata = PERMANOVA_sample_data$group)
+vegan::adonis(bc_cellulose_dist_matrix ~ PERMANOVA_sample_data$day)
+```
+
+```{r}
+#Dispersion test and plot
+(dispr_cellulose <- vegan::betadisper(bc_cellulose_dist_matrix, PERMANOVA_sample_data$day))
+
+plot(dispr_cellulose, main = "Ordination Centroids and Dispersion Labeled: Aitchison Distance", sub = "")
+
+boxplot(dispr_cellulose, main = "", xlab = "")
+
+permutest(dispr_cellulose)
+```
+
+
+# Using UniFrac
+
+```{r}
+#Generate distances
+ord_unifrac <- ordinate(ps_cellulose, method = "PCoA", distance = "wunifrac") 
+ord_unifrac_un <- ordinate(ps_cellulose, method = "PCoA", distance = "unifrac")   
+#Plot ordinations
+a <- plot_ordination(ps, ord_unifrac, color = "day") + geom_point(size = 2)
+b <- plot_ordination(ps, ord_unifrac_un, color = "day") + geom_point(size = 2)
+cowplot::plot_grid(a, b, nrow = 1, ncol = 2, scale = .9, labels = c("Weighted", "Unweighted"))
+```

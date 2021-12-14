@@ -1,0 +1,142 @@
+---
+title: "Process Data Phyloseq"
+output: html_notebook
+author: Gati Aher
+date: 12/7/2021
+---
+
+Goal: get processed data into phyloseq object
+
+Following Tutorials:
+* [Importing phyloseq Data](https://joey711.github.io/phyloseq/import-data.html)
+* [How to save the phyloseq object generated in dada2' tutorial for later use #107](https://github.com/benjjneb/dada2/issues/107)
+
+Useful References:
+* [Functions for Accessing and (Pre)Processing Dat](https://joey711.github.io/phyloseq/preprocess.html)
+* [Bonus: Handoff to phyloseq](http://benjjneb.github.io/dada2/tutorial.html)
+
+# Importing Data Into Phyloseq
+
+```{r}
+.cran_packages <- c("tidyverse")
+.inst <- .cran_packages %in% installed.packages()
+if(any(!.inst)) {
+  install.packages(.cran_packages[!.inst])
+}
+```
+
+
+```{r}
+.bioc_packages <- c("phyloseq", "Biostrings")
+BiocManager::install(version = '3.14')
+BiocManager::install(.bioc_packages, version = "3.14")
+```
+
+# Load required packages
+
+```{r}
+library("phyloseq"); packageVersion("phyloseq")
+```
+```{r}
+library("ggplot2"); packageVersion("ggplot2")
+```
+```{r}
+library("ape"); packageVersion("ape")
+```
+
+
+```{r}
+# Define a default theme for ggplot graphics.
+theme_set(theme_bw())
+```
+
+# Load Processed Data Into R
+
+```{r}
+otu_mat <- as.matrix(read.table(file = '../data/processed/OTU_counts_clean.tsv', sep = '\t', header = TRUE, row.names = 1))
+tax_mat <- as.matrix(read.table(file = '../data/processed/taxonomy_table_clean.tsv', sep = '\t', header = TRUE, row.names = 1))
+sample_meta <- read.table(file = '../data/processed/sample_metadata.tsv', header = TRUE, sep = '\t', row.names = 1)
+sample_meta$day <- as.factor(sample_meta$day)
+sample_meta$transfer <- as.factor(sample_meta$transfer)
+
+# get phylogenetic tree
+tree <- ape::read.tree("../data/raw/MUSCLE_alignment_ML_tree_all_OTUs")
+
+class(otu_mat)
+class(tax_mat)
+class(sample_meta)
+```
+
+```{r}
+OTU = otu_table(otu_mat, taxa_are_rows = TRUE)
+TAX = tax_table(tax_mat)
+ps = phyloseq(OTU, TAX, tree)
+sample_data(ps) <- sample_meta
+ps
+```
+
+```{r}
+# Sort samples on total read count, remove <5k reads, remove any OTUs seen in only those samples
+sort(phyloseq::sample_sums(ps)) 
+```
+
+```{r}
+# Note: this filtering did not remove any samples 
+(ps <- phyloseq::subset_samples(ps, phyloseq::sample_sums(ps) > 5000)) 
+(ps <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps) > 0, ps))
+```
+
+```{r}
+table(phyloseq::tax_table(ps)[, "class"])
+```
+
+# Calculate Alpha Diversity
+
+
+# Remove Low Abundance OTUs
+
+
+```{r}
+# Save
+saveRDS(ps, "../data/r/phyloseq.rds")
+```
+
+# Save CLR Transformed Table
+
+```{r}
+# CLR transform
+(ps_clr <- microbiome::transform(ps, "clr"))
+# Save
+phyloseq::otu_table(ps_clr)[1:5, 1:5]
+write.csv(phyloseq::otu_table(ps_clr), "../data/processed/OTU_counts_clean_clr.csv")
+```
+
+# Subset Samples on Cellulose
+
+```{r}
+# get a subsection of only samples on cellulose
+(ps_cellulose <- phyloseq::subset_samples(ps, carbon =="cellulose")) 
+(ps_cellulose <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_cellulose) > 0, ps_cellulose))
+
+ps_cellulose %>% 
+  sample_data %>%
+  dplyr::count(group)
+
+saveRDS(ps_cellulose, "../data/r/phyloseq_cellulose.rds")
+```
+
+# Fun Visualizations
+
+```{r}
+plot_bar(ps, fill = "phylum")
+```
+
+
+```{r}
+plot_bar(ps, fill = "class")
+```
+
+```{r}
+#plot_tree(physeq, color="carbon", label.tips="taxa_names", ladderize="left", plot.margin=0.3)
+```
+

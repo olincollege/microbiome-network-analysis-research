@@ -1,0 +1,352 @@
+---
+title: "Composition Analysis"
+output: 
+  html_notebook: 
+    fig_width: 16
+    fig_height: 16
+author: Gati Aher
+date: 09/17/2021
+fig_width: 24  
+fig_height: 16
+---
+
+## Set-Up
+
+```{r}
+# installed.packages()[, c("Package", "LibPath")]
+
+# # Install BioConductor
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# BiocManager::install(version = "3.13", lib = "/home/gaher/R/x86_64-pc-linux-gnu-library/4.1")
+```
+```{r}
+# # Install phyloseq from Bioconductor
+# BiocManager::install("phyloseq", lib = "/home/gaher/R/x86_64-pc-linux-gnu-library/4.1")
+```
+```{r}
+# # Install the rest of the packages from CRAN
+# install.packages(c("vegan", "metacoder", "taxa", "ggplot2", "dplyr", "readr", "stringr", "agricolae", "ape"),
+#                  repos = "http://cran.rstudio.com",
+#                  dependencies = TRUE,
+#                  lib = "/home/gaher/R/x86_64-pc-linux-gnu-library/4.1")
+```
+
+
+Import packages
+```{r}
+# https://grunwaldlab.github.io/analysis_of_microbiome_community_data_in_r/00--required_software.html (ZSL Foster and NJ Grünwald. 2018. Analysis of Microbiome Community Data in R.)
+# https://microsud.github.io/Tools-Microbiome-Analysis/
+
+# Popular package with tools for analysis and visualization of microbiome data (McMurdie and Holmes 2013).
+library(phyloseq)
+
+# Implements many standard statistical techniques used in ecological research. Is used extensively by packages like phyloseq and metacoder. (Dixon 2003)
+library(vegan)
+
+# Manipulation and visualization of taxonomic data, particularly those from amplicon metagenomics research. (Foster, Sharpton, and Grünwald 2017)
+library(metacoder)
+
+# defines taxonomic classes and functions to manipulate them. The goal is to use these classes as low level fundamental taxonomic classes that other R packages can build on and use. This is used by metacoder. 
+library(taxa)
+
+# Awesome graphing package. (Wickham 2009)
+library(ggplot2)
+
+# A package for manipulating tabular data with a cohesive and intuitive set of commands. A popular alternative to base R methods.
+library(dplyr)
+
+# Makes reading tabular data from files easier.
+library(readr)
+
+# Functions for text manipulation.
+library(stringr)
+
+# Used for the design and analysis of experiments, especially plant-related experiments.
+library(agricolae)
+
+# A popular package for DNA sequence analysis and phylogenetics.
+library(ape)
+```
+Import Data
+
+**Other**
+* OTU ID x OTU ID Pairwise Alignment Scores
+  * (Muscle): Pairwise_distances_all_OTU_Muscle
+* OTU ID Phylogenetic Tree
+  * (Muscle): MUSCLE_alignment_ML_tree_all_OTUs
+
+**Processed**
+* Sample Name x Meta Information
+  * sample_annotations.csv
+* OTU ID x Sample ID x Absolute Counts
+  * OTU_counts.csv
+* OTU ID x Taxonomy, Functions
+  * OTU_properties.csv
+  
+```{r}
+sample_annotations = read.csv("data/processed/sample_annotations.csv")
+print(sample_annotations)
+```
+
+```{r}
+OTU_properties = read.csv("data/processed/OTU_properties_clean.csv")
+print(OTU_properties)
+```
+
+```{r}
+OTU_counts = read.csv("data/processed/OTU_counts_clean.csv")
+print(OTU_counts)
+```
+
+Combine OTU and properties tables to simplify analysis
+```{r}
+OTU_properties$otu.name <- as.character(OTU_properties$otu.name) # Must be same type for join to work
+OTU_counts$otu.name <- as.character(OTU_counts$otu.name) # Must be same type for join to work
+OTU_data <- left_join(OTU_counts, OTU_properties,
+                      by = c("otu.name" = "otu.name")) # identifies cols with shared IDs
+print(OTU_data)
+```
+
+Convert data to the taxmap format (format specialized for community abundance data)
+```{r}
+obj <- parse_tax_data(OTU_data,
+                      class_cols = "taxonomy", # The column in the input table
+                      class_sep = ";", # What each taxon is separated by
+                      class_regex = "^([a-z]{0,1})_{0,2}(.*)$",
+                      class_key = c("tax_rank" = "taxon_rank", "name" = "taxon_name"))
+print(obj)
+```
+
+The reliance on color to differentiate taxa means that the maximum number of taxa that can be effectively displayed is limited by the number of colors that can be distinguished. This is typically around 10, maybe 13 with careful selection (as in the graph above), but definitely not more than 15. For those who are color blind (~ 4% of people), even fewer colors can be used. This limitation is likely the reason Wagner et al. (2016) chose to show phylum-level abundances and grouped some phyla into a “Low abundance” category, even though there might be interesting pattern in finer ranks (e.g. genus or species). This is typical of most publications, which either show only the most coarse ranks (e.g. phylum) or only the ~10 most abundant taxa when using stacked barcharts. As an alternative/complement to stacked barcharts, we have developed what we call “heat trees” to display statistics associated with taxa (e.g. abundance) in a tree format. (Source: https://grunwaldlab.github.io/analysis_of_microbiome_community_data_in_r/05--plotting.html)
+
+
+```{r}
+set.seed(0)
+obj %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>% 
+  # filter_taxa(taxon_ranks == "g", supertaxa = TRUE) %>%
+  heat_tree(node_size = n_obs,
+            node_color = n_obs,
+            node_color_axis_label = "OTU count",
+            # node_label = ifelse(is.element(taxon_ranks, c("", "d", "k", "p", "c", "o")), taxon_names, ""),
+            node_label = taxon_names,
+            layout = "davidson-harel",
+            initial_layout = "reingold-tilford")
+            # output_file = "results/heat_tree_all_taxa_all_samples.pdf")
+```
+
+Rarefaction curve
+```{r}
+## commented out because takes a while to calculate
+# raremax <- min(colSums(OTU_counts[, sample_annotations$sampleID]))
+# rarecurve(t(OTU_counts[, sample_annotations$sampleID]), step = 20, 
+#           sample = raremax, 
+#           col = "blue", 
+#           cex = 0.6)
+```
+
+Alpha Diversity
+
+Common alpha diversity statistics include:
+
+* Shannon: How difficult it is to predict the identity of a randomly chosen individual.
+* Simpson: The probability that two randomly chosen individuals are the same species.
+
+```{r}
+sample_alpha_diversity = read.csv("data/processed/alpha_diversity_rel.csv")
+```
+
+
+```{r}
+compare_alpha <- function(OTU_counts, sample_annotations, grouping_var, sample_alpha_diversity, index) {
+  # Calculate alpha diversity
+  alphad <- diversity(OTU_counts[, sample_annotations$sampleID],
+                                  MARGIN = 2,
+                                  index = "shannon")
+  
+  # Get alpha diversity
+  alpha <- sample_alpha_diversity[[index]]
+  names(alpha) <- sample_alpha_diversity$sampleID
+  # properly order alpha vectors
+  sample_annotations$alpha = alpha[order(factor(names(alpha), levels=names(alphad)))]
+
+  # Do ANOVA
+  sample_annotations$grouping <- sample_annotations[[grouping_var]] # needed for how `aov` works
+  anova_result <- aov(alpha ~ grouping, sample_annotations)
+  
+  # Do Tukey's HSD test
+  tukey_result <- HSD.test(anova_result, "grouping", group = TRUE)
+
+  # Plot result
+  group_data <- tukey_result$groups[order(rownames(tukey_result$groups)),]
+  my_plot <- ggplot(sample_annotations, aes(x = grouping, y = alpha)) +
+    geom_text(data = data.frame(),
+              aes(x = rownames(group_data),
+                  y = max(sample_annotations$alpha) * 1.1,
+                  label = group_data$groups),
+              col = 'black',
+              size = 10) +
+    geom_boxplot() +
+    ggtitle(paste("Alpha Diversity", index)) +
+    xlab(grouping_var) +
+    ylab("Alpha Diversity Index")
+  
+  # Return plot
+  return(my_plot)
+}
+```
+
+```{r}
+compare_alpha(OTU_counts, sample_annotations, "group", sample_alpha_diversity, "shannon")
+```
+
+```{r}
+compare_alpha(OTU_counts, sample_annotations, "group", sample_alpha_diversity, "chao1")
+```
+
+```{r}
+compare_alpha(OTU_counts, sample_annotations, "group", sample_alpha_diversity, "simpson")
+```
+
+```{r}
+compare_alpha(OTU_counts, sample_annotations, "group", sample_alpha_diversity, "simpson_e")
+```
+
+```{r}
+compare_alpha(OTU_counts, sample_annotations, "group", sample_alpha_diversity, "faith_pd")
+```
+
+```{r}
+compare_alpha(OTU_counts, sample_annotations, "carbon", sample_alpha_diversity, "faith_pd")
+```
+
+
+```{r}
+compare_alpha(OTU_counts, sample_annotations, "transfer", sample_alpha_diversity, "faith_pd")
+```
+
+```{r}
+compare_alpha(OTU_counts, sample_annotations, "day", sample_alpha_diversity, "faith_pd")
+```
+
+```{r}
+ps_obj <- as_phyloseq(obj,
+                      otu_table = "tax_data",
+                      otu_id_col = "otu.name",
+                      sample_data = sample_annotations,
+                      sample_id_col = "sampleID")
+plot_richness(ps_obj, color = "day", x = "group")
+```
+
+Alpha diversity statistics capture the diversity of whole samples in a single number, but to see the abundance of each taxon in a group of samples (e.g., root samples), we need to use other techniques. Stacked barcharts are typically used for this purpose, but we will be using heat trees. First, we need to calculate the abundance of each taxon for a set of samples from our OTU abundance information. We can use the calc_taxon_abund function to do this, grouping by a sample characteristic:
+
+```{r}
+obj$data$type_abund <- calc_taxon_abund(obj, "tax_data",
+                                        cols = sample_annotations$sampleID,
+                                        groups = sample_annotations$carbon)
+print(obj$data$type_abund)
+```
+
+```{r}
+obj$data$tax_abund <- calc_taxon_abund(obj, "tax_data", 
+                                       cols = sample_annotations$sampleID)
+
+obj$data$diff_table <- compare_groups(obj, dataset = "tax_abund",
+                                      cols = sample_annotations$sampleID,
+                                      groups = sample_annotations$carbon)
+obj <- mutate_obs(obj, "diff_table",
+                  wilcox_p_value = p.adjust(wilcox_p_value, method = "fdr"))
+
+obj$data$diff_table$log2_median_ratio[obj$data$diff_table$wilcox_p_value > 0.05] <- 0
+
+print(obj$data$diff_table)
+```
+
+Some significant ones
+```{r}
+range(obj$data$diff_table$wilcox_p_value, finite = TRUE) 
+```
+
+
+```{r}
+set.seed(1)
+obj %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  # filter_taxa(taxon_ranks == "o", supertaxa = TRUE) %>%
+  heat_tree_matrix(dataset = "diff_table",
+                   node_label = taxon_names,
+                   node_size = n_obs, # number of OTUs
+                   node_color = log2_median_ratio, # difference between groups
+                   node_color_trans = "linear",
+                   node_color_interval = c(-3, 3), # symmetric interval
+                   edge_color_interval = c(-3, 3), # symmetric interval
+                   node_color_range = diverging_palette(), # diverging colors
+                   node_size_axis_label = "OTU count",
+                   node_color_axis_label = "Log 2 ratio of median counts",
+                   layout = "da", 
+                   initial_layout = "re",
+                   output_file = "results/differential_heat_tree.pdf") # Saves the plot as a pdf file
+```
+
+Question: Which OTUs are in the dataset?
+Method: Explore Composition
+Normalization: None
+Result: relative_abundance_matrix_{}.csv
+Visual: sample_composition_stacked_bar_plots.png
+Goal: Identify high abundance members
+Goal: Identify low abundance members
+Goal: Identify who is not present in replicates
+Impact: Inform potential cleaning decisions
+
+
+
+Question: How are the OTUs phylogenetically related and distributed?
+Normalization: None --format OTU name into tree
+Result: skbio.TreeNode
+Visual: tree_OTU_count_all_sample_dendrogram.img
+Goal: Pretty summary of distances
+Impact: Inform structure of dataset, inform merging decision
+
+```{r}
+
+```
+
+Question: How diverse is each sample?
+Method: Alpha Diversity Analysis
+Normalization: use relative_abundance_matrix_{}.csv
+Result: sample_diversity_table.csv
+Visual: sample_diversity_boxplot_xxx.csv
+Diversity
+Richness
+Faith’s PD
+
+```{r}
+
+```
+
+Question: What are the gradients of change?
+Method: Beta Diversity Analysis
+Normalization: use relative_abundance_matrix_{}.csv
+Result: sample_diversity_PCoA.csv
+Visual: sample_diversity_PCoA_xxx.csv
+Bray-Curtis
+UniFrac
+Impact: expect that samples return to similar variance localization
+
+```{r}
+
+```
+
+Question: Take a closer look at gradients of change?
+Method: Beta Diversity Analysis (within series)
+Result: sample_diversity_PCoA.csv
+Visual: sample_diversity_PCoA_xxx.csv
+Bray-Curtis
+UniFrac
+Impact: observe some notable time trends (PCoA)
+
+```{r}
+
+```
+

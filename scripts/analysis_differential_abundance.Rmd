@@ -1,0 +1,306 @@
+---
+title: "Differential Abundance Focus"
+output: html_notebook
+    fig_width: 16
+    fig_height: 16
+author: Gati Aher
+date: 12/07/2021
+fig_width: 24  
+fig_height: 16
+---
+
+# Differential Abundance Testing
+
+Goal: identify specific taxa associated with clinical metadata variables of interest
+* difficult
+* controversial
+* concerns that normalization and testing approaches have generally failed to control false discovery rates
+* contributed to lack of reproducibility in microbiome studies
+
+Two Common Approaches
+1. Applying non-parametric Wilcoxon rank-sum test to each taxon
+2. Version of Wilcoxon test developed for compositional NGS data
+
+Include the use of a CoDA transform for both since there does seem to be some growing support that log-ratio methodologies may better control the false positive rate.
+
+```{r}
+.cran_packages <- c("tidyverse", "cowplot", "picante", "vegan", "HMP", "dendextend", "rms", "devtools")
+```
+
+```{r}
+.bioc_packages <- c("phyloseq", "DESeq2", "microbiome", "metagenomeSeq", "ALDEx2")
+```
+
+```{r}
+.inst <- .cran_packages %in% installed.packages()
+if(any(!.inst)) {
+  install.packages(.cran_packages[!.inst])
+}
+```
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install(.bioc_packages, version = "3.14")
+```
+
+# Loading Required Packages
+
+```{r}
+# Popular package with tools for analysis and visualization of microbiome data (McMurdie and Holmes 2013).
+library(phyloseq); packageVersion("phyloseq")                 
+```
+
+```{r}
+# Implements many standard statistical techniques used in ecological research. Is used extensively by packages like phyloseq and metacoder. (Dixon 2003)
+library(vegan); packageVersion("vegan")
+```
+
+```{r}
+# Manipulation and visualization of taxonomic data, particularly those from amplicon metagenomics research. (Foster, Sharpton, and Grünwald 2017)
+library(metacoder); packageVersion("metacoder")
+```
+
+```{r}
+# defines taxonomic classes and functions to manipulate them. The goal is to use these classes as low level fundamental taxonomic classes that other R packages can build on and use. This is used by metacoder. 
+library(taxa); packageVersion("taxa")
+```
+
+```{r}
+# Awesome graphing package. (Wickham 2009)
+library(ggplot2); packageVersion("ggplot2")
+```
+
+```{r}
+# A package for manipulating tabular data with a cohesive and intuitive set of commands. A popular alternative to base R methods.
+library(dplyr); packageVersion("dplyr")
+```
+
+```{r}
+# Makes reading tabular data from files easier.
+library(readr); packageVersion("readr")
+```
+
+```{r}
+# Functions for text manipulation.
+library(stringr); packageVersion("stringr")
+```
+
+```{r}
+# Used for the design and analysis of experiments, especially plant-related experiments.
+library(agricolae); packageVersion("agricolae")
+```
+
+```{r}
+# A popular package for DNA sequence analysis and phylogenetics.
+library(ape); packageVersion("ape")
+```
+```{r}
+# has clr transform
+library(microbiome); packageVersion("microbiome")
+```
+
+
+# Load Processed Data Into R
+
+```{r}
+ps <- readRDS("../data/r/phyloseq.rds")
+ps
+```
+
+```{r}
+# use only the clr transformed data
+(ps <- microbiome::transform(ps, "clr"))
+```
+
+# Create Taxmap Format -- Used By Metacoder
+
+```{r}
+(taxmap <- parse_phyloseq(ps))
+```
+
+```{r}
+set.seed(0)
+taxmap %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs,
+            node_color = n_obs,
+            node_color_axis_label = "Log-Ratio",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel")
+```
+# Check Differential Abundance of Samples day 5-20, transfer 1
+
+```{r}
+# create subset sample metadata
+meta_df <- data.frame(sample_data(ps))
+meta_df <- subset(meta_df, day %in% c(5, 7, 10, 20))
+meta_df <- subset(meta_df, transfer == 1)
+row.names(meta_df)
+```
+
+```{r}
+(taxmap$data$carbon_abund <- calc_taxon_abund(taxmap, "otu_table", 
+                                              cols = row.names(meta_df), 
+                                              groups = meta_df$carbon))
+```
+
+```{r}
+taxmap$data$tax_abund <- calc_taxon_abund(taxmap, "otu_table", 
+                                           cols = row.names(meta_df))
+
+taxmap$data$diff_table <- compare_groups(taxmap, dataset = "tax_abund",
+                                         cols = row.names(meta_df),
+                                         groups = meta_df$carbon)
+  
+taxmap <- mutate_obs(taxmap, "diff_table",
+                  wilcox_p_value = p.adjust(wilcox_p_value, method = "fdr"))
+  
+taxmap$data$diff_table$log2_median_ratio[taxmap$data$diff_table$wilcox_p_value > 0.05] <- 0
+```
+```{r}
+print(taxmap$data$diff_table)
+```
+```{r}
+range(taxmap$data$diff_table$wilcox_p_value, finite = TRUE) 
+```
+
+```{r}
+# plot heat tree
+set.seed(0)
+taxmap %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  # filter_taxa(taxon_ranks == "o", supertaxa = TRUE) %>%
+  heat_tree_matrix(dataset = "diff_table",
+                   node_label = taxon_names,
+                   node_size = n_obs, # number of OTUs
+                   node_color = log2_median_ratio, # difference between groups
+                   node_color_trans = "linear",
+                   node_color_interval = c(-3, 3), # symmetric interval
+                   edge_color_interval = c(-3, 3), # symmetric interval
+                   node_color_range = diverging_palette(), # diverging colors
+                   node_size_axis_label = "Log-Ratio",
+                   node_color_axis_label = "Log 2 ratio of median counts",
+                   layout = "da", 
+                   initial_layout = "re",
+                   output_file = "../terminal/heat_tree_day_5_to_20.pdf")
+```
+# Check Differential Abundance of Samples on/returned to cellulose, day 5-20
+
+```{r}
+# create subset sample metadata
+meta_df_cellulose <- data.frame(sample_data(ps))
+meta_df_cellulose <- subset(meta_df_cellulose, carbon == "cellulose")
+meta_df_cellulose <- subset(meta_df_cellulose, day %in% c(5, 7, 10, 20))
+
+# sort row by stability (order: "transitioning", "stable", "early")
+# meta_df_cellulose$stability <- apply(meta_df_cellulose, 1, FUN = function(x) if(x["day"] == 3) "c" else if ((x["day"] == 5) | (x["day"] == 7)) "a" else "b")
+# meta_df_cellulose <- meta_df_cellulose[order(meta_df_cellulose$stability),]
+# meta_df_cellulose$stability <- apply(meta_df_cellulose, 1, FUN = function(x) if(x["day"] == 3) "early" else if ((x["day"] == 5) | (x["day"] == 7)) "transitioning" else "stable")
+row.names(meta_df_cellulose)
+```
+
+```{r}
+taxmap$data$tax_abund <- calc_taxon_abund(taxmap, "otu_table", 
+                                           cols = row.names(meta_df_cellulose))
+
+taxmap$data$diff_table <- compare_groups(taxmap, dataset = "tax_abund",
+                                         cols = row.names(meta_df_cellulose),
+                                         groups = meta_df_cellulose$group)
+  
+taxmap <- mutate_obs(taxmap, "diff_table",
+                  wilcox_p_value = p.adjust(wilcox_p_value, method = "fdr"))
+  
+taxmap$data$diff_table$log2_median_ratio[taxmap$data$diff_table$wilcox_p_value > 0.05] <- 0
+```
+
+```{r}
+print(taxmap$data$diff_table)
+
+range(taxmap$data$diff_table$wilcox_p_value, finite = TRUE)
+
+# plot heat tree
+set.seed(0)
+taxmap %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  # filter_taxa(taxon_ranks == "o", supertaxa = TRUE) %>%
+  heat_tree_matrix(dataset = "diff_table",
+                   node_label = taxon_names,
+                   node_size = n_obs, # number of OTUs
+                   node_color = log2_median_ratio, # difference between groups
+                   node_color_trans = "linear",
+                   node_color_interval = c(-3, 3), # symmetric interval
+                   edge_color_interval = c(-3, 3), # symmetric interval
+                   node_color_range = diverging_palette(), # diverging colors
+                   node_size_axis_label = "Log-Ratio",
+                   node_color_axis_label = "Log 2 ratio of median counts",
+                   layout = "da", 
+                   initial_layout = "re",
+                   output_file = "../terminal/heat_tree_only_cellulose_day_5_to_20.pdf"
+                   )
+```
+
+# Check Differential Abundance of Samples on/returned to cellulose, day 5-20, do not show taxa that are not in subsampled set
+
+```{r}
+ps_cellulose <- phyloseq::subset_samples(ps, carbon =="cellulose")
+(ps_cellulose <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_cellulose) > 0, ps_cellulose))
+```
+
+```{r}
+(taxmap_cellulose <- parse_phyloseq(ps_cellulose))
+```
+
+```{r}
+# create subset sample metadata
+meta_df_cellulose <- data.frame(sample_data(ps_cellulose))
+meta_df_cellulose <- subset(meta_df_cellulose, carbon == "cellulose")
+meta_df_cellulose <- subset(meta_df_cellulose, day %in% c(5, 7, 10, 20))
+
+# sort row by stability (order: "transitioning", "stable", "early")
+# meta_df_cellulose$stability <- apply(meta_df_cellulose, 1, FUN = function(x) if(x["day"] == 3) "c" else if ((x["day"] == 5) | (x["day"] == 7)) "a" else "b")
+# meta_df_cellulose <- meta_df_cellulose[order(meta_df_cellulose$stability),]
+# meta_df_cellulose$stability <- apply(meta_df_cellulose, 1, FUN = function(x) if(x["day"] == 3) "early" else if ((x["day"] == 5) | (x["day"] == 7)) "transitioning" else "stable")
+row.names(meta_df_cellulose)
+```
+
+```{r}
+taxmap_cellulose$data$tax_abund <- calc_taxon_abund(taxmap_cellulose, "otu_table", 
+                                           cols = row.names(meta_df_cellulose))
+
+taxmap_cellulose$data$diff_table <- compare_groups(taxmap_cellulose, dataset = "tax_abund",
+                                         cols = row.names(meta_df_cellulose),
+                                         groups = meta_df_cellulose$group)
+  
+taxmap_cellulose <- mutate_obs(taxmap_cellulose, "diff_table",
+                  wilcox_p_value = p.adjust(wilcox_p_value, method = "fdr"))
+  
+taxmap_cellulose$data$diff_table$log2_median_ratio[taxmap_cellulose$data$diff_table$wilcox_p_value > 0.05] <- 0
+```
+
+```{r}
+print(taxmap_cellulose$data$diff_table)
+
+range(taxmap_cellulose$data$diff_table$wilcox_p_value, finite = TRUE)
+
+# plot heat tree
+set.seed(0)
+taxmap_cellulose %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  # filter_taxa(taxon_ranks == "o", supertaxa = TRUE) %>%
+  heat_tree_matrix(dataset = "diff_table",
+                   node_label = taxon_names,
+                   node_size = n_obs, # number of OTUs
+                   node_color = log2_median_ratio, # difference between groups
+                   node_color_trans = "linear",
+                   node_color_interval = c(-3, 3), # symmetric interval
+                   edge_color_interval = c(-3, 3), # symmetric interval
+                   node_color_range = diverging_palette(), # diverging colors
+                   node_size_axis_label = "Log-Ratio",
+                   node_color_axis_label = "Log 2 ratio of median counts",
+                   layout = "da", 
+                   initial_layout = "re",
+                   output_file = "../terminal/heat_tree_filtered_taxa_only_cellulose_day_5_to_20.pdf"
+                   )
+```

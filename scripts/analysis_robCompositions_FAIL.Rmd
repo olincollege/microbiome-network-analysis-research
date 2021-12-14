@@ -1,0 +1,66 @@
+---
+title: "Using robCompositions -- Failure"
+output: html_notebook
+---
+
+Goal: Make PCA on IRL Data and Biplot on CLR Data
+
+Resources:
+* [Exploratory compositional data analysis using the
+R-package robCompositions (Hron, Templ, Filzmoser)](http://file.statistik.tuwien.ac.at/filz/papers/2010CDAM2.pdf)
+
+ISSUE: [pcaCODA doesn't work with microbiome data](https://github.com/matthias-da/robCompositions/issues/10)
+
+
+```{r}
+# install.packages("devtools")
+# library(devtools)
+# install_github("matthias-da/robCompositions")
+
+# install.packages("robCompositions")
+library(robCompositions)
+```
+
+## Load Compositional Data
+
+Data Format
+* sample x OTU counts
+
+```{r}
+data("expenditures")
+```
+
+## Compute Robust Mahalanobis Distance Matrix
+
+* internally applies isometric log-ratio transformation to the compositions to search for outliers in the real space
+
+```{r}
+# check for outliers (same detection results when method="standard")
+outRob <- outCoDa(expenditures, method="robust")
+outRob
+```
+```{r}
+outRob$mahalDist
+```
+```{r}
+outRob$outlierIndex
+```
+```{r}
+# Figure 1: Graphical output by outlier detection for the expenditures data set.
+plot(outRob)
+```
+ 
+```{r}
+# robust compositional biplot
+PrinCompRob <- pcaCoDa(expenditures, method="robust", solve="eigen")
+PrinCompRob
+summary(PrinCompRob)
+plot(PrinCompRob)
+biplot(PrinCompRob)
+```
+ 
+```{r}
+# original data set expressed in percentages
+constSum(expenditures)
+```
+ 
