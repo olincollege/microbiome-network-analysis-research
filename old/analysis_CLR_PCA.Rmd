@@ -146,15 +146,30 @@ phyloseq::otu_table(ps_rel_abund)[1:5, 1:5]
 ```
 
 ```{r}
+sample_data(ps_rel_abund)$day
+```
+
+
+```{r}
 # Plot class
 phyloseq::plot_bar(ps_rel_abund, fill = "class") +
   geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
   labs(x = "", y = "Relative Abundance\n") +
   facet_wrap(~factor(group, levels=c("C0C", "1C", "2C", "1G", "2G", "3G", "1M", "2M", "3M")), scales = "free") +
   theme(panel.background = element_blank(),
-        axis.text.x=element_blank(),
         axis.ticks.x=element_blank())
 ```
+
+```{r}
+# Plot phylum
+phyloseq::plot_bar(ps_rel_abund, fill = "phylum") +
+  geom_bar(aes(color = phylum, fill = phylum), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap(~factor(group, levels=c("C0C", "1C", "2C", "1G", "2G", "3G", "1M", "2M", "3M")), scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+```
+
 
 ```{r}
 # Plot species
@@ -475,7 +490,15 @@ ggplot(clr_pca.data, aes(x = PC1, y = PC2)) +
 ```
 
 
-
+```{r}
+#Scale axes and plot ordination
+clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
+clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
+phyloseq::plot_ordination(ps, ord_clr, type="samples", color="state") + 
+  geom_point(size = 2) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2)
+```
 
 
 # Compare With PCA on Bray-Curtis
@@ -607,9 +630,6 @@ PERMANOVA_sample_data <-sample_data(ps_cellulose_clr)
 PERMANOVA_sample_data$day[PERMANOVA_sample_data$day == 20] <- 10
 PERMANOVA_sample_data$day
 ```
-
-
-
 ```{r}
 # Generate distance matrix
 clr_cellulose_dist_matrix <- phyloseq::distance(ps_cellulose_clr, method = "euclidean")
@@ -629,6 +649,7 @@ boxplot(dispr_cellulose, main = "", xlab = "")
 
 permutest(dispr_cellulose)
 ```
+
 ```{r}
 # Generate distance matrix
 ps_cellulose_rel_otu <- data.frame(phyloseq::otu_table(ps_cellulose_rel_abund))

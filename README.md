@@ -11,84 +11,119 @@ The steps in a standard microbiome analysis toolkit have compositional replaceme
 ![Compositional Data Analysis Pipeline](img/compositional_data_analysis_pipeline.jpg)
 Image Source: [Microbiome Datasets Are Compositional: And This Is Not Optional (Gloor 2017)](https://www.frontiersin.org/articles/10.3389/fmicb.2017.02224/full)
 
-In this analysis, we use:
-1. Isometric-Log Ratio (ILR) Transform
-2. Aitchison Distance
-3. PCA (Variance)
-4. ANCOM Differential Abundance
+
+1. Normalization: Centered-Log Ratio (CLR) Transform + Aitchison Distance
+2. Ordination: PCA (Variance) + Clustering Dendogram
+3. Multivariate Comparison: PERMANOVA, ANOSIM 
+4. Correlation: SpiecEasi
+5. Differential Abundance: [ANCOM](https://www.tandfonline.com/doi/full/10.3402/mehd.v26.27663), [ALDEx2](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0067019)
 
 ### Theory References
 
 **Compositional Data Analysis:**  
 * Introduction to CoDA: [Microbiome Datasets Are Compositional: And This Is Not Optional (Gloor 2017)](https://www.frontiersin.org/articles/10.3389/fmicb.2017.02224/full)
 * Case Study: [Compositional Data Analysis Approaches to Improve Microbiome Studies: from Collection to Conclusions](https://www.youtube.com/watch?v=j1IbfQrT2Cs)
+* Tutorial: [Introduction to the Statistical Analysis of Microbiome Data in R](https://www.nicholas-ollberding.com/post/introduction-to-the-statistical-analysis-of-microbiome-data-in-r/)
+* Review: [Understanding sequencing data as compositions: an outlook and review](https://academic.oup.com/bioinformatics/article/34/16/2870/4956011?login=false)
+* Explanation of Correlation-Clustering: [Differential abundance analysis with gneiss](https://docs.qiime2.org/2019.4/tutorials/gneiss/)
+* Tutorial on Using PERMANOVA test: [Tutorial on using adonis from the vegan R package (CC081)
+](https://www.youtube.com/watch?v=1ETBgbXl-BM)
+* ALDEx2 vignette: [ANOVA-Like Differential Expression tool for high throughput sequencing data](https://www.bioconductor.org/packages/devel/bioc/vignettes/ALDEx2/inst/doc/ALDEx2_vignette.html)
+* ANCOM vignette: [ANCOM-BC](http://www.bioconductor.org/packages/release/bioc/vignettes/ANCOMBC/inst/doc/ANCOMBC.html)
+* Metacoder documentation: [Diversity statistics](https://grunwaldlab.github.io/metacoder_documentation/workshop--07--diversity_stats.html)
 
-**Balance Trees: Isometric-Log Ratio Transform**  
-In this analysis, we use ILR. In microbial ecology, PCA on various distance metrics are used to explore sources of variation in the data. The ILR transform is the only compositional transform that is suitable as a feature space for PCA exploratory data analysis. [(Source 1)](https://stats.stackexchange.com/questions/305965/can-i-use-the-clr-centered-log-ratio-transformation-to-prepare-data-for-pca) [(Source 2)](http://www.statsathome.com/2017/08/09/we-can-do-better-than-the-alr-or-softmax-transform/)
+**Other Resources:**
+* Comparison for methods of variable selection (selbal, clr-lasso, coda-lasso): [Variable selection in microbiome compositional data analysis](https://academic.oup.com/nargab/article/2/2/lqaa029/5836692)
+* Visualization Options: [Exploring the Microbiome Analysis and Visualization Landscape](https://www.frontiersin.org/articles/10.3389/fbinf.2021.774631/pdf)
+
+**PERMANOVA vs. ANOSIM:**  
+
+If you have very different group sizes, you may consider analysis of similarities (ANOSIM) instead of PERMANOVA. This test does not assume equal group variances. However, it only allows simple 1 variable models with no interactions and can only be used for categorical (AgeGroup), not continuous (ADG) variables. So, ANOSIM has a lot of limitations and should only be used if you group sizes are very, very different, like 10 vs 100.
+([Source](https://rstudio-pubs-static.s3.amazonaws.com/343284_cbadd2f3b7cd42f3aced2d3f42dc6d33.html))
+
 
 ## Code Overview
 
-### Process Data Files
+### Format Data Files (`format.ipynb`)
 
 **Dependencies:**
-* Python skbio: [set-up](http://scikit-bio.org/)
-* Python pandas, numpy, re
+* [skbio](http://scikit-bio.org/)
+* pandas, numpy, re
 
-**Run:** `jupyter notebook scripts/process_data.ipynb` to create the following files:
+**Run:**  
+`jupyter notebook scripts/process_data.ipynb`
 
-* Sample Name x Meta Information
-    * `data/processed/sample_metadata.tsv`
-* OTU ID x Sample ID x Absolute Counts
-    * `data/processed/OTU_counts.tsv`
-* OTU ID x Taxonomy, Functions
-    * `data/processed/feature_metadata.tsv`
+**Input:**
 
-### Make PCA on LR Data
+* `data/raw/sample_names.csv`
+  * Mapping from generated sample ID to renamed sample IDs
+* `data/raw/081616JHnew515Fcomplete-pr.fasta.otus.fa.OTU.txt`
+  * OTU ID, taxonomy x Sample ID x Absolute Counts 
+* `data/raw/FCF_annotations.csv`
+  * Sample ID x Meta Information
 
-**Dependencies:**
-* R robCompositions: [issue: does not work with microbiome data](https://github.com/matthias-da/robCompositions/issues/10)
+**Output:**
 
-Actually going to follow analysis from 
+* `data/processed/sample_metadata.tsv`
+  * Sample ID x Meta Information
+* `data/processed/OTU_counts.tsv`
+  * OTU ID x Sample ID x Absolute Counts
+* `data/processed/feature_metadata.tsv`
+  * OTU ID x Taxonomy
 
+### Ordination (`ordination.Rmd`)
 
-Steps:
-* Compositional Data --> ILR Coordinates
-* PCA on ILR Coordinates
-* Transform PCA_ILR back to CLR
+Bar Chart, sample groups
+* raw counts (class)
+* relative abundance (class, phylum)
+* centered log ratio (class)
 
----
+Dendogram, samples
+* aitchison (series, cluster)
+* bray-curtis (series, cluster)
 
-## Use QIIME2
+PCA, samples
+* aitchison (all, cellulose)
+* bray-curtis (all, cellulose)
 
-**Dependencies:**
-* BIOM: [set-up](https://biom-format.org/index.html)
-* QIIME2: [set-up](https://docs.qiime2.org/2021.11/install/)
-* GNEISS: `pip install git+https://github.com/biocore/gneiss.git`
+From Ward distance hierarchial correlation clustering on CLR values, identified strong clusters
+* top 3 high-level clusters recorded in `data/raw/cluster_decisions.csv`
 
-Activate QIIME Environment: `conda activate qiime2-2021.11`
+### Multivariate Comparison (`multivariate_comparison.Rmd`)
 
-### Creating Balances
-The selection of balance tree controls for variation and allows us to identify interesting differentially abundant partitions of taxa. Through gneiss, there are three approaches:
+Bar Chart, sample clusters
+* raw counts (class)
+* relative abundance (class, phylum)
 
-* **Correlation Clustering:** If we don’t have relevant prior information about how to cluster together organisms, we can group together organisms based on how often they co-occur with each other. This is available in the `correlation-clustering` command and creates tree input for `ilr-hierarchical`.
-* **Gradient Clustering:** Use a metadata category to cluster taxa found in similar sample types. For example, if we want to evaluate if pH is a driving factor, we can cluster according to the pH that the taxa are observed in, and observe whether the ratios of low-pH organisms to high-pH organisms change as the pH changes. This is available in the `gradient-clustering` command and creates tree input for `ilr-hierarchical`.
-* **Phylogenetic Analysis:** A phylogenetic tree (e.g. `rooted-tree.qza`) created outside of gneiss can also be used. In this case you can use your phylogenetic tree as input for `ilr-phylogenetic`.
+PCA, samples
+* aitchison (all)
 
-**Resources**
-* [QIIME Docs Tutorial: Differential abundance analysis with gneiss](https://docs.qiime2.org/2021.11/tutorials/gneiss/)
-* [GNEISS Docs Tutorial: Linear regression on balances in the 88 soils](https://biocore.github.io/gneiss/docs/v0.4.0/tutorials/qiime2/88soils-qiime2-tutorial.html)
-* [GNEISS Docs Tutorial: Linear mixed effects models on balances in a CF study](https://biocore.github.io/gneiss/docs/v0.4.0/tutorials/qiime2/cfstudy-qiime2-tutorial.html)
-* [GNEISS Docs Tutorial: Linear regression on balances in the Chronic Fatigue Syndrome](https://biocore.github.io/gneiss/docs/v0.4.0/tutorials/qiime2/cfs-qiime2-tutorial.html)
+PERMANOVA
 
-Activate the environment: `conda activate qiime2-2021.11`
-Then run `jupyter notebook scripts/qiime.ipynb` to do the following analysis:
+| name | P | Disp | R2 |
+| ----- | ----- | ----- | ----- |
+| all -- cluster | *** | 0.939 | 0.25283 |
+| pairwise -- early vs. recovering | *** | 0.632 | 0.19428 |
+| pairwise -- early vs. stable | *** | 0.824 | 0.21769 |
+| pairwise -- recovering vs. stable | *** | 0.92 | 0.19261 |
+| all -- focused.cluster | \*\*\* | \*\*\* | 0.41679 |
+| early -- focused.cluster | \*\*\* | \*\*\* | 0.2369 |
+| pairwise -- perturbed G vs. perturbed M | *** | . | 0.32278 |
+| recovering -- focused.cluster | *** | 0.499 | 0.20343 |
+| pairwise -- recovering G vs. recovering M | ** | 0.283 | 0.13335 |
+| pairwise -- recovering G vs. recovering C | *** | 0.932 | 0.15766 |
+| pairwise -- recovering C vs. recovering M | *** | 0.296 | 0.375 |
+| stable -- focused.cluster | *** | 0.213 | 0.23358 |
+| pairwise -- stable G vs. stable M | ** | 0.696 | 0.14746 |
+| pairwise -- stable C vs. stable M | ** | 0.719 | 0.14746 |
+| pairwise -- stable G vs. stable C | *** | . | 0.18258 |
 
-## Use gneiss
+Signif. codes:  0 '\*\*\*' 0.001 '\*\*' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-**Dependencies:**
-* gneiss: [set-up](https://github.com/biocore/gneiss)
+### Differential Abundance (`differential_abundance.Rmd`)
 
-**Resources**
-* [GNEISS Docs Tutorial: Linear regression on balances in the 88 soils](https://biocore.github.io/gneiss/docs/v0.4.0/tutorials/python/88soils-python-tutorial.html)
-* [GNEISS Docs Tutorial: Linear mixed effects models on balances in a CF study](https://biocore.github.io/gneiss/docs/v0.4.0/tutorials/python/cfstudy-python-tutorial.html)
-* [GNEISS Docs Tutorial: Linear regression on balances in the Chronic Fatigue Syndrome](https://biocore.github.io/gneiss/docs/v0.4.0/tutorials/python/cfs-python-tutorial.html)
+Tools
+* ALDEx2
+* ANCOM
+* metacodr (visualize heat map tree)
+

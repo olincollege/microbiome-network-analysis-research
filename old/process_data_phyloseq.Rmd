@@ -43,6 +43,9 @@ library("ggplot2"); packageVersion("ggplot2")
 ```{r}
 library("ape"); packageVersion("ape")
 ```
+```{r}
+library(dplyr)
+```
 
 
 ```{r}
@@ -82,9 +85,14 @@ sort(phyloseq::sample_sums(ps))
 
 ```{r}
 # Note: this filtering did not remove any samples 
-(ps <- phyloseq::subset_samples(ps, phyloseq::sample_sums(ps) > 5000)) 
-(ps <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps) > 0, ps))
+# (ps <- phyloseq::subset_samples(ps, phyloseq::sample_sums(ps) > 5000)) 
+# (ps <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps) > 0, ps))
 ```
+
+```{r}
+table(phyloseq::tax_table(ps)[, "phylum"])
+```
+
 
 ```{r}
 table(phyloseq::tax_table(ps)[, "class"])

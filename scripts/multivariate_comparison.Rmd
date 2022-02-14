@@ -1,0 +1,352 @@
+---
+title: "Multivariate Comparison"
+output: html_notebook
+author: Gati Aher
+date: 02/12/2022
+---
+
+Goal: compare clusters
+
+Multivariate Comparison
+* perMANOVA
+* ANOSIM
+
+# Install Packages
+
+```{r}
+# .cran_packages <- c("tidyverse", "cowplot", "picante", "vegan", "HMP", "dendextend", "rms", "devtools")
+# .inst <- .cran_packages %in% installed.packages()
+# if(any(!.inst)) {
+#   install.packages(.cran_packages[!.inst])
+# }
+```
+
+```{r}
+# .bioc_packages <- c("phyloseq", "Biostrings", "DESeq2", "microbiome", "metagenomeSeq", "ALDEx2")
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(.bioc_packages, version = "3.14")
+```
+
+# Loading Required Packages
+
+```{r}
+library("ggplot2"); packageVersion("ggplot2") # plotting
+```
+```{r}
+library("tidyverse"); packageVersion("tidyverse") # util              
+```
+```{r}
+library("dplyr"); packageVersion("dplyr") # util
+```
+```{r}
+library("phyloseq"); packageVersion("phyloseq") # data object                 
+```
+```{r}
+library("ape"); packageVersion("ape") # taxa string manipulation
+```
+```{r}
+library(microbiome); packageVersion("microbiome") # clr transformation
+```
+```{r}
+library(dendextend); packageVersion("dendextend") # extend customization of dendograms
+```
+```{r}
+library(vegan); packageVersion("vegan") # bray-curtis and other metrics
+```
+
+# Load Phyloseq Data Object
+```{r}
+(ps <- readRDS("../data/processed/phyloseq.rds"))
+
+# Get Relative Abundance transform values
+ps_rel_abund = phyloseq::transform_sample_counts(ps, function(x){x / sum(x)})
+
+# Get CLR transform values
+ps_clr <- microbiome::transform(ps, "clr")
+```
+```{r}
+sample_data(ps)
+```
+
+
+# Explore Cluster Relative Abundance Patterns
+
+```{r}
+# Plot class
+phyloseq::plot_bar(ps, fill = "class") +
+  geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
+  labs(x = "", y = "Counts\n") +
+  facet_wrap(~factor(focused.cluster, levels=c("early", "perturbed M", "perturbed G", "recovering C", "recovering G", "recovering M", "stable C", "stable G", "stable M")), scales = "free", ncol=3) +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+```
+```{r}
+# Plot class
+phyloseq::plot_bar(ps_rel_abund, fill = "class") +
+  geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap(~factor(focused.cluster, levels=c("early", "perturbed M", "perturbed G", "recovering C", "recovering G", "recovering M", "stable C", "stable G", "stable M")), scales = "free", ncol=3) +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+```{r}
+# Plot phylum
+phyloseq::plot_bar(ps_rel_abund, fill = "phylum") +
+  geom_bar(aes(color = phylum, fill = phylum), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap(~factor(focused.cluster, levels=c("early", "perturbed M", "perturbed G", "recovering C", "recovering G", "recovering M", "stable C", "stable G", "stable M")), scales = "free", ncol=3) +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+# Multivariate Comparison
+
+## Visualize PCA
+
+```{r}
+#PCA via phyloseq
+ord_clr <- phyloseq::ordinate(ps_clr, "RDA")
+```
+
+
+```{r}
+#Scale axes and plot ordination
+clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
+clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
+phyloseq::plot_ordination(ps, ord_clr, type="samples", color="cluster") +
+  geom_point(size = 2) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2)
+```
+
+```{r}
+#Scale axes and plot ordination
+clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
+clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
+phyloseq::plot_ordination(ps, ord_clr, type="samples", color="focused.cluster") +
+  geom_point(size = 2) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2)
+```
+
+## PERMANOVA
+
+```{r}
+set.seed(42)
+permutations=10000
+
+# p values
+p_values <- numeric()
+
+# pairwise p values
+pairwise_p_cluster <- numeric()
+pairwise_p_early_cluster <- numeric()
+pairwise_p_recovering_cluster <- numeric()
+pairwise_p_stable_cluster <- numeric()
+```
+
+### PEMANOVA on cluster
+
+```{r}
+permanova_on_cluster <- function(ps) {
+  # Get CLR transform values
+  ps_clr <- microbiome::transform(ps, "clr")
+  
+  #Generate distance matrix
+  clr_dist_matrix <- phyloseq::distance(ps_clr, method = "euclidean") 
+  
+  ###############
+  # ADONIS test #
+  ###############
+  (all_test <- vegan::adonis(clr_dist_matrix ~ phyloseq::sample_data(ps_clr)$cluster, permutations=10000))
+  print(all_test)
+  
+  #get dispersions
+  dispr <- vegan::betadisper(clr_dist_matrix, phyloseq::sample_data(ps_clr)$cluster)
+  dispr
+  
+  # plot dispersions distances
+  plot(dispr, main = "Ordination Centroids and Dispersion Labeled: Aitchison Distance", sub ="")
+  
+  # plot dispersions boxplot
+  boxplot(dispr, main = "", xlab = "")
+  
+  ################################################################
+  # Permutation test for homogeneity of multivariate dispersions #
+  ################################################################
+  print(permutest(dispr))
+  
+  return(all_test[["aov.tab"]][["Pr(>F)"]][1])
+}
+
+p_values["cluster"] <- permanova_on_cluster(ps)
+```
+We reject the null hypothesis of no difference in the centroid location according to cluster.
+
+R2 (effect size). R2 = 0.25283 means that 25.283% of the variation in distances is explained by grouping being tested.
+
+Pr(>F) (p value). p value = 9.999e-05 means that there is a 0.0009999% (< 0.01 significant) chance a difference was detected between groups when indeed there was none.
+
+Very similar distance distributions --> fail to reject null hypothesis that disperions are different --> follow assumptions of Adonis test 
+
+#### Pair-wise Comparisons PERMANOVA
+
+```{r}
+(ps_early_vs_recovering <- phyloseq::subset_samples(ps, cluster == "early" | cluster == "recovering"))
+(ps_early_vs_recovering <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_early_vs_recovering) > 0, ps_early_vs_recovering))
+
+pairwise_p_cluster["early_vs_recovering"] <- permanova_on_cluster(ps_early_vs_recovering)
+```
+```{r}
+(ps_early_vs_stable <- phyloseq::subset_samples(ps, cluster == "early" | cluster == "stable"))
+(ps_early_vs_stable <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_early_vs_stable) > 0, ps_early_vs_stable))
+
+pairwise_p_cluster["early_vs_stable"] <- permanova_on_cluster(ps_early_vs_stable)
+```
+```{r}
+(ps_stable_vs_recovering <- phyloseq::subset_samples(ps, cluster == "stable" | cluster == "recovering"))
+(ps_stable_vs_recovering <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable_vs_recovering) > 0, ps_stable_vs_recovering))
+
+pairwise_p_cluster["recovering_vs_stable"] <- permanova_on_cluster(ps_stable_vs_recovering)
+```
+#### Multiple Corrections
+
+```{r}
+p.adjust(pairwise_p_cluster) < 0.05
+```
+
+### PERMANOVA on focused cluster
+
+```{r}
+permanova_on_focused_cluster <- function(ps) {
+  # Get CLR transform values
+  ps_clr <- microbiome::transform(ps, "clr")
+  
+  #Generate distance matrix
+  clr_dist_matrix <- phyloseq::distance(ps_clr, method = "euclidean") 
+  
+  ###############
+  # ADONIS test #
+  ###############
+  (all_test <- vegan::adonis(clr_dist_matrix ~ phyloseq::sample_data(ps_clr)$focused.cluster, permutations=10000))
+  print(all_test)
+  
+  #get dispersions
+  dispr <- vegan::betadisper(clr_dist_matrix, phyloseq::sample_data(ps_clr)$focused.cluster)
+  dispr
+  
+  # plot dispersions distances
+  plot(dispr, main = "Ordination Centroids and Dispersion Labeled: Aitchison Distance", sub ="")
+  
+  # plot dispersions boxplot
+  boxplot(dispr, main = "", xlab = "")
+  
+  ################################################################
+  # Permutation test for homogeneity of multivariate dispersions #
+  ################################################################
+  print(permutest(dispr))
+  
+  return(all_test[["aov.tab"]][["Pr(>F)"]][1])
+}
+
+p_values["focused.cluster"] <- permanova_on_focused_cluster(ps)
+```
+NOTE: significant difference in dispersion --> assumptions of ADONIS violated
+
+```{r}
+(ps_early_cluster <- phyloseq::subset_samples(ps, cluster == "early"))
+(ps_early_cluster <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_early_cluster) > 0, ps_early_cluster))
+
+p_values["early cluster"] <- permanova_on_focused_cluster(ps_early_cluster)
+```
+NOTE: significant difference in dispersion --> assumptions of ADONIS violated
+
+```{r}
+(ps_recovering_cluster <- phyloseq::subset_samples(ps, cluster == "recovering"))
+(ps_recovering_cluster <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recovering_cluster) > 0, ps_recovering_cluster))
+
+p_values["recovering cluster"] <- permanova_on_focused_cluster(ps_recovering_cluster)
+```
+
+```{r}
+(ps_stable_cluster <- phyloseq::subset_samples(ps, cluster == "stable"))
+(ps_stable_cluster <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable_cluster) > 0, ps_stable_cluster))
+
+p_values["stable cluster"] <- permanova_on_focused_cluster(ps_stable_cluster)
+```
+
+#### Multiple Corrections
+
+```{r}
+p.adjust(p_values) < 0.05
+```
+#### Pair-wise Comparisons PERMANOVA early perturbed G vs. M
+
+```{r}
+(ps_early_G_vs_M <- phyloseq::subset_samples(ps_early_cluster, focused.cluster == "perturbed G" | focused.cluster == "perturbed M"))
+(ps_early_G_vs_M <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_early_G_vs_M) > 0, ps_early_G_vs_M))
+
+pairwise_p_early_cluster["G_vs_M"] <- permanova_on_focused_cluster(ps_early_G_vs_M)
+```
+#### Pair-wise Comparisons PERMANOVA recovering C vs. G vs. M
+
+```{r}
+(ps_recovering_G_vs_M <- phyloseq::subset_samples(ps_recovering_cluster, focused.cluster == "recovering G" | focused.cluster == "recovering M"))
+(ps_recovering_G_vs_M <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recovering_G_vs_M) > 0, ps_recovering_G_vs_M))
+
+pairwise_p_recovering_cluster["G_vs_M"] <- permanova_on_focused_cluster(ps_recovering_G_vs_M)
+```
+
+```{r}
+(ps_recovering_G_vs_C <- phyloseq::subset_samples(ps_recovering_cluster, focused.cluster == "recovering G" | focused.cluster == "recovering C"))
+(ps_recovering_G_vs_C <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recovering_G_vs_C) > 0, ps_recovering_G_vs_C))
+
+pairwise_p_recovering_cluster["G_vs_C"] <- permanova_on_focused_cluster(ps_recovering_G_vs_C)
+```
+
+```{r}
+(ps_recovering_C_vs_M <- phyloseq::subset_samples(ps_recovering_cluster, focused.cluster == "recovering C" | focused.cluster == "recovering M"))
+(ps_recovering_C_vs_M <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recovering_C_vs_M) > 0, ps_recovering_C_vs_M))
+
+pairwise_p_recovering_cluster["C_vs_M"] <- permanova_on_focused_cluster(ps_recovering_C_vs_M)
+```
+
+#### Pair-wise Comparisons PERMANOVA stable C vs. G vs. M
+
+```{r}
+(ps_stable_G_vs_M <- phyloseq::subset_samples(ps_stable_cluster, focused.cluster == "stable G" | focused.cluster == "stable M"))
+(ps_stable_G_vs_M <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable_G_vs_M) > 0, ps_stable_G_vs_M))
+
+pairwise_p_stable_cluster["G_vs_M"] <- permanova_on_focused_cluster(ps_stable_G_vs_M)
+```
+
+```{r}
+(ps_stable_G_vs_C <- phyloseq::subset_samples(ps_stable_cluster, focused.cluster == "stable G" | focused.cluster == "stable C"))
+(ps_stable_G_vs_C <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable_G_vs_C) > 0, ps_stable_G_vs_C))
+
+pairwise_p_stable_cluster["G_vs_C"] <- permanova_on_focused_cluster(ps_stable_G_vs_C)
+```
+
+```{r}
+(ps_stable_C_vs_M <- phyloseq::subset_samples(ps_stable_cluster, focused.cluster == "stable G" | focused.cluster == "stable M"))
+(ps_stable_C_vs_M <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable_C_vs_M) > 0, ps_stable_C_vs_M))
+
+pairwise_p_stable_cluster["C_vs_M"] <- permanova_on_focused_cluster(ps_stable_C_vs_M)
+```
+#### Multiple Corrections
+
+```{r}
+p.adjust(pairwise_p_early_cluster) < 0.05
+p.adjust(pairwise_p_recovering_cluster) < 0.05
+p.adjust(pairwise_p_stable_cluster) < 0.05
+p.adjust(c(pairwise_p_early_cluster, pairwise_p_recovering_cluster, pairwise_p_stable_cluster)) < 0.05
+```
+```{r}
+p.adjust(c(p_values, pairwise_p_cluster, pairwise_p_early_cluster, pairwise_p_recovering_cluster, pairwise_p_stable_cluster)) < 0.05
+```
+```{r}
+p.adjust(c(p_values, pairwise_p_cluster, pairwise_p_early_cluster, pairwise_p_recovering_cluster, pairwise_p_stable_cluster), method = "BH") < 0.05
+```
+
