@@ -1,0 +1,234 @@
+---
+title: "differential abundance wilcoxon sum rank"
+output: html_notebook
+---
+
+Goal: since there is a significant difference in the composition of clusters, find out who is driving the difference
+
+Groups
+* "stable" vs. "recovering"
+* "perturbed M" vs. "perturbed G"
+
+* "recovering"
+* "recovering C" vs. "recovering G"
+* "recovering C" vs. "recovering M"
+* "recovering G" vs. "recovering M"
+
+* "stable"
+* "stable C" vs. "stable G" 
+* "stable C" vs. "stable M"
+* "stable G" vs. "stable M"
+
+Methods:
+* Wilcox Sum Rank Test
+* ALDEx2
+* ANCOM-BC
+
+Levels
+* Phylum
+* Class
+* Order
+* Family
+* Genus
+* Species
+
+# Install Packages
+
+```{r}
+# .cran_packages <- c("tidyverse", "cowplot", "picante", "vegan", "HMP", "dendextend", "rms", "devtools")
+# .inst <- .cran_packages %in% installed.packages()
+# if(any(!.inst)) {
+#   install.packages(.cran_packages[!.inst])
+# }
+```
+
+```{r}
+# .bioc_packages <- c("phyloseq", "Biostrings", "DESeq2", "microbiome", "metagenomeSeq", "ALDEx2")
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(.bioc_packages, version = "3.14")
+```
+
+# Loading Required Packages
+
+```{r}
+library("ggplot2"); packageVersion("ggplot2") # plotting
+```
+```{r}
+library("tidyverse"); packageVersion("tidyverse") # util              
+```
+```{r}
+library("dplyr"); packageVersion("dplyr") # util
+```
+```{r}
+library("phyloseq"); packageVersion("phyloseq") # data object                 
+```
+```{r}
+library("ape"); packageVersion("ape") # taxa string manipulation
+```
+```{r}
+library(microbiome); packageVersion("microbiome") # clr transformation
+```
+```{r}
+library(dendextend); packageVersion("dendextend") # extend customization of dendograms
+```
+```{r}
+library(vegan); packageVersion("vegan") # bray-curtis and other metrics
+```
+
+```{r}
+# Manipulation and visualization of taxonomic data, particularly those from amplicon metagenomics research. (Foster, Sharpton, and Grünwald 2017)
+library(metacoder); packageVersion("metacoder")
+```
+```{r}
+# defines taxonomic classes and functions to manipulate them. The goal is to use these classes as low level fundamental taxonomic classes that other R packages can build on and use. This is used by metacoder. 
+library(taxa); packageVersion("taxa")
+```
+```{r}
+library(ALDEx2); packageVersion("ALDEx2") # aldex2 test (compositional differential abundance)
+```
+
+
+
+# Initialization
+
+```{r}
+# ggplot2 package theme set
+theme_set(theme_bw())
+
+# ensure randomization is same
+set.seed(42)
+```
+
+# Load Phyloseq Data Object
+```{r}
+(ps <- readRDS("../data/processed/phyloseq.rds"))
+# convert to taxmap format 
+taxmap <- parse_phyloseq(ps)
+
+# Get Relative Abundance transform values
+ps_rel_abund = phyloseq::transform_sample_counts(ps, function(x){x / sum(x)})
+
+# Get CLR transform values
+ps_clr <- microbiome::transform(ps, "clr")
+taxmap_clr <- parse_phyloseq(ps_clr)
+```
+
+# Make Subset Cluster Group Tables
+
+* "stable" vs. "recovering"
+```{r}
+(ps_stable_vs_recovering <- phyloseq::subset_samples(ps, cluster == "stable" | cluster == "recovering"))
+(ps_stable_vs_recovering <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable_vs_recovering) > 0, ps_stable_vs_recovering))
+```
+
+* "perturbed M" vs. "perturbed G"
+```{r}
+(ps_perturbedM_vs_perturbedG <- phyloseq::subset_samples(ps, focused.cluster == "perturbed M" | focused.cluster == "perturbed G"))
+(ps_perturbedM_vs_perturbedG <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_perturbedM_vs_perturbedG) > 0, ps_perturbedM_vs_perturbedG))
+```
+* "recovering"
+* "recovering C" vs. "recovering G"
+* "recovering C" vs. "recovering M"
+* "recovering G" vs. "recovering M"
+```{r}
+(ps_recovering <- phyloseq::subset_samples(ps, cluster == "recovering"))
+(ps_recovering <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recovering) > 0, ps_recovering))
+
+(ps_recoveringC_vs_recoveringG <- phyloseq::subset_samples(ps, focused.cluster == "recovering C" | focused.cluster == "recovering G"))
+(ps_recoveringC_vs_recoveringG <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recoveringC_vs_recoveringG) > 0, ps_recoveringC_vs_recoveringG))
+
+(ps_recoveringC_vs_recoveringM <- phyloseq::subset_samples(ps, focused.cluster == "recovering C" | focused.cluster == "recovering M"))
+(ps_recoveringC_vs_recoveringM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recoveringC_vs_recoveringM) > 0, ps_recoveringC_vs_recoveringM))
+
+(ps_recoveringG_vs_recoveringM <- phyloseq::subset_samples(ps, focused.cluster == "recovering G" | focused.cluster == "recovering M"))
+(ps_recoveringG_vs_recoveringM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recoveringG_vs_recoveringM) > 0, ps_recoveringG_vs_recoveringM))
+```
+* "stable"
+* "stable C" vs. "stable G", 
+* "stable C" vs. "stable M"
+* "stable G" vs. "stable M"
+```{r}
+(ps_stable <- phyloseq::subset_samples(ps, cluster == "stable"))
+(ps_stable <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable) > 0, ps_stable))
+
+(ps_stableC_vs_stableG <- phyloseq::subset_samples(ps, focused.cluster == "stable C" | focused.cluster == "stable G"))
+(ps_stableC_vs_stableG <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stableC_vs_stableG) > 0, ps_stableC_vs_stableG))
+
+(ps_stableC_vs_stableM <- phyloseq::subset_samples(ps, focused.cluster == "stable C" | focused.cluster == "stable M"))
+(ps_stableC_vs_stableM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stableC_vs_stableM) > 0, ps_stableC_vs_stableM))
+
+(ps_stableG_vs_stableM <- phyloseq::subset_samples(ps, focused.cluster == "stable G" | focused.cluster == "stable M"))
+(ps_stableG_vs_stableM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stableG_vs_stableM) > 0, ps_stableG_vs_stableM))
+```
+
+# ALDEx2 Test
+
+```{r}
+aldex2_cluster <- function(ps, save_name) {
+  #Run ALDEx2
+  aldex2_da <- ALDEx2::aldex(data.frame(phyloseq::otu_table(ps)), phyloseq::sample_data(ps)$cluster, test="t", effect = TRUE, denom="iqlr")
+  
+  #Plot effect sizes
+  png(file=paste("../img/aldex2_differential_abundance/", save_name, ".png", sep=""))
+  par(mfrow=c(1,2))
+  ALDEx2::aldex.plot(aldex2_da, type="MA", test="wilcox")
+  ALDEx2::aldex.plot(aldex2_da, type="MW", test="wilcox")
+  dev.off()
+  
+  #Clean up presentation
+  sig_aldex2 <- aldex2_da %>%
+    rownames_to_column(var = "OTU") %>%
+    filter(wi.eBH < 0.05) %>%
+    arrange(effect, wi.eBH) %>%
+    dplyr::select(OTU, diff.btw, diff.win, effect, wi.ep, wi.eBH)
+  
+  # save significant names and values to csv
+  sig_aldex2 <- merge(x=sig_aldex2, y=phyloseq::tax_table(ps), by.x="OTU", by.y=0, all.x=TRUE)
+  write.csv(sig_aldex2, paste("../data/aldex2_differential_abundance/", save_name, ".csv", sep=""))
+  
+  return(sig_aldex2)
+}
+
+
+aldex2_focused_cluster <- function(ps, save_name) {
+   #Run ALDEx2
+  aldex2_da <- ALDEx2::aldex(data.frame(phyloseq::otu_table(ps)), phyloseq::sample_data(ps)$focused.cluster, test="t", effect = TRUE, denom="iqlr")
+  
+  #Plot effect sizes
+  png(file=paste("../img/aldex2_differential_abundance/", save_name, ".png", sep=""))
+  par(mfrow=c(1,2))
+  ALDEx2::aldex.plot(aldex2_da, type="MA", test="wilcox")
+  ALDEx2::aldex.plot(aldex2_da, type="MW", test="wilcox")
+  dev.off()
+  
+  #Clean up presentation
+  sig_aldex2 <- aldex2_da %>%
+    rownames_to_column(var = "OTU") %>%
+    filter(wi.eBH < 0.05) %>%
+    arrange(effect, wi.eBH) %>%
+    dplyr::select(OTU, diff.btw, diff.win, effect, wi.ep, wi.eBH)
+  
+  # save significant names and values to csv
+  sig_aldex2 <- merge(x=sig_aldex2, y=phyloseq::tax_table(ps), by.x="OTU", by.y=0, all.x=TRUE)
+  write.csv(sig_aldex2, paste("../data/aldex2_differential_abundance/", save_name, ".csv", sep=""))
+  
+  return(sig_aldex2)
+}
+```
+
+```{r}
+aldex2_stable_vs_recovering <- aldex2_cluster(ps_stable_vs_recovering, "stable_vs_recovering")
+aldex2_stable_vs_recovering
+```
+
+```{r warning=FALSE}
+aldex2_perturbedM_vs_perturbedG <- aldex2_focused_cluster(ps_perturbedM_vs_perturbedG, "perturbedM_vs_perturbedG")
+aldex2_recoveringC_vs_recoveringG <- aldex2_focused_cluster(ps_recoveringC_vs_recoveringG, "recoveringC_vs_recoveringG")
+aldex2_recoveringC_vs_recoveringM <- aldex2_focused_cluster(ps_recoveringC_vs_recoveringM, "recoveringC_vs_recoveringM")
+aldex2_recoveringG_vs_recoveringM <- aldex2_focused_cluster(ps_recoveringG_vs_recoveringM, "recoveringG_vs_recoveringM")
+aldex2_stableC_vs_stableG <- aldex2_focused_cluster(ps_stableC_vs_stableG, "stableC_vs_stableG")
+aldex2_stableC_vs_stableM <- aldex2_focused_cluster(ps_stableC_vs_stableM, "stableC_vs_stableM")
+aldex2_stableG_vs_stableM <- aldex2_focused_cluster(ps_stableG_vs_stableM, "stableG_vs_stableM")
+```
+

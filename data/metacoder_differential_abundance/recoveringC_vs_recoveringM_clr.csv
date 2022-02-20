@@ -1,0 +1,79 @@
+,taxon_id,treatment_1,treatment_2,log2_median_ratio,median_diff,mean_diff,wilcox_p_value,otu_id,kingdom,phylum,class,order,family,genus,species
+1,el,recovering C,recovering M,-2.03131124310948,-1.11436174281242,-1.21868407824768,0.0459786892424464,NA,NA,NA,NA,NA,NA,NA,NA
+2,hv,recovering C,recovering M,-2.03131124310948,-1.11436174281242,-1.21868407824768,0.0459786892424464,OTU_34,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,rhodoplanes,rhodoplanes elegans
+3,eu,recovering C,recovering M,-1.46507001622462,4.96049583329944,4.80173866328777,0.0211161387631976,NA,NA,NA,NA,NA,NA,NA,NA
+4,ih,recovering C,recovering M,-1.46507001622462,4.96049583329944,4.80173866328777,0.0211161387631976,OTU_434,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+5,ih,recovering C,recovering M,-1.46507001622462,4.96049583329944,4.80173866328777,0.0211161387631976,OTU_208,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+6,ih,recovering C,recovering M,-1.46507001622462,4.96049583329944,4.80173866328777,0.0211161387631976,OTU_217,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+7,ih,recovering C,recovering M,-1.46507001622462,4.96049583329944,4.80173866328777,0.0211161387631976,OTU_445,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+8,ih,recovering C,recovering M,-1.46507001622462,4.96049583329944,4.80173866328777,0.0211161387631976,OTU_72,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+9,ih,recovering C,recovering M,-1.46507001622462,4.96049583329944,4.80173866328777,0.0211161387631976,OTU_293,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+10,ih,recovering C,recovering M,-1.46507001622462,4.96049583329944,4.80173866328777,0.0211161387631976,OTU_312,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+11,ih,recovering C,recovering M,-1.46507001622462,4.96049583329944,4.80173866328777,0.0211161387631976,OTU_54,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+12,bc,recovering C,recovering M,0,-60.8741546501963,-53.6464453255491,0.0105580693815988,NA,NA,NA,NA,NA,NA,NA,NA
+13,dz,recovering C,recovering M,0,2.02375236300816,2.28048341464672,0.0105580693815988,NA,NA,NA,NA,NA,NA,NA,NA
+14,ei,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,NA,NA,NA,NA,NA,NA,NA,NA
+15,ej,recovering C,recovering M,0,-2.62408878837604,-2.806513059606,0.0105580693815988,NA,NA,NA,NA,NA,NA,NA,NA
+16,gx,recovering C,recovering M,0,2.02375236300816,2.28048341464672,0.0105580693815988,NA,NA,NA,NA,NA,NA,NA,NA
+17,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_89,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+18,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_323,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+19,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_378,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+20,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_430,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+21,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_615,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+22,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_71,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+23,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_104,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+24,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_335,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+25,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_370,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+26,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_429,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+27,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_213,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+28,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_600,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+29,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_5,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+30,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_415,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+31,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_390,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+32,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_136,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+33,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_417,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+34,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_183,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+35,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_279,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+36,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_515,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+37,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_400,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+38,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_349,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+39,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_597,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+40,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_245,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+41,hr,recovering C,recovering M,0,-41.5653414621888,-42.0453499818811,0.0105580693815988,OTU_566,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+42,hs,recovering C,recovering M,0,-2.62408878837604,-2.806513059606,0.0105580693815988,OTU_543,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,beijerinckiaceae,beijerinckia,beijerinckia spp.
+43,hs,recovering C,recovering M,0,-2.62408878837604,-2.806513059606,0.0105580693815988,OTU_418,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,beijerinckiaceae,beijerinckia,beijerinckia spp.
+44,kl,recovering C,recovering M,0,-2.92578451928541,-2.47018111416985,0.0105580693815988,OTU_18,bacteria,proteobacteria,gammaproteobacteria,pseudomonadales,pseudomonadaceae,pseudomonas,pseudomonas veronii
+45,kw,recovering C,recovering M,0,-1.9107853986588,-1.98568527846473,0.0105580693815988,OTU_19,bacteria,firmicutes,bacilli,lactobacillales,streptococcaceae,streptococcus,streptococcus salivarius
+46,lg,recovering C,recovering M,0,2.02375236300816,2.28048341464672,0.0105580693815988,OTU_22,bacteria,firmicutes,clostridia,clostridiales,ruminococcaceae,ruminococcus,ruminococcus spp.
+47,ak,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,NA,NA,NA,NA,NA,NA,NA,NA
+48,az,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,NA,NA,NA,NA,NA,NA,NA,NA
+49,cc,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,NA,NA,NA,NA,NA,NA,NA,NA
+50,dy,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,NA,NA,NA,NA,NA,NA,NA,NA
+51,gt,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,NA,NA,NA,NA,NA,NA,NA,NA
+52,lb,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,OTU_181,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+53,lb,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,OTU_311,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+54,lb,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,OTU_639,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+55,lb,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,OTU_182,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+56,lb,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,OTU_106,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+57,lb,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,OTU_174,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+58,lb,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,OTU_144,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+59,lb,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,OTU_15,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+60,lb,recovering C,recovering M,0,11.315648708486,8.29061815750853,0.0250754147812971,OTU_443,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+61,js,recovering C,recovering M,0,-1.82726168841703,-1.69409675543488,0.0459786892424464,OTU_267,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,rhizobiaceae,rhizobium,rhizobium sp.
+62,is,recovering C,recovering M,0.281791265572239,3.51353968412852,4.71005396095575,0.0380090497737557,OTU_9,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+63,is,recovering C,recovering M,0.281791265572239,3.51353968412852,4.71005396095575,0.0380090497737557,OTU_351,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+64,is,recovering C,recovering M,0.281791265572239,3.51353968412852,4.71005396095575,0.0380090497737557,OTU_275,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+65,is,recovering C,recovering M,0.281791265572239,3.51353968412852,4.71005396095575,0.0380090497737557,OTU_479,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+66,is,recovering C,recovering M,0.281791265572239,3.51353968412852,4.71005396095575,0.0380090497737557,OTU_163,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+67,is,recovering C,recovering M,0.281791265572239,3.51353968412852,4.71005396095575,0.0380090497737557,OTU_215,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+68,is,recovering C,recovering M,0.281791265572239,3.51353968412852,4.71005396095575,0.0380090497737557,OTU_521,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+69,is,recovering C,recovering M,0.281791265572239,3.51353968412852,4.71005396095575,0.0380090497737557,OTU_135,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+70,ct,recovering C,recovering M,0.392171952359086,4.87598257093667,5.63047567836962,0.0459786892424464,NA,NA,NA,NA,NA,NA,NA,NA
+71,fe,recovering C,recovering M,0.392171952359086,4.87598257093667,5.63047567836962,0.0459786892424464,NA,NA,NA,NA,NA,NA,NA,NA
+72,ev,recovering C,recovering M,0.762244639516856,1.67312377844664,1.57629686608927,0.0105580693815988,NA,NA,NA,NA,NA,NA,NA,NA
+73,ii,recovering C,recovering M,0.762244639516856,1.67312377844664,1.57629686608927,0.0105580693815988,OTU_25,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,nitrospirillum,azospirillum amazonense
+74,ho,recovering C,recovering M,0.776476290085466,0.866797910110059,1.23250956913256,0.0158371040723982,OTU_589,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas rhenobacensis
+75,ar,recovering C,recovering M,0.902203913919524,7.21538562649998,9.05800411349721,0.0211161387631976,NA,NA,NA,NA,NA,NA,NA,NA
+76,bk,recovering C,recovering M,0.902203913919524,7.21538562649998,9.05800411349721,0.0211161387631976,NA,NA,NA,NA,NA,NA,NA,NA
+77,iv,recovering C,recovering M,1.11880479822518,0.722553162509017,1.02627637104728,0.0459786892424464,OTU_348,bacteria,proteobacteria,gammaproteobacteria,enterobacteriales,enterobacteriaceae,enterobacter,enterobacter sp.
+78,cg,recovering C,recovering M,1.94559301308528,-4.16780201499502,-4.30360924638576,0.0158371040723982,NA,NA,NA,NA,NA,NA,NA,NA

@@ -1,0 +1,350 @@
+,taxon_id,treatment_1,treatment_2,log2_median_ratio,median_diff,mean_diff,wilcox_p_value,otu_id,kingdom,phylum,class,order,family,genus,species
+1,jh,stable,recovering,-Inf,-7,-5.68589743589744,1.10714855844679e-05,OTU_594,bacteria,proteobacteria,alphaproteobacteria,caulobacterales,caulobacteraceae,brevundimonas,brevundimonas spp.
+2,ji,stable,recovering,-Inf,-7.5,-8.45192307692308,1.14736871760951e-05,OTU_321,bacteria,proteobacteria,gammaproteobacteria,enterobacteriales,enterobacteriaceae,escherichia,escherichia vulneris
+3,jj,stable,recovering,-Inf,-4,-3.46153846153846,8.82591101101854e-05,OTU_348,bacteria,proteobacteria,gammaproteobacteria,enterobacteriales,enterobacteriaceae,enterobacter,enterobacter sp.
+4,dh,stable,recovering,-Inf,-1,-0.996794871794872,0.000194690974011356,NA,NA,NA,NA,NA,NA,NA,NA
+5,ga,stable,recovering,-Inf,-1,-0.996794871794872,0.000194690974011356,NA,NA,NA,NA,NA,NA,NA,NA
+6,jz,stable,recovering,-Inf,-1,-0.996794871794872,0.000194690974011356,OTU_132,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,rhizobiales,methyloligella,methyloligella halotolerans
+7,js,stable,recovering,-Inf,-1,-0.846153846153846,0.000278683374066864,OTU_338,bacteria,proteobacteria,gammaproteobacteria,pseudomonadales,pseudomonadaceae,pseudomonas,pseudomonas sp.
+8,js,stable,recovering,-Inf,-1,-0.846153846153846,0.000278683374066864,OTU_296,bacteria,proteobacteria,gammaproteobacteria,pseudomonadales,pseudomonadaceae,pseudomonas,pseudomonas sp.
+9,ja,stable,recovering,-Inf,-5,-4.88461538461539,0.0002878180148299,OTU_78,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,rhodovibrio,rhodovibrio sodomensis
+10,ag,stable,recovering,-Inf,-2,-2.36858974358974,0.00182308894538688,NA,NA,NA,NA,NA,NA,NA,NA
+11,au,stable,recovering,-Inf,-2,-2.36858974358974,0.00182308894538688,NA,NA,NA,NA,NA,NA,NA,NA
+12,bq,stable,recovering,-Inf,-2,-2.36858974358974,0.00182308894538688,NA,NA,NA,NA,NA,NA,NA,NA
+13,db,stable,recovering,-Inf,-2,-2.36858974358974,0.00182308894538688,NA,NA,NA,NA,NA,NA,NA,NA
+14,fq,stable,recovering,-Inf,-2,-2.36858974358974,0.00182308894538688,NA,NA,NA,NA,NA,NA,NA,NA
+15,jm,stable,recovering,-Inf,-2,-2.36858974358974,0.00182308894538688,OTU_172,bacteria,gemmatimonadetes,gemmatimonadetes,gemmatimonadales,gemmatimonadaceae,gemmatimonas,gemmatimonas spp.
+16,jm,stable,recovering,-Inf,-2,-2.36858974358974,0.00182308894538688,OTU_233,bacteria,gemmatimonadetes,gemmatimonadetes,gemmatimonadales,gemmatimonadaceae,gemmatimonas,gemmatimonas spp.
+17,jm,stable,recovering,-Inf,-2,-2.36858974358974,0.00182308894538688,OTU_143,bacteria,gemmatimonadetes,gemmatimonadetes,gemmatimonadales,gemmatimonadaceae,gemmatimonas,gemmatimonas spp.
+18,kc,stable,recovering,-Inf,-1,-2.21474358974359,0.00182308894538688,OTU_117,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,brucellaceae,ochrobactrum,ochrobactrum intermedium
+19,jd,stable,recovering,-Inf,-2,-1.53846153846154,0.00317262855334972,OTU_289,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,rhodovibrio,rhodovibrio spp.
+20,jd,stable,recovering,-Inf,-2,-1.53846153846154,0.00317262855334972,OTU_232,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,rhodovibrio,rhodovibrio spp.
+21,jd,stable,recovering,-Inf,-2,-1.53846153846154,0.00317262855334972,OTU_376,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,rhodovibrio,rhodovibrio spp.
+22,jd,stable,recovering,-Inf,-2,-1.53846153846154,0.00317262855334972,OTU_205,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,rhodovibrio,rhodovibrio spp.
+23,ez,stable,recovering,-Inf,-1,-1.16025641025641,0.00721343225790468,NA,NA,NA,NA,NA,NA,NA,NA
+24,iu,stable,recovering,-Inf,-1,-1.16025641025641,0.00721343225790468,OTU_254,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,beijerinckiaceae,chelatococcus,chelatococcus spp.
+25,br,stable,recovering,-Inf,-1,-0.830128205128205,0.00768379540542924,NA,NA,NA,NA,NA,NA,NA,NA
+26,dc,stable,recovering,-Inf,-1,-0.830128205128205,0.00768379540542924,NA,NA,NA,NA,NA,NA,NA,NA
+27,fr,stable,recovering,-Inf,-1,-0.830128205128205,0.00768379540542924,NA,NA,NA,NA,NA,NA,NA,NA
+28,jo,stable,recovering,-Inf,-1,-0.830128205128205,0.00768379540542924,OTU_209,bacteria,proteobacteria,gammaproteobacteria,chromatiales,ectothiorhodospiraceae,thioalkalivibrio,thioalkalivibrio spp.
+29,bf,stable,recovering,-Inf,-1,-0.868589743589744,0.0134527698582534,NA,NA,NA,NA,NA,NA,NA,NA
+30,de,stable,recovering,-Inf,-1,-1.26923076923077,0.0142487995403664,NA,NA,NA,NA,NA,NA,NA,NA
+31,fv,stable,recovering,-Inf,-1,-1.26923076923077,0.0142487995403664,NA,NA,NA,NA,NA,NA,NA,NA
+32,jt,stable,recovering,-Inf,-1,-1.26923076923077,0.0142487995403664,OTU_350,bacteria,proteobacteria,gammaproteobacteria,xanthomonadales,sinobacteraceae,steroidobacter,steroidobacter spp.
+33,jt,stable,recovering,-Inf,-1,-1.26923076923077,0.0142487995403664,OTU_125,bacteria,proteobacteria,gammaproteobacteria,xanthomonadales,sinobacteraceae,steroidobacter,steroidobacter spp.
+34,is,stable,recovering,-Inf,-0.5,-0.641025641025641,0.0208977550775374,OTU_450,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,beijerinckiaceae,methylocella,methylocella silvestris
+35,is,stable,recovering,-Inf,-0.5,-0.641025641025641,0.0208977550775374,OTU_533,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,beijerinckiaceae,methylocella,methylocella silvestris
+36,kg,stable,recovering,-Inf,-2,-3.25961538461539,0.0485292369674735,OTU_267,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,rhizobiaceae,rhizobium,rhizobium sp.
+37,ka,stable,recovering,-4.35755200461808,-19.5,-17.125,4.40495144609119e-06,OTU_307,bacteria,proteobacteria,alphaproteobacteria,caulobacterales,caulobacteraceae,brevundimonas,brevundimonas sp.
+38,ka,stable,recovering,-4.35755200461808,-19.5,-17.125,4.40495144609119e-06,OTU_536,bacteria,proteobacteria,alphaproteobacteria,caulobacterales,caulobacteraceae,brevundimonas,brevundimonas sp.
+39,jg,stable,recovering,-4.30252269571477,-18227,-16410.5641025641,2.30545527952601e-07,OTU_9,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+40,jg,stable,recovering,-4.30252269571477,-18227,-16410.5641025641,2.30545527952601e-07,OTU_163,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+41,jg,stable,recovering,-4.30252269571477,-18227,-16410.5641025641,2.30545527952601e-07,OTU_135,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+42,jg,stable,recovering,-4.30252269571477,-18227,-16410.5641025641,2.30545527952601e-07,OTU_351,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+43,jg,stable,recovering,-4.30252269571477,-18227,-16410.5641025641,2.30545527952601e-07,OTU_521,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+44,jg,stable,recovering,-4.30252269571477,-18227,-16410.5641025641,2.30545527952601e-07,OTU_275,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+45,jg,stable,recovering,-4.30252269571477,-18227,-16410.5641025641,2.30545527952601e-07,OTU_479,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+46,jg,stable,recovering,-4.30252269571477,-18227,-16410.5641025641,2.30545527952601e-07,OTU_215,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+47,cw,stable,recovering,-4.30107829810771,-18226.5,-16411.4455128205,2.30545527952601e-07,NA,NA,NA,NA,NA,NA,NA,NA
+48,fk,stable,recovering,-4.30107829810771,-18226.5,-16411.4455128205,2.30545527952601e-07,NA,NA,NA,NA,NA,NA,NA,NA
+49,fl,stable,recovering,-4.24792751344359,-27,-22.8108974358974,4.53020725761454e-06,NA,NA,NA,NA,NA,NA,NA,NA
+50,as,stable,recovering,-4.2466132243476,-18189.5,-16376.5769230769,2.30545527952601e-07,NA,NA,NA,NA,NA,NA,NA,NA
+51,bm,stable,recovering,-4.2466132243476,-18189.5,-16376.5769230769,2.30545527952601e-07,NA,NA,NA,NA,NA,NA,NA,NA
+52,ad,stable,recovering,-4.24537546515238,-18191,-16378.4871794872,2.30545527952601e-07,NA,NA,NA,NA,NA,NA,NA,NA
+53,fb,stable,recovering,-3.62449086490779,-34,-48.0448717948718,1.28376207356314e-06,NA,NA,NA,NA,NA,NA,NA,NA
+54,iw,stable,recovering,-3.62449086490779,-34,-48.0448717948718,1.28376207356314e-06,OTU_25,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,nitrospirillum,azospirillum amazonense
+55,ff,stable,recovering,-3.58496250072116,-5.5,-6.42307692307692,7.27749258745639e-05,NA,NA,NA,NA,NA,NA,NA,NA
+56,bn,stable,recovering,-2.77258950389693,-210,-187.717948717949,3.9505637765154e-06,NA,NA,NA,NA,NA,NA,NA,NA
+57,cx,stable,recovering,-2.77258950389693,-210,-187.717948717949,3.9505637765154e-06,NA,NA,NA,NA,NA,NA,NA,NA
+58,fy,stable,recovering,-2.71989208080726,-190,-164.907051282051,4.40495144609119e-06,NA,NA,NA,NA,NA,NA,NA,NA
+59,jw,stable,recovering,-2.71989208080726,-190,-164.907051282051,4.40495144609119e-06,OTU_569,bacteria,proteobacteria,alphaproteobacteria,caulobacterales,caulobacteraceae,caulobacter,caulobacter spp.
+60,ft,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,NA,NA,NA,NA,NA,NA,NA,NA
+61,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_583,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+62,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_258,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+63,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_257,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+64,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_396,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+65,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_160,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+66,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_261,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+67,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_608,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+68,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_73,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+69,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_359,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+70,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_315,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+71,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_1,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+72,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_195,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+73,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_444,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+74,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_246,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+75,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_228,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+76,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_52,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+77,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_187,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+78,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_222,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+79,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_412,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+80,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_530,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+81,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_636,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+82,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_67,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+83,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_609,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+84,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_367,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+85,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_269,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+86,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_562,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+87,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_524,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+88,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_212,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+89,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_155,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+90,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_467,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+91,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_448,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+92,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_6,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+93,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_218,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+94,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_575,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+95,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_497,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+96,jq,stable,recovering,-2.46814672551858,-18670.5,-16622.3557692308,0.000928837528924969,OTU_601,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+97,cp,stable,recovering,-2.46277287019816,-18755,-16684.233974359,0.000928837528924969,NA,NA,NA,NA,NA,NA,NA,NA
+98,ju,stable,recovering,-2.44745897697122,-49,-46.1762820512821,1.28376207356314e-06,OTU_196,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,brucellaceae,ochrobactrum,ochrobactrum anthropi
+99,df,stable,recovering,-2.43063435432986,-50.5,-48.7596153846154,1.21361376898601e-06,NA,NA,NA,NA,NA,NA,NA,NA
+100,fw,stable,recovering,-2.39530128121758,-49,-48.3910256410256,1.21361376898601e-06,NA,NA,NA,NA,NA,NA,NA,NA
+101,fg,stable,recovering,-2,-3,-5.06410256410256,0.00039320148018927,NA,NA,NA,NA,NA,NA,NA,NA
+102,jb,stable,recovering,-2,-3,-5.06410256410256,0.00039320148018927,OTU_85,bacteria,bacteroidetes,bacteroidetes,bacteroidetes order ii. incertae sedis,rhodothermaceae,rhodothermus,rhodothermus spp.
+103,jb,stable,recovering,-2,-3,-5.06410256410256,0.00039320148018927,OTU_130,bacteria,bacteroidetes,bacteroidetes,bacteroidetes order ii. incertae sedis,rhodothermaceae,rhodothermus,rhodothermus spp.
+104,hv,stable,recovering,-1.94341647163363,-18.5,-16.9711538461538,0.00183766181362118,OTU_403,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas pangongensis
+105,hv,stable,recovering,-1.94341647163363,-18.5,-16.9711538461538,0.00183766181362118,OTU_442,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas pangongensis
+106,hv,stable,recovering,-1.94341647163363,-18.5,-16.9711538461538,0.00183766181362118,OTU_123,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas pangongensis
+107,hv,stable,recovering,-1.94341647163363,-18.5,-16.9711538461538,0.00183766181362118,OTU_77,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas pangongensis
+108,hv,stable,recovering,-1.94341647163363,-18.5,-16.9711538461538,0.00183766181362118,OTU_102,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas pangongensis
+109,fi,stable,recovering,-1.87446911791614,-8,-10.9615384615385,0.000438464681136025,NA,NA,NA,NA,NA,NA,NA,NA
+110,je,stable,recovering,-1.87446911791614,-8,-10.9615384615385,0.000438464681136025,OTU_251,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,cytophaga,cytophaga spp.
+111,an,stable,recovering,-1.58496250072116,-2,-1.91025641025641,0.000408440812360765,NA,NA,NA,NA,NA,NA,NA,NA
+112,lw,stable,recovering,-1.49476469174958,-10,-10.5064102564103,0.00168367856734454,OTU_491,bacteria,verrucomicrobia,opitutae,opitutales,opitutaceae,opitutus,opitutus sp.
+113,lw,stable,recovering,-1.49476469174958,-10,-10.5064102564103,0.00168367856734454,OTU_40,bacteria,verrucomicrobia,opitutae,opitutales,opitutaceae,opitutus,opitutus sp.
+114,dg,stable,recovering,-1.35755200461808,-12.5,-14.176282051282,0.00354424479254551,NA,NA,NA,NA,NA,NA,NA,NA
+115,fz,stable,recovering,-1.35755200461808,-12.5,-14.176282051282,0.00354424479254551,NA,NA,NA,NA,NA,NA,NA,NA
+116,jy,stable,recovering,-1.32192809488736,-4.5,-7.45192307692308,0.000975312128096194,OTU_50,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,rhizobiaceae,rhizobium,rhizobium straminoryzae
+117,fa,stable,recovering,-1.15754127698648,-8,-11.0288461538462,0.0185926651115169,NA,NA,NA,NA,NA,NA,NA,NA
+118,iv,stable,recovering,-1.15754127698648,-8,-11.0288461538462,0.0185926651115169,OTU_72,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+119,iv,stable,recovering,-1.15754127698648,-8,-11.0288461538462,0.0185926651115169,OTU_217,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+120,iv,stable,recovering,-1.15754127698648,-8,-11.0288461538462,0.0185926651115169,OTU_312,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+121,iv,stable,recovering,-1.15754127698648,-8,-11.0288461538462,0.0185926651115169,OTU_208,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+122,iv,stable,recovering,-1.15754127698648,-8,-11.0288461538462,0.0185926651115169,OTU_445,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+123,iv,stable,recovering,-1.15754127698648,-8,-11.0288461538462,0.0185926651115169,OTU_54,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+124,iv,stable,recovering,-1.15754127698648,-8,-11.0288461538462,0.0185926651115169,OTU_293,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+125,iv,stable,recovering,-1.15754127698648,-8,-11.0288461538462,0.0185926651115169,OTU_434,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+126,cc,stable,recovering,-1,-1,-1.04166666666667,0.00511096924354027,NA,NA,NA,NA,NA,NA,NA,NA
+127,ea,stable,recovering,-1,-1,-1.26282051282051,0.00690271850968373,NA,NA,NA,NA,NA,NA,NA,NA
+128,hb,stable,recovering,-1,-1,-1.26282051282051,0.00690271850968373,NA,NA,NA,NA,NA,NA,NA,NA
+129,fm,stable,recovering,-0.761389068105424,-28.5,-51.275641025641,0.00853638341052244,NA,NA,NA,NA,NA,NA,NA,NA
+130,lj,stable,recovering,-0.67283525674649,-20.5,-42.8237179487179,0.0438705822300164,OTU_284,bacteria,proteobacteria,gammaproteobacteria,enterobacteriales,enterobacteriaceae,escherichia,escherichia spp.
+131,ij,stable,recovering,0,0,0.833333333333333,0.00277345948005022,OTU_206,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,rhodoplanes,rhodoplanes spp.
+132,ij,stable,recovering,0,0,0.833333333333333,0.00277345948005022,OTU_347,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,rhodoplanes,rhodoplanes spp.
+133,gn,stable,recovering,0,0,2.45833333333333,0.0059412865060381,NA,NA,NA,NA,NA,NA,NA,NA
+134,kv,stable,recovering,0,0,2.45833333333333,0.0059412865060381,OTU_31,bacteria,proteobacteria,betaproteobacteria,rhodocyclales,rhodocyclaceae,zoogloea,zoogloea sp.
+135,cv,stable,recovering,0,0,-0.573717948717949,0.00620186643397517,NA,NA,NA,NA,NA,NA,NA,NA
+136,fj,stable,recovering,0,0,-0.573717948717949,0.00620186643397517,NA,NA,NA,NA,NA,NA,NA,NA
+137,jf,stable,recovering,0,0,-0.573717948717949,0.00620186643397517,OTU_310,bacteria,firmicutes,bacilli,bacillales,alicyclobacillaceae,tumebacillus,tumebacillus sp.
+138,jf,stable,recovering,0,0,-0.573717948717949,0.00620186643397517,OTU_593,bacteria,firmicutes,bacilli,bacillales,alicyclobacillaceae,tumebacillus,tumebacillus sp.
+139,bc,stable,recovering,0,0,0.503205128205128,0.00939632046248827,NA,NA,NA,NA,NA,NA,NA,NA
+140,cg,stable,recovering,0,0,0.503205128205128,0.00939632046248827,NA,NA,NA,NA,NA,NA,NA,NA
+141,eg,stable,recovering,0,0,0.503205128205128,0.00939632046248827,NA,NA,NA,NA,NA,NA,NA,NA
+142,hn,stable,recovering,0,0,0.503205128205128,0.00939632046248827,NA,NA,NA,NA,NA,NA,NA,NA
+143,mh,stable,recovering,0,0,0.503205128205128,0.00939632046248827,OTU_169,bacteria,bacteroidetes,sphingobacteriia,sphingobacteriales,sphingobacteriaceae,sphingobacterium,sphingobacterium spp.
+144,dt,stable,recovering,0,0,1.20833333333333,0.0102350544425348,NA,NA,NA,NA,NA,NA,NA,NA
+145,fo,stable,recovering,0,0,-0.423076923076923,0.0102350544425348,NA,NA,NA,NA,NA,NA,NA,NA
+146,gp,stable,recovering,0,0,1.20833333333333,0.0102350544425348,NA,NA,NA,NA,NA,NA,NA,NA
+147,jk,stable,recovering,0,0,-0.423076923076923,0.0102350544425348,OTU_482,bacteria,firmicutes,clostridia,clostridiales,lachnospiraceae,roseburia,roseburia spp.
+148,kx,stable,recovering,0,0,1.20833333333333,0.0102350544425348,OTU_38,bacteria,proteobacteria,betaproteobacteria,burkholderiales,alcaligenaceae,bordetella,bordetella hinzii
+149,fe,stable,recovering,0,0,-0.724358974358974,0.0134527698582534,NA,NA,NA,NA,NA,NA,NA,NA
+150,iz,stable,recovering,0,0,-0.724358974358974,0.0134527698582534,OTU_166,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,spirosoma,spirosoma spp.
+151,gh,stable,recovering,0,0,0.708333333333333,0.0194174509243623,NA,NA,NA,NA,NA,NA,NA,NA
+152,ko,stable,recovering,0,0,0.708333333333333,0.0194174509243623,OTU_66,bacteria,proteobacteria,alphaproteobacteria,sphingomonadales,sphingomonadaceae,sphingobium,sphingobium yanoikuyae
+153,dv,stable,recovering,0,0,4.62820512820513,0.0303400811268831,NA,NA,NA,NA,NA,NA,NA,NA
+154,gu,stable,recovering,0,0,4.62820512820513,0.0303400811268831,NA,NA,NA,NA,NA,NA,NA,NA
+155,ld,stable,recovering,0,0,4.62820512820513,0.0303400811268831,OTU_21,bacteria,proteobacteria,gammaproteobacteria,xanthomonadales,xanthomonadaceae,stenotrophomonas,stenotrophomonas spp.
+156,cz,stable,recovering,0,0,-0.564102564102564,0.0381458878389763,NA,NA,NA,NA,NA,NA,NA,NA
+157,hw,stable,recovering,0.584962500721156,1,1.71474358974359,0.0142487995403664,OTU_162,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,bradyrhizobium,bradyrhizobium spp.
+158,hw,stable,recovering,0.584962500721156,1,1.71474358974359,0.0142487995403664,OTU_327,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,bradyrhizobium,bradyrhizobium spp.
+159,hw,stable,recovering,0.584962500721156,1,1.71474358974359,0.0142487995403664,OTU_595,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,bradyrhizobium,bradyrhizobium spp.
+160,es,stable,recovering,0.812576408180348,74.5,270.852564102564,0.0189809771925723,NA,NA,NA,NA,NA,NA,NA,NA
+161,ik,stable,recovering,0.812576408180348,74.5,270.852564102564,0.0189809771925723,OTU_494,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+162,ik,stable,recovering,0.812576408180348,74.5,270.852564102564,0.0189809771925723,OTU_265,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+163,ik,stable,recovering,0.812576408180348,74.5,270.852564102564,0.0189809771925723,OTU_150,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+164,ik,stable,recovering,0.812576408180348,74.5,270.852564102564,0.0189809771925723,OTU_27,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+165,ik,stable,recovering,0.812576408180348,74.5,270.852564102564,0.0189809771925723,OTU_157,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+166,ik,stable,recovering,0.812576408180348,74.5,270.852564102564,0.0189809771925723,OTU_42,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+167,ik,stable,recovering,0.812576408180348,74.5,270.852564102564,0.0189809771925723,OTU_158,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+168,ik,stable,recovering,0.812576408180348,74.5,270.852564102564,0.0189809771925723,OTU_14,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+169,ik,stable,recovering,0.812576408180348,74.5,270.852564102564,0.0189809771925723,OTU_329,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+170,ik,stable,recovering,0.812576408180348,74.5,270.852564102564,0.0189809771925723,OTU_146,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+171,el,stable,recovering,0.853702659733348,3496.5,3846.82692307692,0.0023180778086211,NA,NA,NA,NA,NA,NA,NA,NA
+172,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_131,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+173,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_253,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+174,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_3,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+175,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_107,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+176,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_357,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+177,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_585,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+178,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_604,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+179,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_298,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+180,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_87,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+181,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_425,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+182,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_113,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+183,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_437,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+184,hy,stable,recovering,0.87009325838696,3516,3849.57371794872,0.00219288276150364,OTU_414,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+185,ck,stable,recovering,1.01414418232027,103.5,289.355769230769,0.00932208030080827,NA,NA,NA,NA,NA,NA,NA,NA
+186,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_463,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+187,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_464,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+188,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_114,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+189,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_239,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+190,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_295,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+191,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_436,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+192,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_421,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+193,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_362,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+194,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_197,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+195,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_141,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+196,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_360,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+197,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_456,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+198,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_380,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+199,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_411,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+200,ip,stable,recovering,1.27008916336774,12,12.6538461538462,0.0030019051254293,OTU_382,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+201,gt,stable,recovering,1.36194377373524,100.5,76.1538461538462,0.0400690241648309,NA,NA,NA,NA,NA,NA,NA,NA
+202,lb,stable,recovering,1.36446213872592,100,75.4102564102564,0.0438705822300164,OTU_184,bacteria,proteobacteria,betaproteobacteria,rhodocyclales,rhodocyclaceae,rhodocyclus,rhodocyclus tenuis
+203,lb,stable,recovering,1.36446213872592,100,75.4102564102564,0.0438705822300164,OTU_194,bacteria,proteobacteria,betaproteobacteria,rhodocyclales,rhodocyclaceae,rhodocyclus,rhodocyclus tenuis
+204,lb,stable,recovering,1.36446213872592,100,75.4102564102564,0.0438705822300164,OTU_498,bacteria,proteobacteria,betaproteobacteria,rhodocyclales,rhodocyclaceae,rhodocyclus,rhodocyclus tenuis
+205,lb,stable,recovering,1.36446213872592,100,75.4102564102564,0.0438705822300164,OTU_16,bacteria,proteobacteria,betaproteobacteria,rhodocyclales,rhodocyclaceae,rhodocyclus,rhodocyclus tenuis
+206,bz,stable,recovering,1.4093909361377,106,81.4391025641026,0.0368096350914409,NA,NA,NA,NA,NA,NA,NA,NA
+207,dr,stable,recovering,1.4093909361377,106,81.4391025641026,0.0368096350914409,NA,NA,NA,NA,NA,NA,NA,NA
+208,ii,stable,recovering,1.44745897697122,9.5,17.6698717948718,0.000712646169267077,OTU_34,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,rhodoplanes,rhodoplanes elegans
+209,ay,stable,recovering,1.4704027364583,116,90.5352564102564,0.0317590804866732,NA,NA,NA,NA,NA,NA,NA,NA
+210,er,stable,recovering,1.49476469174958,10,18.5032051282051,0.000536949890967486,NA,NA,NA,NA,NA,NA,NA,NA
+211,kn,stable,recovering,1.50250034052918,5.5,6.94230769230769,0.00168367856734454,OTU_139,bacteria,proteobacteria,gammaproteobacteria,enterobacteriales,enterobacteriaceae,enterobacter,enterobacter spp.
+212,kn,stable,recovering,1.50250034052918,5.5,6.94230769230769,0.00168367856734454,OTU_355,bacteria,proteobacteria,gammaproteobacteria,enterobacteriales,enterobacteriaceae,enterobacter,enterobacter spp.
+213,kn,stable,recovering,1.50250034052918,5.5,6.94230769230769,0.00168367856734454,OTU_70,bacteria,proteobacteria,gammaproteobacteria,enterobacteriales,enterobacteriaceae,enterobacter,enterobacter spp.
+214,kn,stable,recovering,1.50250034052918,5.5,6.94230769230769,0.00168367856734454,OTU_330,bacteria,proteobacteria,gammaproteobacteria,enterobacteriales,enterobacteriaceae,enterobacter,enterobacter spp.
+215,ig,stable,recovering,1.58496250072116,2,5.34935897435897,0.0286990571152731,OTU_53,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,bradyrhizobium,bradyrhizobium yuanmingense
+216,mf,stable,recovering,1.70043971814109,9,7.10576923076923,0.0204142880010511,OTU_36,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter salisaro
+217,ap,stable,recovering,1.9457741787566,17736.5,21991.0608974359,1.28376207356314e-06,NA,NA,NA,NA,NA,NA,NA,NA
+218,bj,stable,recovering,1.9457741787566,17736.5,21991.0608974359,1.28376207356314e-06,NA,NA,NA,NA,NA,NA,NA,NA
+219,ah,stable,recovering,2,3,3.58333333333333,7.75785572897689e-05,NA,NA,NA,NA,NA,NA,NA,NA
+220,av,stable,recovering,2,3,3.58333333333333,7.75785572897689e-05,NA,NA,NA,NA,NA,NA,NA,NA
+221,bu,stable,recovering,2,3,3.58333333333333,7.75785572897689e-05,NA,NA,NA,NA,NA,NA,NA,NA
+222,dk,stable,recovering,2,3,3.58333333333333,7.75785572897689e-05,NA,NA,NA,NA,NA,NA,NA,NA
+223,ge,stable,recovering,2,3,3.58333333333333,7.75785572897689e-05,NA,NA,NA,NA,NA,NA,NA,NA
+224,kk,stable,recovering,2,3,3.58333333333333,7.75785572897689e-05,OTU_128,bacteria,chlorobi,chlorobia,chlorobiales,chlorobiaceae,chlorobium,chlorobium spp.
+225,kk,stable,recovering,2,3,3.58333333333333,7.75785572897689e-05,OTU_507,bacteria,chlorobi,chlorobia,chlorobiales,chlorobiaceae,chlorobium,chlorobium spp.
+226,kk,stable,recovering,2,3,3.58333333333333,7.75785572897689e-05,OTU_416,bacteria,chlorobi,chlorobia,chlorobiales,chlorobiaceae,chlorobium,chlorobium spp.
+227,kk,stable,recovering,2,3,3.58333333333333,7.75785572897689e-05,OTU_86,bacteria,chlorobi,chlorobia,chlorobiales,chlorobiaceae,chlorobium,chlorobium spp.
+228,kk,stable,recovering,2,3,3.58333333333333,7.75785572897689e-05,OTU_375,bacteria,chlorobi,chlorobia,chlorobiales,chlorobiaceae,chlorobium,chlorobium spp.
+229,ae,stable,recovering,2.10300193423594,29550.5,27331.5352564103,5.86881047764887e-06,NA,NA,NA,NA,NA,NA,NA,NA
+230,cq,stable,recovering,2.1186123542455,18261.5,19964.7147435897,2.28421344871802e-05,NA,NA,NA,NA,NA,NA,NA,NA
+231,fc,stable,recovering,2.1186123542455,18261.5,19964.7147435897,2.28421344871802e-05,NA,NA,NA,NA,NA,NA,NA,NA
+232,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_92,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+233,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_8,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+234,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_99,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+235,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_252,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+236,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_111,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+237,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_204,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+238,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_94,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+239,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_13,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+240,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_103,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+241,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_80,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+242,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_313,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+243,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_47,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+244,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_561,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+245,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_446,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+246,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_149,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+247,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_56,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+248,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_304,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+249,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_30,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+250,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_45,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+251,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_137,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+252,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_219,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+253,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_474,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+254,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_79,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+255,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_138,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+256,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_248,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+257,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_170,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+258,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_48,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+259,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_634,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+260,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_294,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+261,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_381,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+262,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_486,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+263,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_317,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+264,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_83,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+265,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_633,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+266,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_332,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+267,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_236,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+268,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_356,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+269,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_268,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+270,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_278,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+271,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_584,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+272,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_590,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+273,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_82,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+274,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_508,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+275,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_234,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+276,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_580,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+277,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_300,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+278,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_379,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+279,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_428,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+280,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_74,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+281,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_49,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+282,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_483,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+283,ix,stable,recovering,2.11886880894257,18249,19956.1570512821,2.28421344871802e-05,OTU_408,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides spp.
+284,ai,stable,recovering,2.32192809488736,4,7.31410256410256,0.000408440812360765,NA,NA,NA,NA,NA,NA,NA,NA
+285,aw,stable,recovering,2.32192809488736,4,7.31410256410256,0.000408440812360765,NA,NA,NA,NA,NA,NA,NA,NA
+286,bv,stable,recovering,2.32192809488736,4,7.31410256410256,0.000408440812360765,NA,NA,NA,NA,NA,NA,NA,NA
+287,dm,stable,recovering,2.32192809488736,4,7.31410256410256,0.000408440812360765,NA,NA,NA,NA,NA,NA,NA,NA
+288,gg,stable,recovering,2.32192809488736,4,7.31410256410256,0.000408440812360765,NA,NA,NA,NA,NA,NA,NA,NA
+289,km,stable,recovering,2.32192809488736,4,7.31410256410256,0.000408440812360765,OTU_65,bacteria,fibrobacteres,fibrobacteria,fibrobacterales,fibrobacteraceae,fibrobacter,fibrobacter spp.
+290,km,stable,recovering,2.32192809488736,4,7.31410256410256,0.000408440812360765,OTU_168,bacteria,fibrobacteres,fibrobacteria,fibrobacterales,fibrobacteraceae,fibrobacter,fibrobacter spp.
+291,mb,stable,recovering,2.40404288024703,3269,3075.08333333333,0.0023180778086211,OTU_549,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter spp.
+292,mb,stable,recovering,2.40404288024703,3269,3075.08333333333,0.0023180778086211,OTU_371,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter spp.
+293,mb,stable,recovering,2.40404288024703,3269,3075.08333333333,0.0023180778086211,OTU_10,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter spp.
+294,mb,stable,recovering,2.40404288024703,3269,3075.08333333333,0.0023180778086211,OTU_224,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter spp.
+295,mb,stable,recovering,2.40404288024703,3269,3075.08333333333,0.0023180778086211,OTU_457,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter spp.
+296,mb,stable,recovering,2.40404288024703,3269,3075.08333333333,0.0023180778086211,OTU_556,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter spp.
+297,mb,stable,recovering,2.40404288024703,3269,3075.08333333333,0.0023180778086211,OTU_500,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter spp.
+298,mb,stable,recovering,2.40404288024703,3269,3075.08333333333,0.0023180778086211,OTU_51,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter spp.
+299,mb,stable,recovering,2.40404288024703,3269,3075.08333333333,0.0023180778086211,OTU_216,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter spp.
+300,mb,stable,recovering,2.40404288024703,3269,3075.08333333333,0.0023180778086211,OTU_506,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter spp.
+301,mb,stable,recovering,2.40404288024703,3269,3075.08333333333,0.0023180778086211,OTU_201,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter spp.
+302,aq,stable,recovering,2.48446987455005,5322.5,5333.60897435897,0.00155217337779016,NA,NA,NA,NA,NA,NA,NA,NA
+303,bk,stable,recovering,2.48446987455005,5322.5,5333.60897435897,0.00155217337779016,NA,NA,NA,NA,NA,NA,NA,NA
+304,cs,stable,recovering,2.48509293439169,5323,5333.91025641026,0.00155217337779016,NA,NA,NA,NA,NA,NA,NA,NA
+305,hk,stable,recovering,2.50681344455718,5337,5345.59615384615,0.00149195953746865,NA,NA,NA,NA,NA,NA,NA,NA
+306,me,stable,recovering,2.58496250072116,5,2.51602564102564,0.0134527698582534,OTU_98,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter korlensis
+307,md,stable,recovering,2.68170028103799,2050,2260.89102564103,0.000631860564177184,OTU_274,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter sp.
+308,md,stable,recovering,2.68170028103799,2050,2260.89102564103,0.000631860564177184,OTU_59,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter sp.
+309,md,stable,recovering,2.68170028103799,2050,2260.89102564103,0.000631860564177184,OTU_62,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter sp.
+310,md,stable,recovering,2.68170028103799,2050,2260.89102564103,0.000631860564177184,OTU_271,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter sp.
+311,md,stable,recovering,2.68170028103799,2050,2260.89102564103,0.000631860564177184,OTU_211,bacteria,bacteroidetes,cytophagia,cytophagales,cytophagaceae,pontibacter,pontibacter sp.
+312,dj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,NA,NA,NA,NA,NA,NA,NA,NA
+313,gd,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,NA,NA,NA,NA,NA,NA,NA,NA
+314,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_116,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+315,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_35,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+316,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_334,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+317,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_229,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+318,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_176,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+319,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_364,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+320,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_395,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+321,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_308,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+322,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_318,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+323,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_316,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+324,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_165,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+325,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_468,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+326,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_46,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+327,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_11,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+328,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_522,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+329,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_145,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+330,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_90,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+331,kj,stable,recovering,2.71280632124173,5386.5,5564.91666666667,5.30308711869659e-07,OTU_76,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,acetobacteraceae,acetobacter,acetobacter spp.
+332,hl,stable,recovering,2.89616418901546,29,28.7435897435897,0.00240504781488792,NA,NA,NA,NA,NA,NA,NA,NA
+333,mc,stable,recovering,2.89616418901546,29,28.7435897435897,0.00240504781488792,OTU_560,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,barnesiella,barnesiella viscericola
+334,mc,stable,recovering,2.89616418901546,29,28.7435897435897,0.00240504781488792,OTU_37,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,barnesiella,barnesiella viscericola
+335,mc,stable,recovering,2.89616418901546,29,28.7435897435897,0.00240504781488792,OTU_345,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,barnesiella,barnesiella viscericola
+336,mc,stable,recovering,2.89616418901546,29,28.7435897435897,0.00240504781488792,OTU_88,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,barnesiella,barnesiella viscericola
+337,mc,stable,recovering,2.89616418901546,29,28.7435897435897,0.00240504781488792,OTU_488,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,barnesiella,barnesiella viscericola
+338,mc,stable,recovering,2.89616418901546,29,28.7435897435897,0.00240504781488792,OTU_546,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,barnesiella,barnesiella viscericola
+339,mp,stable,recovering,3.70043971814109,6,6.89102564102564,0.00142786192922858,OTU_68,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides fragilis
+340,hi,stable,recovering,Inf,2,1.93589743589744,7.27749258745639e-05,NA,NA,NA,NA,NA,NA,NA,NA
+341,lz,stable,recovering,Inf,2,1.93589743589744,7.27749258745639e-05,OTU_121,bacteria,bacteroidetes,bacteroidetes,bacteroidetes order ii. incertae sedis,rhodothermaceae,salinibacter,salinibacter spp.
+342,hg,stable,recovering,Inf,4,3.61858974358974,9.61310016263952e-05,NA,NA,NA,NA,NA,NA,NA,NA
+343,lx,stable,recovering,Inf,4,3.61858974358974,9.61310016263952e-05,OTU_285,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,inquilinus,inquilinus spp.
+344,mo,stable,recovering,Inf,2.5,1.66666666666667,0.00756034186534992,OTU_93,bacteria,bacteroidetes,bacteroidia,bacteroidales,bacteroidaceae,bacteroides,bacteroides caccae
+345,lc,stable,recovering,Inf,1,0.743589743589744,0.00949563571141608,OTU_505,bacteria,proteobacteria,betaproteobacteria,rhodocyclales,rhodocyclaceae,rhodocyclus,rhodocyclus spp.
+346,lc,stable,recovering,Inf,1,0.743589743589744,0.00949563571141608,OTU_156,bacteria,proteobacteria,betaproteobacteria,rhodocyclales,rhodocyclaceae,rhodocyclus,rhodocyclus spp.
+347,ly,stable,recovering,Inf,1,0.775641025641026,0.0217477745400104,OTU_272,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,parabacteroides,parabacteroides distasonis
+348,ly,stable,recovering,Inf,1,0.775641025641026,0.0217477745400104,OTU_175,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,parabacteroides,parabacteroides distasonis
+349,hh,stable,recovering,Inf,1,0.737179487179487,0.0380005495722896,NA,NA,NA,NA,NA,NA,NA,NA

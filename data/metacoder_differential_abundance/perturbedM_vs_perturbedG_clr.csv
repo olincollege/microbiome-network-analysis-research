@@ -1,0 +1,263 @@
+,taxon_id,treatment_1,treatment_2,log2_median_ratio,median_diff,mean_diff,wilcox_p_value,otu_id,kingdom,phylum,class,order,family,genus,species
+1,ac,perturbed M,perturbed G,-2.68224550057285,-45.9549775762069,-42.7666914083393,0.00084416861910468,NA,NA,NA,NA,NA,NA,NA,NA
+2,ae,perturbed M,perturbed G,-2.55225582963588,27.1505645471626,30.4663078645379,0.00766416246292407,NA,NA,NA,NA,NA,NA,NA,NA
+3,by,perturbed M,perturbed G,-2.35329383982994,-35.4834065519735,-37.5282722990161,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+4,ak,perturbed M,perturbed G,-2.08597628706217,-48.5307422645851,-46.9838119372076,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+5,az,perturbed M,perturbed G,-1.54005872573413,1.85778151639288,1.46486869780151,0.0372137666255313,NA,NA,NA,NA,NA,NA,NA,NA
+6,bx,perturbed M,perturbed G,-1.54005872573413,1.85778151639288,1.46486869780151,0.0372137666255313,NA,NA,NA,NA,NA,NA,NA,NA
+7,dj,perturbed M,perturbed G,-1.54005872573413,1.85778151639288,1.46486869780151,0.0372137666255313,NA,NA,NA,NA,NA,NA,NA,NA
+8,dy,perturbed M,perturbed G,-1.25574980563742,5.72144553162181,4.93711763469358,0.00143821320291909,NA,NA,NA,NA,NA,NA,NA,NA
+9,gp,perturbed M,perturbed G,-1.25574980563742,5.72144553162181,4.93711763469358,0.00143821320291909,OTU_434,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+10,gp,perturbed M,perturbed G,-1.25574980563742,5.72144553162181,4.93711763469358,0.00143821320291909,OTU_312,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+11,gp,perturbed M,perturbed G,-1.25574980563742,5.72144553162181,4.93711763469358,0.00143821320291909,OTU_72,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+12,gp,perturbed M,perturbed G,-1.25574980563742,5.72144553162181,4.93711763469358,0.00143821320291909,OTU_54,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+13,gp,perturbed M,perturbed G,-1.25574980563742,5.72144553162181,4.93711763469358,0.00143821320291909,OTU_293,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+14,gp,perturbed M,perturbed G,-1.25574980563742,5.72144553162181,4.93711763469358,0.00143821320291909,OTU_217,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+15,gp,perturbed M,perturbed G,-1.25574980563742,5.72144553162181,4.93711763469358,0.00143821320291909,OTU_445,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+16,gp,perturbed M,perturbed G,-1.25574980563742,5.72144553162181,4.93711763469358,0.00143821320291909,OTU_208,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,phaeospirillum,phaeospirillum sp.
+17,dm,perturbed M,perturbed G,-1.24410823625187,-14.8007646264834,-14.1249437315995,0.00084416861910468,NA,NA,NA,NA,NA,NA,NA,NA
+18,aj,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,NA,NA,NA,NA,NA,NA,NA,NA
+19,aw,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,NA,NA,NA,NA,NA,NA,NA,NA
+20,bu,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,NA,NA,NA,NA,NA,NA,NA,NA
+21,de,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,NA,NA,NA,NA,NA,NA,NA,NA
+22,fh,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,NA,NA,NA,NA,NA,NA,NA,NA
+23,il,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,OTU_106,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+24,il,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,OTU_181,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+25,il,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,OTU_394,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+26,il,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,OTU_182,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+27,il,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,OTU_443,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+28,il,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,OTU_174,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+29,il,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,OTU_144,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+30,il,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,OTU_15,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+31,il,perturbed M,perturbed G,-1.19482746980558,3.64466259290751,3.81257700916408,0.0106628183773796,OTU_639,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+32,an,perturbed M,perturbed G,-0.842553126011108,14.3962273102916,15.7376360354253,0.0035301596798923,NA,NA,NA,NA,NA,NA,NA,NA
+33,bf,perturbed M,perturbed G,-0.842553126011108,14.3962273102916,15.7376360354253,0.0035301596798923,NA,NA,NA,NA,NA,NA,NA,NA
+34,dl,perturbed M,perturbed G,-0.730909098880134,-7.45499271684986,-5.30761709829178,0.0372137666255313,NA,NA,NA,NA,NA,NA,NA,NA
+35,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_471,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+36,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_620,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+37,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_640,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+38,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_24,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+39,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_518,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+40,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_617,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+41,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_365,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+42,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_451,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+43,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_23,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+44,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_63,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+45,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_542,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+46,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_57,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+47,ft,perturbed M,perturbed G,-0.661433558683235,-7.14548367747563,-5.42182513552803,0.0470938323253717,OTU_622,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,afipia,afipia sp.
+48,au,perturbed M,perturbed G,-0.633838726829487,2.21954787030516,1.91138658429808,0.0470938323253717,NA,NA,NA,NA,NA,NA,NA,NA
+49,fx,perturbed M,perturbed G,-0.55998662440458,-8.41728882282526,-7.5797005360695,0.00143821320291909,OTU_253,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+50,fx,perturbed M,perturbed G,-0.55998662440458,-8.41728882282526,-7.5797005360695,0.00143821320291909,OTU_107,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+51,fx,perturbed M,perturbed G,-0.55998662440458,-8.41728882282526,-7.5797005360695,0.00143821320291909,OTU_425,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+52,fx,perturbed M,perturbed G,-0.55998662440458,-8.41728882282526,-7.5797005360695,0.00143821320291909,OTU_585,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+53,fx,perturbed M,perturbed G,-0.55998662440458,-8.41728882282526,-7.5797005360695,0.00143821320291909,OTU_3,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+54,fx,perturbed M,perturbed G,-0.55998662440458,-8.41728882282526,-7.5797005360695,0.00143821320291909,OTU_604,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+55,fx,perturbed M,perturbed G,-0.55998662440458,-8.41728882282526,-7.5797005360695,0.00143821320291909,OTU_131,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+56,fx,perturbed M,perturbed G,-0.55998662440458,-8.41728882282526,-7.5797005360695,0.00143821320291909,OTU_87,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+57,fx,perturbed M,perturbed G,-0.55998662440458,-8.41728882282526,-7.5797005360695,0.00143821320291909,OTU_113,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+58,fx,perturbed M,perturbed G,-0.55998662440458,-8.41728882282526,-7.5797005360695,0.00143821320291909,OTU_357,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+59,fx,perturbed M,perturbed G,-0.55998662440458,-8.41728882282526,-7.5797005360695,0.00143821320291909,OTU_437,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+60,fx,perturbed M,perturbed G,-0.55998662440458,-8.41728882282526,-7.5797005360695,0.00143821320291909,OTU_298,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+61,ed,perturbed M,perturbed G,-0.554228780611796,0.921716490748842,1.12007554458164,0.0151882273324399,NA,NA,NA,NA,NA,NA,NA,NA
+62,ig,perturbed M,perturbed G,-0.498161170618474,0.421866771504011,0.725357664697588,0.00234329564958368,OTU_167,bacteria,proteobacteria,gammaproteobacteria,enterobacteriales,enterobacteriaceae,citrobacter,citrobacter sp.
+63,ew,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.54082591701693,0.0106628183773796,NA,NA,NA,NA,NA,NA,NA,NA
+64,ht,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.54082591701693,0.0106628183773796,OTU_232,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,rhodovibrio,rhodovibrio spp.
+65,ao,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.521140199520998,0.0179728062081003,NA,NA,NA,NA,NA,NA,NA,NA
+66,bg,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.521140199520998,0.0179728062081003,NA,NA,NA,NA,NA,NA,NA,NA
+67,ch,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.521140199520998,0.0179728062081003,NA,NA,NA,NA,NA,NA,NA,NA
+68,eb,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.521140199520998,0.0179728062081003,NA,NA,NA,NA,NA,NA,NA,NA
+69,gs,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.521140199520998,0.0179728062081003,OTU_85,bacteria,bacteroidetes,bacteroidetes,bacteroidetes order ii. incertae sedis,rhodothermaceae,rhodothermus,rhodothermus spp.
+70,gu,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.521140199520998,0.0179728062081003,OTU_594,bacteria,proteobacteria,alphaproteobacteria,caulobacterales,caulobacteraceae,brevundimonas,brevundimonas spp.
+71,ay,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.542514092405534,0.0372137666255313,NA,NA,NA,NA,NA,NA,NA,NA
+72,bw,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.542514092405534,0.0372137666255313,NA,NA,NA,NA,NA,NA,NA,NA
+73,di,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.542514092405534,0.0372137666255313,NA,NA,NA,NA,NA,NA,NA,NA
+74,fo,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.542514092405534,0.0372137666255313,NA,NA,NA,NA,NA,NA,NA,NA
+75,iw,perturbed M,perturbed G,-0.390411220352193,0.342542646536524,0.542514092405534,0.0372137666255313,OTU_169,bacteria,bacteroidetes,sphingobacteriia,sphingobacteriales,sphingobacteriaceae,sphingobacterium,sphingobacterium spp.
+76,cl,perturbed M,perturbed G,-0.363203683736947,0.321558270434306,0.4100575539364,0.0106628183773796,NA,NA,NA,NA,NA,NA,NA,NA
+77,ef,perturbed M,perturbed G,-0.363203683736947,0.321558270434306,0.4100575539364,0.0106628183773796,NA,NA,NA,NA,NA,NA,NA,NA
+78,gw,perturbed M,perturbed G,-0.363203683736947,0.321558270434306,0.4100575539364,0.0106628183773796,OTU_482,bacteria,firmicutes,clostridia,clostridiales,lachnospiraceae,roseburia,roseburia spp.
+79,ib,perturbed M,perturbed G,-0.363203683736947,0.321558270434306,0.4100575539364,0.0106628183773796,OTU_18,bacteria,proteobacteria,gammaproteobacteria,pseudomonadales,pseudomonadaceae,pseudomonas,pseudomonas veronii
+80,al,perturbed M,perturbed G,-0.363203683736947,0.643116540868611,0.784470903701473,0.0309215838627603,NA,NA,NA,NA,NA,NA,NA,NA
+81,bb,perturbed M,perturbed G,-0.363203683736947,0.321558270434306,0.384888870355407,0.0309215838627603,NA,NA,NA,NA,NA,NA,NA,NA
+82,cb,perturbed M,perturbed G,-0.363203683736947,0.321558270434306,0.384888870355407,0.0309215838627603,NA,NA,NA,NA,NA,NA,NA,NA
+83,du,perturbed M,perturbed G,-0.363203683736947,0.321558270434306,0.384888870355407,0.0309215838627603,NA,NA,NA,NA,NA,NA,NA,NA
+84,fr,perturbed M,perturbed G,-0.363203683736947,0.321558270434306,0.384888870355407,0.0309215838627603,NA,NA,NA,NA,NA,NA,NA,NA
+85,gj,perturbed M,perturbed G,-0.363203683736947,0.321558270434306,0.384888870355407,0.0309215838627603,OTU_513,bacteria,firmicutes,bacilli,bacillales,paenibacillaceae,paenibacillus,paenibacillus spp.
+86,iz,perturbed M,perturbed G,-0.363203683736947,0.321558270434306,0.384888870355407,0.0309215838627603,OTU_281,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,parabacteroides,parabacteroides spp.
+87,hg,perturbed M,perturbed G,-0.363203683736947,0.321558270434306,0.59893534506064,0.0470938323253717,OTU_536,bacteria,proteobacteria,alphaproteobacteria,caulobacterales,caulobacteraceae,brevundimonas,brevundimonas sp.
+88,ba,perturbed M,perturbed G,0,-104.093103522413,-99.0141560646579,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+89,be,perturbed M,perturbed G,0,52.8671842169963,50.4048307454498,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+90,ca,perturbed M,perturbed G,0,-8.46714733745488,-7.99192119991423,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+91,cd,perturbed M,perturbed G,0,-56.4810989739845,-48.9007875500808,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+92,cf,perturbed M,perturbed G,0,48.3277377714275,50.9169743568917,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+93,dg,perturbed M,perturbed G,0,1.57339340212056,1.50666036202121,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+94,dt,perturbed M,perturbed G,0,-9.3387766474212,-7.30075882607853,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+95,dw,perturbed M,perturbed G,0,-56.9266957271479,-49.145434862339,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+96,fk,perturbed M,perturbed G,0,1.57339340212056,1.50666036202121,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+97,gi,perturbed M,perturbed G,0,-9.3387766474212,-7.30075882607853,0.000462282815223992,OTU_27,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+98,gi,perturbed M,perturbed G,0,-9.3387766474212,-7.30075882607853,0.000462282815223992,OTU_494,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+99,gi,perturbed M,perturbed G,0,-9.3387766474212,-7.30075882607853,0.000462282815223992,OTU_14,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+100,gi,perturbed M,perturbed G,0,-9.3387766474212,-7.30075882607853,0.000462282815223992,OTU_150,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+101,gi,perturbed M,perturbed G,0,-9.3387766474212,-7.30075882607853,0.000462282815223992,OTU_42,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+102,gi,perturbed M,perturbed G,0,-9.3387766474212,-7.30075882607853,0.000462282815223992,OTU_158,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,hyphomicrobiaceae,ancalomicrobium,ancalomicrobium spp.
+103,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_84,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+104,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_247,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+105,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_249,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+106,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_555,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+107,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_191,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+108,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_326,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+109,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_605,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+110,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_538,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+111,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_41,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+112,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_383,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+113,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_276,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+114,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_559,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+115,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_424,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+116,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_638,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+117,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_299,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+118,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_75,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+119,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_527,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+120,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_563,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+121,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_641,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+122,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_259,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+123,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_393,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+124,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_190,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+125,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_333,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+126,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_567,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+127,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_297,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+128,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_4,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+129,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_140,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+130,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_61,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+131,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_541,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+132,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_426,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+133,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_544,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+134,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_537,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+135,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_200,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+136,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_539,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+137,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_161,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+138,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_548,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+139,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_643,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+140,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_283,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+141,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_387,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+142,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_481,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+143,gl,perturbed M,perturbed G,0,-42.3983772747481,-34.450401786952,0.000462282815223992,OTU_478,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas oryzae
+144,go,perturbed M,perturbed G,0,-7.74351667113907,-7.20070976600022,0.000462282815223992,OTU_523,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas sp.
+145,go,perturbed M,perturbed G,0,-7.74351667113907,-7.20070976600022,0.000462282815223992,OTU_91,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas sp.
+146,go,perturbed M,perturbed G,0,-7.74351667113907,-7.20070976600022,0.000462282815223992,OTU_39,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas sp.
+147,go,perturbed M,perturbed G,0,-7.74351667113907,-7.20070976600022,0.000462282815223992,OTU_127,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas sp.
+148,go,perturbed M,perturbed G,0,-7.74351667113907,-7.20070976600022,0.000462282815223992,OTU_270,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas sp.
+149,go,perturbed M,perturbed G,0,-7.74351667113907,-7.20070976600022,0.000462282815223992,OTU_60,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas sp.
+150,go,perturbed M,perturbed G,0,-7.74351667113907,-7.20070976600022,0.000462282815223992,OTU_273,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas sp.
+151,go,perturbed M,perturbed G,0,-7.74351667113907,-7.20070976600022,0.000462282815223992,OTU_186,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas sp.
+152,ip,perturbed M,perturbed G,0,1.57339340212056,1.50666036202121,0.000462282815223992,OTU_596,bacteria,firmicutes,clostridia,clostridiales,clostridiaceae,clostridium,clostridium sp.
+153,hh,perturbed M,perturbed G,0,-1.15964387466661,-1.27728995145459,0.00234329564958368,OTU_81,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,rhizobiaceae,rhizobium,rhizobium petrolearium
+154,dp,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,NA,NA,NA,NA,NA,NA,NA,NA
+155,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_323,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+156,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_5,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+157,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_71,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+158,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_430,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+159,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_335,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+160,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_370,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+161,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_89,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+162,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_213,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+163,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_600,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+164,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_400,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+165,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_390,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+166,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_417,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+167,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_183,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+168,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_136,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+169,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_415,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+170,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_429,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+171,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_515,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+172,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_245,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+173,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_597,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+174,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_615,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+175,gc,perturbed M,perturbed G,0,-16.7296672346697,-15.8861309222827,0.0035301596798923,OTU_104,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+176,fy,perturbed M,perturbed G,0,-5.25767807806032,-4.12478713703979,0.0052700240935535,OTU_28,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas spp.
+177,fy,perturbed M,perturbed G,0,-5.25767807806032,-4.12478713703979,0.0052700240935535,OTU_602,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas spp.
+178,fy,perturbed M,perturbed G,0,-5.25767807806032,-4.12478713703979,0.0052700240935535,OTU_363,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas spp.
+179,fy,perturbed M,perturbed G,0,-5.25767807806032,-4.12478713703979,0.0052700240935535,OTU_339,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas spp.
+180,fy,perturbed M,perturbed G,0,-5.25767807806032,-4.12478713703979,0.0052700240935535,OTU_44,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas spp.
+181,he,perturbed M,perturbed G,0,-1.40839392464017,-1.44726034199949,0.0052700240935535,OTU_50,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,rhizobiaceae,rhizobium,rhizobium straminoryzae
+182,co,perturbed M,perturbed G,0,-2.51917101554371,-2.45717333956304,0.00992857409969709,NA,NA,NA,NA,NA,NA,NA,NA
+183,em,perturbed M,perturbed G,0,-2.51917101554371,-2.45717333956304,0.00992857409969709,NA,NA,NA,NA,NA,NA,NA,NA
+184,ga,perturbed M,perturbed G,0,-1.16704088087755,-1.37129447489403,0.00992857409969709,OTU_589,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas rhenobacensis
+185,bi,perturbed M,perturbed G,0,1.07907516208123,1.38264789374283,0.0106628183773796,NA,NA,NA,NA,NA,NA,NA,NA
+186,cj,perturbed M,perturbed G,0,1.07907516208123,1.38264789374283,0.0106628183773796,NA,NA,NA,NA,NA,NA,NA,NA
+187,ge,perturbed M,perturbed G,0,-1.46019093828088,-1.3058846717794,0.0106628183773796,OTU_53,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,bradyrhizobium,bradyrhizobium yuanmingense
+188,ct,perturbed M,perturbed G,0,4.52326463947072,6.8857900455188,0.0179728062081003,NA,NA,NA,NA,NA,NA,NA,NA
+189,dd,perturbed M,perturbed G,0,1.6489213455728,1.27490980419259,0.0179728062081003,NA,NA,NA,NA,NA,NA,NA,NA
+190,dz,perturbed M,perturbed G,0,1.61984407944069,1.11500164511181,0.0179728062081003,NA,NA,NA,NA,NA,NA,NA,NA
+191,fg,perturbed M,perturbed G,0,1.6489213455728,1.27490980419259,0.0179728062081003,NA,NA,NA,NA,NA,NA,NA,NA
+192,gq,perturbed M,perturbed G,0,1.61984407944069,1.11500164511181,0.0179728062081003,OTU_25,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,nitrospirillum,azospirillum amazonense
+193,ij,perturbed M,perturbed G,0,1.6489213455728,1.27490980419259,0.0179728062081003,OTU_32,bacteria,actinobacteria,actinobacteria,actinomycetales,propionibacteriaceae,propionibacterium,propionibacterium acnes
+194,ie,perturbed M,perturbed G,0.458152409063621,1.20438331108502,0.972871168078705,0.00143821320291909,OTU_284,bacteria,proteobacteria,gammaproteobacteria,enterobacteriales,enterobacteriaceae,escherichia,escherichia spp.
+195,df,perturbed M,perturbed G,0.504263556590791,0.721317157891983,0.933949279182604,0.00992857409969709,NA,NA,NA,NA,NA,NA,NA,NA
+196,fj,perturbed M,perturbed G,0.504263556590791,0.721317157891983,0.933949279182604,0.00992857409969709,NA,NA,NA,NA,NA,NA,NA,NA
+197,io,perturbed M,perturbed G,0.504263556590791,0.721317157891983,0.933949279182604,0.00992857409969709,OTU_22,bacteria,firmicutes,clostridia,clostridiales,ruminococcaceae,ruminococcus,ruminococcus spp.
+198,dn,perturbed M,perturbed G,0.827884084907799,-2.14865013840225,-2.40968851801793,0.0470938323253717,NA,NA,NA,NA,NA,NA,NA,NA
+199,ee,perturbed M,perturbed G,0.929004703203962,1.58522224817119,1.21783104008366,0.0106628183773796,NA,NA,NA,NA,NA,NA,NA,NA
+200,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_421,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+201,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_114,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+202,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_464,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+203,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_362,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+204,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_197,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+205,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_295,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+206,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_141,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+207,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_436,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+208,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_239,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+209,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_456,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+210,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_463,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+211,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_411,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+212,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_380,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+213,gm,perturbed M,perturbed G,1.03336648485895,-6.28570515834155,-7.4943233093867,0.000462282815223992,OTU_382,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,methylocystaceae,pleomorphomonas,pleomorphomonas spp.
+214,gt,perturbed M,perturbed G,1.08347292936395,4.42677404111831,3.51069214928383,0.0106628183773796,OTU_479,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+215,gt,perturbed M,perturbed G,1.08347292936395,4.42677404111831,3.51069214928383,0.0106628183773796,OTU_275,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+216,gt,perturbed M,perturbed G,1.08347292936395,4.42677404111831,3.51069214928383,0.0106628183773796,OTU_215,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+217,gt,perturbed M,perturbed G,1.08347292936395,4.42677404111831,3.51069214928383,0.0106628183773796,OTU_521,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+218,gt,perturbed M,perturbed G,1.08347292936395,4.42677404111831,3.51069214928383,0.0106628183773796,OTU_9,bacteria,firmicutes,clostridia,clostridiales,eubacteriaceae,eubacterium,eubacterium sp.
+219,es,perturbed M,perturbed G,1.18403665723257,3.11747160541359,4.18082885430064,0.00766416246292407,NA,NA,NA,NA,NA,NA,NA,NA
+220,hp,perturbed M,perturbed G,1.18403665723257,3.11747160541359,4.18082885430064,0.00766416246292407,OTU_480,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,paludibacter,paludibacter propionicigenes
+221,hp,perturbed M,perturbed G,1.18403665723257,3.11747160541359,4.18082885430064,0.00766416246292407,OTU_109,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,paludibacter,paludibacter propionicigenes
+222,hp,perturbed M,perturbed G,1.18403665723257,3.11747160541359,4.18082885430064,0.00766416246292407,OTU_192,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,paludibacter,paludibacter propionicigenes
+223,hp,perturbed M,perturbed G,1.18403665723257,3.11747160541359,4.18082885430064,0.00766416246292407,OTU_12,bacteria,bacteroidetes,bacteroidia,bacteroidales,porphyromonadaceae,paludibacter,paludibacter propionicigenes
+224,ap,perturbed M,perturbed G,1.44250832745095,5.48625620917349,6.04072149793839,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+225,bh,perturbed M,perturbed G,1.44250832745095,5.48625620917349,6.04072149793839,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+226,ei,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA
+227,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_258,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+228,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_636,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+229,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_212,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+230,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_575,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+231,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_315,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+232,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_601,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+233,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_160,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+234,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_530,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+235,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_6,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+236,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_608,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+237,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_187,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+238,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_367,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+239,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_359,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+240,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_1,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+241,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_261,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+242,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_257,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+243,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_396,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+244,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_52,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+245,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_562,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+246,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_222,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+247,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_583,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+248,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_218,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+249,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_497,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+250,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_73,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+251,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_524,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+252,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_444,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+253,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_609,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+254,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_448,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+255,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_195,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+256,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_269,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+257,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_412,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+258,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_155,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+259,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_467,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+260,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_67,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+261,gz,perturbed M,perturbed G,2.4659166802815,43.7387192747546,43.9079771943225,0.000462282815223992,OTU_228,bacteria,proteobacteria,alphaproteobacteria,rhodospirillales,rhodospirillaceae,magnetospirillum,magnetospirillum sp.
+262,ad,perturbed M,perturbed G,4.40368804909416,6.1293727500421,6.82519240163987,0.000462282815223992,NA,NA,NA,NA,NA,NA,NA,NA

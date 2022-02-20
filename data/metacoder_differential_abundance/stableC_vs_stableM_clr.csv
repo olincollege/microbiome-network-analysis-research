@@ -1,0 +1,75 @@
+,taxon_id,treatment_1,treatment_2,log2_median_ratio,median_diff,mean_diff,wilcox_p_value,otu_id,kingdom,phylum,class,order,family,genus,species
+1,ad,stable C,stable M,-2.45863489432554,10.2288985338819,11.3241535246071,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+2,ef,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+3,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_323,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+4,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_71,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+5,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_89,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+6,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_335,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+7,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_370,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+8,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_429,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+9,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_104,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+10,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_600,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+11,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_5,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+12,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_415,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+13,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_213,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+14,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_378,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+15,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_430,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+16,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_615,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+17,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_279,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+18,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_136,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+19,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_417,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+20,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_183,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+21,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_597,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+22,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_515,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+23,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_400,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+24,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_349,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+25,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_245,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+26,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_390,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+27,ho,stable C,stable M,-1.87700982795974,-13.0825505279791,-17.9598543210418,0.0283449883449883,OTU_566,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodoblastus,rhodoblastus acidophilus
+28,ak,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+29,ar,stable C,stable M,0,9.29928367315964,12.0136190534966,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+30,az,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+31,bk,stable C,stable M,0,9.29928367315964,12.0136190534966,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+32,br,stable C,stable M,0,-3.80961812968991,-3.33410428187717,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+33,cb,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+34,dj,stable C,stable M,0,-7.02867231478361,-6.06838240876735,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+35,dw,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+36,fz,stable C,stable M,0,-6.44695759327981,-5.40666630455414,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+37,gh,stable C,stable M,0,-3.11806026336211,-2.52898637518498,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+38,gr,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+39,jy,stable C,stable M,0,-3.46182190620015,-2.76837951036724,0.0283449883449883,OTU_134,bacteria,proteobacteria,betaproteobacteria,burkholderiales,comamonadaceae,acidovorax,acidovorax caeni
+40,ka,stable C,stable M,0,-3.09492681712696,-2.6382867941869,0.0283449883449883,OTU_33,bacteria,proteobacteria,betaproteobacteria,burkholderiales,comamonadaceae,acidovorax,acidovorax spp.
+41,kh,stable C,stable M,0,-3.11806026336211,-2.52898637518498,0.0283449883449883,OTU_29,bacteria,proteobacteria,betaproteobacteria,rhodocyclales,rhodocyclaceae,dechloromonas,dechloromonas agitata
+42,kz,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,OTU_181,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+43,kz,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,OTU_394,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+44,kz,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,OTU_311,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+45,kz,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,OTU_639,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+46,kz,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,OTU_182,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+47,kz,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,OTU_106,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+48,kz,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,OTU_174,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+49,kz,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,OTU_144,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+50,kz,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,OTU_15,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+51,kz,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,OTU_443,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+52,kz,stable C,stable M,0,23.7189601501119,21.9069751082202,0.0283449883449883,OTU_353,bacteria,spirochaetes,spirochaetia,spirochaetales,spirochaetaceae,spirochaeta,spirochaeta spp.
+53,dx,stable C,stable M,0,5.37179114201444,4.97857320960783,0.0488706695603247,NA,NA,NA,NA,NA,NA,NA,NA
+54,gv,stable C,stable M,0,5.37179114201444,4.97857320960783,0.0488706695603247,NA,NA,NA,NA,NA,NA,NA,NA
+55,le,stable C,stable M,0,5.37179114201444,4.97857320960783,0.0488706695603247,OTU_22,bacteria,firmicutes,clostridia,clostridiales,ruminococcaceae,ruminococcus,ruminococcus spp.
+56,hi,stable C,stable M,0.49192490559216,8.11017278132141,8.26489517461002,0.0283449883449883,OTU_425,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+57,hi,stable C,stable M,0.49192490559216,8.11017278132141,8.26489517461002,0.0283449883449883,OTU_253,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+58,hi,stable C,stable M,0.49192490559216,8.11017278132141,8.26489517461002,0.0283449883449883,OTU_131,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+59,hi,stable C,stable M,0.49192490559216,8.11017278132141,8.26489517461002,0.0283449883449883,OTU_3,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+60,hi,stable C,stable M,0.49192490559216,8.11017278132141,8.26489517461002,0.0283449883449883,OTU_107,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+61,hi,stable C,stable M,0.49192490559216,8.11017278132141,8.26489517461002,0.0283449883449883,OTU_298,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+62,hi,stable C,stable M,0.49192490559216,8.11017278132141,8.26489517461002,0.0283449883449883,OTU_87,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+63,hi,stable C,stable M,0.49192490559216,8.11017278132141,8.26489517461002,0.0283449883449883,OTU_585,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+64,hi,stable C,stable M,0.49192490559216,8.11017278132141,8.26489517461002,0.0283449883449883,OTU_604,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+65,hi,stable C,stable M,0.49192490559216,8.11017278132141,8.26489517461002,0.0283449883449883,OTU_437,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+66,hi,stable C,stable M,0.49192490559216,8.11017278132141,8.26489517461002,0.0283449883449883,OTU_113,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+67,hi,stable C,stable M,0.49192490559216,8.11017278132141,8.26489517461002,0.0283449883449883,OTU_414,bacteria,proteobacteria,alphaproteobacteria,rhizobiales,bradyrhizobiaceae,rhodopseudomonas,rhodopseudomonas palustris
+68,ed,stable C,stable M,0.840908637949694,13.1993634409268,14.8691370924263,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+69,cf,stable C,stable M,1.34867859787292,-2.05339473884169,-2.29646429779592,0.0488706695603247,NA,NA,NA,NA,NA,NA,NA,NA
+70,ax,stable C,stable M,2.14667723140691,-15.3136683861045,-14.6980994817891,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+71,bw,stable C,stable M,3.70036871013296,-9.14577372608458,-8.97126107597135,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+72,bx,stable C,stable M,4.42724526508539,-6.31104382831521,-5.64381017489972,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+73,dl,stable C,stable M,4.42724526508539,-6.31104382831521,-5.64381017489972,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
+74,ac,stable C,stable M,9.98511925534143,-49.6085061675071,-44.3450002725439,0.0283449883449883,NA,NA,NA,NA,NA,NA,NA,NA
