@@ -1,36 +1,35 @@
 ---
 title: "differential abundance wilcoxon sum rank"
 output: html_notebook
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
-Goal: since there is a significant difference in the composition of clusters, find out who is driving the difference
+Goal: since there is a significant difference in the composition of
+clusters, find out who is driving the difference
 
-Groups
-* "stable" vs. "recovering"
-* "perturbed M" vs. "perturbed G"
+Groups \* "stable" vs. "recovering" \* "perturbed M" vs. "perturbed G"
 
-* "recovering"
-* "recovering C" vs. "recovering G"
-* "recovering C" vs. "recovering M"
-* "recovering G" vs. "recovering M"
+-   "recovering"
 
-* "stable"
-* "stable C" vs. "stable G" 
-* "stable C" vs. "stable M"
-* "stable G" vs. "stable M"
+-   "recovering C" vs. "recovering G"
 
-Methods:
-* Wilcox Sum Rank Test
-* ALDEx2
-* ANCOM-BC
+-   "recovering C" vs. "recovering M"
 
-Levels
-* Phylum
-* Class
-* Order
-* Family
-* Genus
-* Species
+-   "recovering G" vs. "recovering M"
+
+-   "stable"
+
+-   "stable C" vs. "stable G"
+
+-   "stable C" vs. "stable M"
+
+-   "stable G" vs. "stable M"
+
+Methods: \* Wilcox Sum Rank Test \* ALDEx2 \* ANCOM-BC
+
+Levels \* Phylum \* Class \* Order \* Family \* Genus \* Species
 
 # Install Packages
 
@@ -54,24 +53,31 @@ Levels
 ```{r}
 library("ggplot2"); packageVersion("ggplot2") # plotting
 ```
+
 ```{r}
 library("tidyverse"); packageVersion("tidyverse") # util              
 ```
+
 ```{r}
 library("dplyr"); packageVersion("dplyr") # util
 ```
+
 ```{r}
 library("phyloseq"); packageVersion("phyloseq") # data object                 
 ```
+
 ```{r}
 library("ape"); packageVersion("ape") # taxa string manipulation
 ```
+
 ```{r}
 library(microbiome); packageVersion("microbiome") # clr transformation
 ```
+
 ```{r}
 library(dendextend); packageVersion("dendextend") # extend customization of dendograms
 ```
+
 ```{r}
 library(vegan); packageVersion("vegan") # bray-curtis and other metrics
 ```
@@ -80,11 +86,11 @@ library(vegan); packageVersion("vegan") # bray-curtis and other metrics
 # Manipulation and visualization of taxonomic data, particularly those from amplicon metagenomics research. (Foster, Sharpton, and Grünwald 2017)
 library(metacoder); packageVersion("metacoder")
 ```
+
 ```{r}
 # defines taxonomic classes and functions to manipulate them. The goal is to use these classes as low level fundamental taxonomic classes that other R packages can build on and use. This is used by metacoder. 
 library(taxa); packageVersion("taxa")
 ```
-
 
 # Initialization
 
@@ -92,11 +98,12 @@ library(taxa); packageVersion("taxa")
 # ggplot2 package theme set
 theme_set(theme_bw())
 
-# ensure randomization is same
+# control randomization
 set.seed(42)
 ```
 
 # Load Phyloseq Data Object
+
 ```{r}
 (ps <- readRDS("../data/processed/phyloseq.rds"))
 # convert to taxmap format 
@@ -110,23 +117,36 @@ ps_clr <- microbiome::transform(ps, "clr")
 taxmap_clr <- parse_phyloseq(ps_clr)
 ```
 
+```{r}
+taxon_names(taxmap)
+```
+
+
+```{r}
+taxon_ranks(taxmap)
+```
+
 # Make Subset Cluster Group Tables
 
-* "stable" vs. "recovering"
+-   "stable" vs. "recovering"
+
 ```{r}
 (ps_stable_vs_recovering <- phyloseq::subset_samples(ps, cluster == "stable" | cluster == "recovering"))
 (ps_stable_vs_recovering <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable_vs_recovering) > 0, ps_stable_vs_recovering))
 ```
 
-* "perturbed M" vs. "perturbed G"
+-   "perturbed M" vs. "perturbed G"
+
 ```{r}
 (ps_perturbedM_vs_perturbedG <- phyloseq::subset_samples(ps, focused.cluster == "perturbed M" | focused.cluster == "perturbed G"))
 (ps_perturbedM_vs_perturbedG <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_perturbedM_vs_perturbedG) > 0, ps_perturbedM_vs_perturbedG))
 ```
-* "recovering"
-* "recovering C" vs. "recovering G"
-* "recovering C" vs. "recovering M"
-* "recovering G" vs. "recovering M"
+
+-   "recovering"
+-   "recovering C" vs. "recovering G"
+-   "recovering C" vs. "recovering M"
+-   "recovering G" vs. "recovering M"
+
 ```{r}
 (ps_recovering <- phyloseq::subset_samples(ps, cluster == "recovering"))
 (ps_recovering <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recovering) > 0, ps_recovering))
@@ -140,10 +160,12 @@ taxmap_clr <- parse_phyloseq(ps_clr)
 (ps_recoveringG_vs_recoveringM <- phyloseq::subset_samples(ps, focused.cluster == "recovering G" | focused.cluster == "recovering M"))
 (ps_recoveringG_vs_recoveringM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recoveringG_vs_recoveringM) > 0, ps_recoveringG_vs_recoveringM))
 ```
-* "stable"
-* "stable C" vs. "stable G", 
-* "stable C" vs. "stable M"
-* "stable G" vs. "stable M"
+
+-   "stable"
+-   "stable C" vs. "stable G",
+-   "stable C" vs. "stable M"
+-   "stable G" vs. "stable M"
+
 ```{r}
 (ps_stable <- phyloseq::subset_samples(ps, cluster == "stable"))
 (ps_stable <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable) > 0, ps_stable))
@@ -264,9 +286,11 @@ WRStaxmap_clr_stableG_vs_stableM <- wilcoxon_rank_sum_focused_cluster(microbiome
 ```
 
 # Visualize Results in Heat Trees
+
 Show counts-based and clr-counts-based
 
 ## All
+
 ```{r}
 taxmap %>%
   filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
@@ -279,6 +303,7 @@ taxmap %>%
             title = "All",
             output_file = "../img/metacoder_differential_abundance/heat_tree_all.png")
 ```
+
 ```{r}
 taxmap_clr %>%
   filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
@@ -293,6 +318,10 @@ taxmap_clr %>%
 ```
 
 ## Pairwise -- Stable vs. Recovering
+
+```{r}
+(WRStaxmap_stable_vs_recovering)
+```
 
 ```{r}
 WRStaxmap_stable_vs_recovering %>%
@@ -457,6 +486,7 @@ WRStaxmap_clr_recoveringG_vs_recoveringM %>%
             title = "Recovering G vs. Recovering M Samples CLR",
             output_file = "../img/metacoder_differential_abundance/heat_tree_recoveringG_vs_recoveringM_clr.png")
 ```
+
 ## Heat Trees -- Stable
 
 ```{r}
@@ -582,6 +612,7 @@ WRStaxmap_recovering %>%
                    output_file = "../img/metacoder_differential_abundance/heat_tree_matrix_recovering.png"
                   )
 ```
+
 ```{r}
 WRStaxmap_clr_recovering %>%
   filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
@@ -600,7 +631,6 @@ WRStaxmap_clr_recovering %>%
                   )
 ```
 
-
 ```{r}
 WRStaxmap_stable %>%
   filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
@@ -618,6 +648,7 @@ WRStaxmap_stable %>%
                    output_file = "../img/metacoder_differential_abundance/heat_tree_matrix_stable.png"
                   )
 ```
+
 ```{r}
 WRStaxmap_clr_stable %>%
   filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
@@ -635,5 +666,3 @@ WRStaxmap_clr_stable %>%
                    output_file = "../img/metacoder_differential_abundance/heat_tree_matrix_stable_clr.png"
                   )
 ```
-
-

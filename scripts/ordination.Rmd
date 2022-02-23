@@ -70,6 +70,9 @@ library(vegan); packageVersion("vegan") # bray-curtis and other metrics
 ```{r}
 # ggplot2 package theme set
 theme_set(theme_bw())
+
+# control randomization
+set.seed(42)
 ```
 
 # Phyloseq Data Object
@@ -144,6 +147,7 @@ saveRDS(ps_cellulose, "../data/processed/phyloseq_cellulose.rds")
 ps <- readRDS("../data/processed/phyloseq.rds")
 ps
 ```
+
 # Visualize Bar Chart Counts
 
 ```{r}
@@ -218,206 +222,265 @@ phyloseq::plot_bar(ps_clr, fill = "class") +
 ```
 # Correlation Clustering
 
-## CLR --> Aitchison Distance --> PCoA
-## CLR --> Ward Distance --> Dendogram
+## Aitchison Distance PCA
 
 ```{r}
-#PCA via phyloseq
-ord_clr <- phyloseq::ordinate(ps_clr, "RDA")
-#Plot scree plot
-phyloseq::plot_scree(ord_clr) + 
-  geom_bar(stat="identity", fill = "blue") +
-  labs(x = "\nAxis", y = "Proportion of Variance\n")
+plot_clr_pca <- function(ps, taxrank="none", color="cluster") {
+  #PCA via phyloseq
+  if (taxrank == "none") {
+    ord_clr <- ps %>%
+      microbiome::transform("clr") %>%
+      phyloseq::ordinate("RDA")
+  } else {
+    ord_clr <- ps %>%
+      tax_glom(taxrank = taxrank, NArm = TRUE) %>% 
+      microbiome::transform("clr") %>%
+      phyloseq::ordinate("RDA")
+  }
+  
+  #Scale axes and plot ordination
+  clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
+  clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
+  phyloseq::plot_ordination(ps, ord_clr, type="samples", color=color) +
+    geom_point(size = 2) +
+    coord_fixed(clr2 / clr1) +
+    stat_ellipse(aes(group = carbon), linetype = 2)
+  
+  # #Plot scree plot
+  # phyloseq::plot_scree(ord_clr) + 
+  #   geom_bar(stat="identity", fill = "blue") +
+  #   labs(x = "\nAxis", y = "Proportion of Variance\n")
+}
 ```
 
 ```{r}
-# Examine eigenvalues and % prop. variance explained
-head(ord_clr$CA$eig)   
-sapply(ord_clr$CA$eig[1:5], function(x) x / sum(ord_clr$CA$eig))
+plot_clr_pca(ps, "none", color="group")
+plot_clr_pca(ps, "none", color="transfer")
+plot_clr_pca(ps, "none", color="day")
 ```
 
 ```{r}
-#Scale axes and plot ordination
-clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
-clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
-phyloseq::plot_ordination(ps, ord_clr, type="samples", color="group") + 
-  geom_point(size = 2) +
-  coord_fixed(clr2 / clr1) +
-  stat_ellipse(aes(group = carbon), linetype = 2)
+plot_clr_pca(ps, "species", color="group")
+plot_clr_pca(ps, "species", color="transfer")
+plot_clr_pca(ps, "species", color="day")
+```
+
+```{r}
+plot_clr_pca(ps, "genus", color="group")
+plot_clr_pca(ps, "genus", color="transfer")
+plot_clr_pca(ps, "genus", color="day")
+```
+
+```{r}
+plot_clr_pca(ps, "family", color="group")
+plot_clr_pca(ps, "family", color="transfer")
+plot_clr_pca(ps, "family", color="day")
+```
+
+## Pretty PCA Plots
+
+```{r}
+plot_pretty_clr_pca <- function(ps, taxrank) {
+  #PCA via phyloseq
+  if (taxrank == "none") {
+    ord_clr <- ps %>%
+      microbiome::transform("clr") %>%
+      phyloseq::ordinate("RDA")
+  } else {
+    ord_clr <- ps %>%
+      tax_glom(taxrank = taxrank, NArm = TRUE) %>% 
+      microbiome::transform("clr") %>%
+      phyloseq::ordinate("RDA")
+  }
+  
+  # make data frame
+  clr_pca.data <- data.frame(PC1=ord_clr$CA$u[,1], PC2=ord_clr$CA$u[,2])
+  meta <- data.frame(phyloseq::sample_data(ps))
+  clr_pca.data <- merge(clr_pca.data, meta, by="row.names")
+  clr_pca.data$day <- as.factor(clr_pca.data$day)
+  
+  #Scale axes and plot ordination
+  clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
+  clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
+  ggplot(clr_pca.data, aes(x = PC1, y = PC2)) + 
+    theme_classic() + 
+    geom_point(
+      mapping = aes(colour = day, shape = carbon),
+      size = 3,
+      alpha = 5/6
+    ) +
+    coord_fixed(clr2 / clr1) +
+    stat_ellipse(aes(group = carbon), linetype = 2) +
+    scale_color_manual(values = c(
+    "3" = "#03045e",
+    "5" = "#0077b6",
+    "7" = "#00b4d8",
+    "10" = "#90e0ef",
+    "20" = "#caf0f8"
+  )) +
+    scale_shape_manual(values = c(
+    "original" = 4,
+    "cellulose" = 16,
+    "glucose" = 18,
+    "malate" = 15
+  )) +
+    xlab(sprintf("PC 1 %s%%", round(100 * clr1, 2))) +
+    ylab(sprintf("PC 2 %s%%", round(100 * clr2, 2))) +
+    ggtitle(sprintf("PCA taxrank: %s", taxrank))
+  
+  # #Plot scree plot
+  # phyloseq::plot_scree(ord_clr) + 
+  #   geom_bar(stat="identity", fill = "blue") +
+  #   labs(x = "\nAxis", y = "Proportion of Variance\n")
+}
+
+
+plot_pretty_clr_pca_detailed <- function(ps, taxrank) {
+  #PCA via phyloseq
+  if (taxrank == "none") {
+    ord_clr <- ps %>%
+      microbiome::transform("clr") %>%
+      phyloseq::ordinate("RDA")
+  } else {
+    ord_clr <- ps %>%
+      tax_glom(taxrank = taxrank, NArm = TRUE) %>% 
+      microbiome::transform("clr") %>%
+      phyloseq::ordinate("RDA")
+  }
+  
+  # make data frame
+  clr_pca.data <- data.frame(PC1=ord_clr$CA$u[,1], PC2=ord_clr$CA$u[,2])
+  meta <- data.frame(phyloseq::sample_data(ps))
+  clr_pca.data <- merge(clr_pca.data, meta, by="row.names")
+  clr_pca.data$day <- as.factor(clr_pca.data$day)
+  
+  #Scale axes and plot ordination
+  clr1 <- ord_cellulose_clr$CA$eig[1] / sum(ord_cellulose_clr$CA$eig)
+  clr2 <- ord_cellulose_clr$CA$eig[2] / sum(ord_cellulose_clr$CA$eig)
+  ggplot(clr_pca.data, aes(x = PC1, y = PC2)) + 
+    theme_classic() + 
+    geom_point(
+      mapping = aes(colour = day, shape = group),
+      size = 3,
+      alpha = 5/6
+    ) +
+    coord_fixed(clr2 / clr1) +
+    stat_ellipse(aes(group = carbon), linetype = 2) +
+    scale_color_manual(values = c(
+    "3" = "#03045e",
+    "5" = "#0077b6",
+    "7" = "#00b4d8",
+    "10" = "#90e0ef",
+    "20" = "#caf0f8"
+  )) +
+    scale_shape_manual(values = c(
+    "C0C" = 4,
+    "1C" = 16,
+    "2C" = 10,
+    "2G" = 18,
+    "3G" = 9,
+    "2M" = 15,
+    "3M" = 12
+  )) +
+    xlab(sprintf("PC 1 %s%%", round(100 * clr1, 2))) +
+    ylab(sprintf("PC 2 %s%%", round(100 * clr2, 2))) +
+    ggtitle(sprintf("PCA taxrank: %s", taxrank))
+  
+  # #Plot scree plot
+  # phyloseq::plot_scree(ord_clr) + 
+  #   geom_bar(stat="identity", fill = "blue") +
+  #   labs(x = "\nAxis", y = "Proportion of Variance\n")
+}
 ```
 
 
 ```{r}
-#Scale axes and plot ordination
-clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
-clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
-phyloseq::plot_ordination(ps, ord_clr, type="samples", color="transfer") + 
-  geom_point(size = 2) +
-  coord_fixed(clr2 / clr1) +
-  stat_ellipse(aes(group = carbon), linetype = 2)
-```
-
-```{r}
-#Scale axes and plot ordination
-clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
-clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
-phyloseq::plot_ordination(ps, ord_clr, type="samples", color="day") + 
-  geom_point(size = 2) +
-  coord_fixed(clr2 / clr1) +
-  stat_ellipse(aes(group = carbon), linetype = 2)
-```
-
-```{r}
-ps_clr_otu <- data.frame(phyloseq::otu_table(ps_clr))
-ps_clr_otu <- t(ps_clr_otu)
-a_dist_clr <- vegan::vegdist(ps_clr_otu,  method = "euclidean")
-#Save as dendrogram
-ward <- as.dendrogram(hclust(a_dist_clr, method = "ward.D2"))
-#Provide color codes
-meta <- data.frame(phyloseq::sample_data(ps_rel_abund))
-colorCode <- c(sC = "green", sM = "orange", sG = "blue")
-labels_colors(ward) <- colorCode[meta$series][order.dendrogram(ward)]
-#Plot
-par(cex = 0.4)
-ward %>% plot(main = "Aitchison on Centered Log-Ratios")
-
-# color by cluster
-ward %>% set("labels_cex", 1) %>% set("labels_col", value = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), k=9) %>% 
-   plot(main = "Aitchison: Color labels \nper cluster")
-
-# color by cluster (3)
-ward %>% set("labels_cex", 1) %>% set("labels_col", value = c(1, 2, 3), k=3) %>% 
-   plot(main = "Aitchison: Color labels \nper cluster")
-```
-
-```{r}
-(clusters <- ward %>% set("labels_col", value = c("early", "recovering", "stable"), k=3) %>% labels_colors)
-write.csv(clusters, file="../data/processed/cluster_decisions.csv", quote=FALSE)
-```
-
-```{r}
-sample_data(ps)
-```
-
-# Pretty CLR + PCA Plot
-
-```{r}
-# make data frame
-clr_pca.data <- data.frame(PC1=ord_clr$CA$u[,1], PC2=ord_clr$CA$u[,2])
-meta <- data.frame(phyloseq::sample_data(ps))
-clr_pca.data <- merge(clr_pca.data, meta, by="row.names")
-clr_pca.data$day <- as.factor(clr_pca.data$day)
-
-# plot
-clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
-clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
-ggplot(clr_pca.data, aes(x = PC1, y = PC2)) + 
-  theme_classic() + 
-  geom_point(
-    mapping = aes(colour = day, shape = carbon),
-    size = 3,
-    alpha = 5/6
-  ) +
-  coord_fixed(clr2 / clr1) +
-  stat_ellipse(aes(group = carbon), linetype = 2) +
-  scale_color_manual(values = c(
-  "3" = "#03045e",
-  "5" = "#0077b6",
-  "7" = "#00b4d8",
-  "10" = "#90e0ef",
-  "20" = "#caf0f8"
-)) +
-  scale_shape_manual(values = c(
-  "original" = 4,
-  "cellulose" = 16,
-  "glucose" = 18,
-  "malate" = 15
-)) +
-  xlab(sprintf("PC 1 [%s%%]", round(100 * clr1, 2))) +
-  ylab(sprintf("PC 2 [%s%%]", round(100 * clr2, 2)))
+plot_pretty_clr_pca(ps, taxrank = "none")
+plot_pretty_clr_pca(ps, taxrank = "species")
+plot_pretty_clr_pca(ps, taxrank = "genus")
 ```
 
 Check that results are robust to sub-sampling only samples on cellulose
 
 ```{r}
-(ps_cellulose_clr <- microbiome::transform(ps_cellulose, "clr"))
-#PCA via phyloseq
-ord_cellulose_clr <- phyloseq::ordinate(ps_cellulose_clr, "RDA")
-#Plot scree plot
-phyloseq::plot_scree(ord_cellulose_clr) + 
-  geom_bar(stat="identity", fill = "blue") +
-  labs(x = "\nAxis", y = "Proportion of Variance\n")
-
-# make data frame
-clr_pca.data <- data.frame(PC1=ord_cellulose_clr$CA$u[,1], PC2=ord_cellulose_clr$CA$u[,2])
-meta <- data.frame(phyloseq::sample_data(ps))
-clr_pca.data <- merge(clr_pca.data, meta, by="row.names")
-clr_pca.data$day <- as.factor(clr_pca.data$day)
-
-# plot
-clr1 <- ord_cellulose_clr$CA$eig[1] / sum(ord_cellulose_clr$CA$eig)
-clr2 <- ord_cellulose_clr$CA$eig[2] / sum(ord_cellulose_clr$CA$eig)
-ggplot(clr_pca.data, aes(x = PC1, y = PC2)) + 
-  theme_classic() + 
-  geom_point(
-    mapping = aes(colour = day, shape = group),
-    size = 3,
-    alpha = 5/6
-  ) +
-  coord_fixed(clr2 / clr1) +
-  stat_ellipse(aes(group = carbon), linetype = 2) +
-  scale_color_manual(values = c(
-  "3" = "#03045e",
-  "5" = "#0077b6",
-  "7" = "#00b4d8",
-  "10" = "#90e0ef",
-  "20" = "#caf0f8"
-)) +
-  scale_shape_manual(values = c(
-  "C0C" = 4,
-  "1C" = 16,
-  "2C" = 10,
-  "2G" = 18,
-  "3G" = 9,
-  "2M" = 15,
-  "3M" = 12
-)) +
-  xlab(sprintf("PC 1 [%s%%]", round(100 * clr1, 2))) +
-  ylab(sprintf("PC 2 [%s%%]", round(100 * clr2, 2)))
+plot_pretty_clr_pca_detailed(ps, taxrank = "none")
+plot_pretty_clr_pca_detailed(ps, taxrank = "species")
+plot_pretty_clr_pca_detailed(ps, taxrank = "genus")
+plot_pretty_clr_pca_detailed(ps, taxrank = "family")
 ```
-## Visualize Clusters
 
 ```{r}
-# plot
-clr1 <- ord_cellulose_clr$CA$eig[1] / sum(ord_cellulose_clr$CA$eig)
-clr2 <- ord_cellulose_clr$CA$eig[2] / sum(ord_cellulose_clr$CA$eig)
-ggplot(clr_pca.data, aes(x = PC1, y = PC2)) + 
-  theme_classic() + 
-  geom_point(
-    mapping = aes(colour = day, shape = group),
-    size = 3,
-    alpha = 5/6
-  ) +
-  coord_fixed(clr2 / clr1) +
-  stat_ellipse(aes(group = cluster), linetype = 2) +
-  scale_color_manual(values = c(
-  "3" = "#03045e",
-  "5" = "#0077b6",
-  "7" = "#00b4d8",
-  "10" = "#90e0ef",
-  "20" = "#caf0f8"
-)) +
-  scale_shape_manual(values = c(
-  "C0C" = 4,
-  "1C" = 16,
-  "2C" = 10,
-  "2G" = 18,
-  "3G" = 9,
-  "2M" = 15,
-  "3M" = 12
-)) +
-  xlab(sprintf("PC 1 [%s%%]", round(100 * clr1, 2))) +
-  ylab(sprintf("PC 2 [%s%%]", round(100 * clr2, 2)))
+plot_pretty_clr_pca_detailed(ps_cellulose, taxrank = "none")
+plot_pretty_clr_pca_detailed(ps_cellulose, taxrank = "species")
+plot_pretty_clr_pca_detailed(ps_cellulose, taxrank = "genus")
+```
+
+## CLR --> Ward Distance --> Clustering Dendogram
+
+```{r}
+get_ward <- function(ps, taxrank) {
+  #PCA via phyloseq
+  if (taxrank == "none") {
+    ps_clr <- ps %>%
+      microbiome::transform("clr")
+  } else {
+    ps_clr <- ps %>%
+      tax_glom(taxrank = taxrank, NArm = TRUE) %>% 
+      microbiome::transform("clr")
+  }
+  
+  #Get Aitchison distance matrix
+  ps_clr_otu <- data.frame(phyloseq::otu_table(ps_clr))
+  ps_clr_otu <- t(ps_clr_otu)
+  a_dist_clr <- vegan::vegdist(ps_clr_otu,  method = "euclidean")
+  
+  #Save as dendrogram
+  ward <- as.dendrogram(hclust(a_dist_clr, method = "ward.D2"))
+  
+  #Provide color codes
+  meta <- data.frame(phyloseq::sample_data(ps))
+  colorCode <- c(C = "green", M = "orange", G = "blue")
+  labels_colors(ward) <- colorCode[meta$series][order.dendrogram(ward)]
+  
+  #Plot color by code
+  par(cex = 0.4)
+  ward %>% plot(main = sprintf("Aitchison on Centered Log-Ratios \ntaxrank: %s", taxrank))
+  
+  #Plot color by cluster
+  ward %>% set("labels_cex", 1) %>% set("labels_col", value = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), k=9) %>% 
+     plot(main = sprintf("Aitchison: Color labels per cluster \ntaxrank: %s", taxrank))
+  
+  #Plot color by cluster (3)
+  ward %>% set("labels_cex", 1) %>% set("labels_col", value = c(1, 2, 3), k=3) %>% 
+     plot(main = sprintf("Aitchison: Color labels per cluster \ntaxrank: %s", taxrank))
+  
+  return(ward)
+}
+```
+
+```{r}
+ward_cellulose_OTU <- get_ward(ps_cellulose, "none")
+```
+
+```{r}
+ward_cellulose_species <- get_ward(ps_cellulose, "species")
+```
+
+```{r}
+ward_cellulose_genus <- get_ward(ps_cellulose, "genus")
+```
+```{r}
+ward_OTU <- get_ward(ps, "none")
+```
+```{r}
+ward_species <- get_ward(ps, "species")
+```
+
+
+
+```{r}
+(clusters <- ward_OTU %>% set("labels_col", value = c("early", "recovering", "stable"), k=3) %>% labels_colors)
+write.csv(clusters, file="../data/processed/cluster_decisions.csv", quote=FALSE)
 ```
 
 # Appendix

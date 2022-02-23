@@ -1,5 +1,5 @@
 ---
-title: "differential abundance wilcoxon sum rank"
+title: "differential abundance aldex2"
 output: html_notebook
 ---
 
@@ -7,14 +7,13 @@ Goal: since there is a significant difference in the composition of clusters, fi
 
 Groups
 * "stable" vs. "recovering"
+
 * "perturbed M" vs. "perturbed G"
 
-* "recovering"
 * "recovering C" vs. "recovering G"
 * "recovering C" vs. "recovering M"
 * "recovering G" vs. "recovering M"
 
-* "stable"
 * "stable C" vs. "stable G" 
 * "stable C" vs. "stable M"
 * "stable G" vs. "stable M"
@@ -31,6 +30,7 @@ Levels
 * Family
 * Genus
 * Species
+* OTU-level
 
 # Install Packages
 
@@ -43,7 +43,7 @@ Levels
 ```
 
 ```{r}
-# .bioc_packages <- c("phyloseq", "Biostrings", "DESeq2", "microbiome", "metagenomeSeq", "ALDEx2")
+# .bioc_packages <- c("phyloseq", "Biostrings", "DESeq2", "microbiome", "metagenomeSeq", "ALDEx2", "ANCOMBC")
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
 # BiocManager::install(.bioc_packages, version = "3.14")
@@ -87,18 +87,16 @@ library(taxa); packageVersion("taxa")
 ```{r}
 library(ALDEx2); packageVersion("ALDEx2") # aldex2 test (compositional differential abundance)
 ```
-
-
-
 # Initialization
 
 ```{r}
 # ggplot2 package theme set
 theme_set(theme_bw())
 
-# ensure randomization is same
+# control randomization
 set.seed(42)
 ```
+
 
 # Load Phyloseq Data Object
 ```{r}
@@ -114,121 +112,259 @@ ps_clr <- microbiome::transform(ps, "clr")
 taxmap_clr <- parse_phyloseq(ps_clr)
 ```
 
-# Make Subset Cluster Group Tables
-
-* "stable" vs. "recovering"
-```{r}
-(ps_stable_vs_recovering <- phyloseq::subset_samples(ps, cluster == "stable" | cluster == "recovering"))
-(ps_stable_vs_recovering <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable_vs_recovering) > 0, ps_stable_vs_recovering))
-```
-
-* "perturbed M" vs. "perturbed G"
-```{r}
-(ps_perturbedM_vs_perturbedG <- phyloseq::subset_samples(ps, focused.cluster == "perturbed M" | focused.cluster == "perturbed G"))
-(ps_perturbedM_vs_perturbedG <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_perturbedM_vs_perturbedG) > 0, ps_perturbedM_vs_perturbedG))
-```
-* "recovering"
-* "recovering C" vs. "recovering G"
-* "recovering C" vs. "recovering M"
-* "recovering G" vs. "recovering M"
-```{r}
-(ps_recovering <- phyloseq::subset_samples(ps, cluster == "recovering"))
-(ps_recovering <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recovering) > 0, ps_recovering))
-
-(ps_recoveringC_vs_recoveringG <- phyloseq::subset_samples(ps, focused.cluster == "recovering C" | focused.cluster == "recovering G"))
-(ps_recoveringC_vs_recoveringG <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recoveringC_vs_recoveringG) > 0, ps_recoveringC_vs_recoveringG))
-
-(ps_recoveringC_vs_recoveringM <- phyloseq::subset_samples(ps, focused.cluster == "recovering C" | focused.cluster == "recovering M"))
-(ps_recoveringC_vs_recoveringM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recoveringC_vs_recoveringM) > 0, ps_recoveringC_vs_recoveringM))
-
-(ps_recoveringG_vs_recoveringM <- phyloseq::subset_samples(ps, focused.cluster == "recovering G" | focused.cluster == "recovering M"))
-(ps_recoveringG_vs_recoveringM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recoveringG_vs_recoveringM) > 0, ps_recoveringG_vs_recoveringM))
-```
-* "stable"
-* "stable C" vs. "stable G", 
-* "stable C" vs. "stable M"
-* "stable G" vs. "stable M"
-```{r}
-(ps_stable <- phyloseq::subset_samples(ps, cluster == "stable"))
-(ps_stable <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable) > 0, ps_stable))
-
-(ps_stableC_vs_stableG <- phyloseq::subset_samples(ps, focused.cluster == "stable C" | focused.cluster == "stable G"))
-(ps_stableC_vs_stableG <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stableC_vs_stableG) > 0, ps_stableC_vs_stableG))
-
-(ps_stableC_vs_stableM <- phyloseq::subset_samples(ps, focused.cluster == "stable C" | focused.cluster == "stable M"))
-(ps_stableC_vs_stableM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stableC_vs_stableM) > 0, ps_stableC_vs_stableM))
-
-(ps_stableG_vs_stableM <- phyloseq::subset_samples(ps, focused.cluster == "stable G" | focused.cluster == "stable M"))
-(ps_stableG_vs_stableM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stableG_vs_stableM) > 0, ps_stableG_vs_stableM))
-```
-
 # ALDEx2 Test
 
 ```{r}
-aldex2_cluster <- function(ps, save_name) {
+# data frame to store test results
+ALDEx2_results <- data.frame(matrix(nrow = 0, ncol = 4))
+```
+
+## Helper Functions
+
+```{r}
+aldex2_on_cluster <- function(ps, test_id) {
   #Run ALDEx2
-  aldex2_da <- ALDEx2::aldex(data.frame(phyloseq::otu_table(ps)), phyloseq::sample_data(ps)$cluster, test="t", effect = TRUE, denom="iqlr")
+  aldex2_da <- ALDEx2::aldex(
+    data.frame(phyloseq::otu_table(ps)), 
+    phyloseq::sample_data(ps)$cluster, 
+    test="t", effect = TRUE, denom="iqlr")
+  
+  #Note treatment variable
+  treatment <- substr(
+    names(aldex2_da)[3], 
+    start = 9, 
+    stop = nchar(names(aldex2_da)[3]))
   
   #Plot effect sizes
-  png(file=paste("../img/aldex2_differential_abundance/", save_name, ".png", sep=""))
+  png(file=paste("../img/aldex2_differential_abundance/", 
+                 test_id, ".png", sep=""))
   par(mfrow=c(1,2))
   ALDEx2::aldex.plot(aldex2_da, type="MA", test="wilcox")
   ALDEx2::aldex.plot(aldex2_da, type="MW", test="wilcox")
   dev.off()
   
   #Clean up presentation
+  colnames(aldex2_da) <- paste("aldex2", colnames(aldex2_da), sep = "_")
   sig_aldex2 <- aldex2_da %>%
     rownames_to_column(var = "OTU") %>%
-    filter(wi.eBH < 0.05) %>%
-    arrange(effect, wi.eBH) %>%
-    dplyr::select(OTU, diff.btw, diff.win, effect, wi.ep, wi.eBH)
+    dplyr::select(OTU, aldex2_diff.btw, aldex2_diff.win, 
+                  aldex2_effect, aldex2_wi.ep, aldex2_wi.eBH)
   
-  # save significant names and values to csv
-  sig_aldex2 <- merge(x=sig_aldex2, y=phyloseq::tax_table(ps), by.x="OTU", by.y=0, all.x=TRUE)
-  write.csv(sig_aldex2, paste("../data/aldex2_differential_abundance/", save_name, ".csv", sep=""))
+  #Get significant names and values to data frame
+  sig_aldex2 <- merge(
+    x=sig_aldex2, 
+    y=phyloseq::tax_table(ps), 
+    by.x="OTU", by.y=0, all.x=TRUE)
+  
+  #Save treatment variable
+  sig_aldex2$aldex2_relative_to <- treatment
   
   return(sig_aldex2)
 }
 
-
-aldex2_focused_cluster <- function(ps, save_name) {
-   #Run ALDEx2
-  aldex2_da <- ALDEx2::aldex(data.frame(phyloseq::otu_table(ps)), phyloseq::sample_data(ps)$focused.cluster, test="t", effect = TRUE, denom="iqlr")
+aldex2_on_focused_cluster <- function(ps, test_id) {
+  #Run ALDEx2
+  aldex2_da <- ALDEx2::aldex(
+    data.frame(phyloseq::otu_table(ps)), 
+    phyloseq::sample_data(ps)$focused.cluster, 
+    test="t", effect = TRUE, denom="iqlr")
+  
+  #Note treatment variable
+  treatment <- substr(
+    names(aldex2_da)[3], 
+    start = 9, 
+    stop = nchar(names(aldex2_da)[3]))
   
   #Plot effect sizes
-  png(file=paste("../img/aldex2_differential_abundance/", save_name, ".png", sep=""))
+  png(file=paste("../img/aldex2_differential_abundance/", 
+                 test_id, ".png", sep=""))
   par(mfrow=c(1,2))
   ALDEx2::aldex.plot(aldex2_da, type="MA", test="wilcox")
   ALDEx2::aldex.plot(aldex2_da, type="MW", test="wilcox")
   dev.off()
   
   #Clean up presentation
+  colnames(aldex2_da) <- paste("aldex2", colnames(aldex2_da), sep = "_")
   sig_aldex2 <- aldex2_da %>%
     rownames_to_column(var = "OTU") %>%
-    filter(wi.eBH < 0.05) %>%
-    arrange(effect, wi.eBH) %>%
-    dplyr::select(OTU, diff.btw, diff.win, effect, wi.ep, wi.eBH)
+    dplyr::select(OTU, aldex2_diff.btw, aldex2_diff.win, 
+                  aldex2_effect, aldex2_wi.ep, aldex2_wi.eBH)
   
-  # save significant names and values to csv
-  sig_aldex2 <- merge(x=sig_aldex2, y=phyloseq::tax_table(ps), by.x="OTU", by.y=0, all.x=TRUE)
-  write.csv(sig_aldex2, paste("../data/aldex2_differential_abundance/", save_name, ".csv", sep=""))
+  #Get significant names and values to data frame
+  sig_aldex2 <- merge(
+    x=sig_aldex2, 
+    y=phyloseq::tax_table(ps), 
+    by.x="OTU", by.y=0, all.x=TRUE)
+  
+  #Save treatment variable
+  sig_aldex2$aldex2_relative_to <- treatment
   
   return(sig_aldex2)
 }
+```
+
+## Drivers
+* test at each taxrank
+
+```{r}
+rank_names(ps)
 ```
 
 ```{r}
-aldex2_stable_vs_recovering <- aldex2_cluster(ps_stable_vs_recovering, "stable_vs_recovering")
-aldex2_stable_vs_recovering
+drive_aldex2_on_cluster <- function(ps, test_id) {
+  # data frame to store test results
+  results <- data.frame(matrix(nrow = 0, ncol = 4))
+  
+  # prune empty taxa
+  ps <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps) > 0, ps)
+  
+  # perform once at OTU level
+  rows <- aldex2_on_cluster(ps, paste(test_id, "OTU-level", sep="_"))
+  if (nrow(rows) > 0) {
+    rows$taxrank <- "OTU-level"
+    results <- rbind(results, rows) 
+  }
+  print("OTU-level") # logging
+  
+  # aggregate at each taxrank
+  for (taxrank in rev(rank_names(ps)[-1])) {
+    ps.taxa <- tax_glom(ps, taxrank = taxrank, NArm = TRUE)
+    # skip if less than 10 taxa
+    if (nrow(tax_table(ps.taxa)) < 11) {
+      next
+    }
+    tryCatch(
+      {
+        # get result of test
+        rows <- aldex2_on_cluster(ps.taxa, paste(test_id, taxrank, sep="_"))
+        if (nrow(rows) > 0) {
+          rows$taxrank <- taxrank
+          results <- rbind(results, rows) 
+        }
+        print(taxrank) # logging
+      },
+      error = function(cond) {
+        message("TEST FAILED!")
+        message(cond)
+      }
+    )
+  }
+  
+  results$test_id <- test_id
+  
+  return(results)
+}
+
+
+drive_aldex2_on_focused_cluster <- function(ps, test_id) {
+  # data frame to store test results
+  results <- data.frame(matrix(nrow = 0, ncol = 4))
+  
+  # prune empty taxa
+  ps <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps) > 0, ps)
+  
+  # perform once at OTU level
+  rows <- aldex2_on_focused_cluster(ps, paste(test_id, "OTU-level", sep="_"))
+  if (nrow(rows) > 0) {
+    rows$taxrank <- "OTU-level"
+    results <- rbind(results, rows) 
+  }
+  print("OTU-level") # logging
+  
+  # aggregate at each taxrank
+  for (taxrank in rev(rank_names(ps)[-1])) {
+    ps.taxa <- tax_glom(ps, taxrank = taxrank, NArm = TRUE)
+    # skip if less than 10 taxa
+    if (nrow(tax_table(ps.taxa)) < 11) {
+      next
+    }
+    tryCatch(
+      {
+        # get result of test
+        rows <- aldex2_on_focused_cluster(ps.taxa, paste(test_id, taxrank, sep="_"))
+        if (nrow(rows) > 0) {
+          rows$taxrank <- taxrank
+          results <- rbind(results, rows) 
+        }
+        print(taxrank) # logging
+      },
+      error = function(cond) {
+        message("TEST FAILED!")
+        message(cond)
+      }
+    )
+  }
+  
+  results$test_id <- test_id
+  
+  return(results)
+}
 ```
 
-```{r warning=FALSE}
-aldex2_perturbedM_vs_perturbedG <- aldex2_focused_cluster(ps_perturbedM_vs_perturbedG, "perturbedM_vs_perturbedG")
-aldex2_recoveringC_vs_recoveringG <- aldex2_focused_cluster(ps_recoveringC_vs_recoveringG, "recoveringC_vs_recoveringG")
-aldex2_recoveringC_vs_recoveringM <- aldex2_focused_cluster(ps_recoveringC_vs_recoveringM, "recoveringC_vs_recoveringM")
-aldex2_recoveringG_vs_recoveringM <- aldex2_focused_cluster(ps_recoveringG_vs_recoveringM, "recoveringG_vs_recoveringM")
-aldex2_stableC_vs_stableG <- aldex2_focused_cluster(ps_stableC_vs_stableG, "stableC_vs_stableG")
-aldex2_stableC_vs_stableM <- aldex2_focused_cluster(ps_stableC_vs_stableM, "stableC_vs_stableM")
-aldex2_stableG_vs_stableM <- aldex2_focused_cluster(ps_stableG_vs_stableM, "stableG_vs_stableM")
+## Clusters
+
+### Cluster -- Pair-wise Comparisons
+
+```{r}
+rows <- drive_aldex2_on_cluster(phyloseq::subset_samples(ps, cluster == "early" | cluster == "recovering"), "early_vs_recovering")
+ALDEx2_results <- rbind(ALDEx2_results, rows)
+```
+```{r}
+rows <- drive_aldex2_on_cluster(phyloseq::subset_samples(ps, cluster == "early" | cluster == "stable"), "early_vs_stable")
+ALDEx2_results <- rbind(ALDEx2_results, rows)
+```
+```{r}
+rows <- drive_aldex2_on_cluster(phyloseq::subset_samples(ps, cluster == "stable" | cluster == "recovering"), "stable_vs_recovering")
+ALDEx2_results <- rbind(ALDEx2_results, rows)
+```
+### Focused Cluster -- Pair-wise Comparisons
+
+```{r}
+rows <- drive_aldex2_on_focused_cluster(phyloseq::subset_samples(ps, focused.cluster == "perturbed G" | focused.cluster == "perturbed M"), "pG_vs_pM")
+ALDEx2_results <- rbind(ALDEx2_results, rows)
+```
+
+```{r}
+rows <- drive_aldex2_on_focused_cluster(phyloseq::subset_samples(ps, focused.cluster == "recovering C" | focused.cluster == "recovering M"), "rC_vs_rM")
+ALDEx2_results <- rbind(ALDEx2_results, rows)
+```
+```{r}
+rows <- drive_aldex2_on_focused_cluster(phyloseq::subset_samples(ps, focused.cluster == "recovering C" | focused.cluster == "recovering G"), "rC_vs_rG")
+ALDEx2_results <- rbind(ALDEx2_results, rows)
+```
+```{r}
+rows <- drive_aldex2_on_focused_cluster(phyloseq::subset_samples(ps, focused.cluster == "recovering G" | focused.cluster == "recovering M"), "rG_vs_rM")
+ALDEx2_results <- rbind(ALDEx2_results, rows)
+```
+
+```{r}
+rows <- drive_aldex2_on_focused_cluster(phyloseq::subset_samples(ps, focused.cluster == "stable C" | focused.cluster == "stable M"), "sC_vs_sM")
+# ALDEx2_results <- rbind(ALDEx2_results, rows)
+```
+```{r}
+rows <- drive_aldex2_on_focused_cluster(phyloseq::subset_samples(ps, focused.cluster == "stable C" | focused.cluster == "stable G"), "sC_vs_sG")
+ALDEx2_results <- rbind(ALDEx2_results, rows)
+```
+```{r}
+rows <- drive_aldex2_on_focused_cluster(phyloseq::subset_samples(ps, focused.cluster == "stable G" | focused.cluster == "stable M"), "sG_vs_sM")
+ALDEx2_results <- rbind(ALDEx2_results, rows)
+```
+
+### Save to .csv
+
+```{r}
+ALDEx2_results
+```
+
+```{r}
+# save to csv
+write.csv(ALDEx2_results, "../data/processed/ALDEx2_results.csv", quote = FALSE)
+```
+
+```{r}
+# save only significantly differentially abundant taxa
+ALDEx2_results %>%
+  filter(aldex2_wi.eBH < 0.05) %>%
+  write.csv("../data/processed/ALDEx2_results_TRUE.csv", quote = FALSE)
 ```
 
