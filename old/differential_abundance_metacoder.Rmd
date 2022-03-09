@@ -1,0 +1,445 @@
+---
+title: "differential abundance metacoder"
+output: html_notebook
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+Goal: since there is a significant difference in the composition of clusters, find out who is driving the difference
+
+Groups
+* "stable" vs. "recovering"
+
+* "perturbed M" vs. "perturbed G"
+
+* "recovering C" vs. "recovering G"
+* "recovering C" vs. "recovering M"
+* "recovering G" vs. "recovering M"
+
+* "stable C" vs. "stable G" 
+* "stable C" vs. "stable M"
+* "stable G" vs. "stable M"
+
+Methods:
+* Wilcox Sum Rank Test
+* ALDEx2
+* ANCOM-BC
+
+Levels
+* Phylum
+* Class
+* Order
+* Family
+* Genus
+* Species
+* OTU-level
+
+# Install Packages
+
+```{r}
+# .cran_packages <- c("tidyverse", "cowplot", "picante", "vegan", "HMP", "dendextend", "rms", "devtools")
+# .inst <- .cran_packages %in% installed.packages()
+# if(any(!.inst)) {
+#   install.packages(.cran_packages[!.inst])
+# }
+```
+
+```{r}
+# .bioc_packages <- c("phyloseq", "Biostrings", "DESeq2", "microbiome", "metagenomeSeq", "ALDEx2")
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(.bioc_packages, version = "3.14")
+```
+
+# Loading Required Packages
+
+```{r}
+library("ggplot2"); packageVersion("ggplot2") # plotting
+```
+
+```{r}
+library("tidyverse"); packageVersion("tidyverse") # util              
+```
+
+```{r}
+library("dplyr"); packageVersion("dplyr") # util
+```
+
+```{r}
+library("phyloseq"); packageVersion("phyloseq") # data object                 
+```
+
+```{r}
+library("ape"); packageVersion("ape") # taxa string manipulation
+```
+
+```{r}
+library(microbiome); packageVersion("microbiome") # clr transformation
+```
+
+```{r}
+library(dendextend); packageVersion("dendextend") # extend customization of dendograms
+```
+
+```{r}
+library(vegan); packageVersion("vegan") # bray-curtis and other metrics
+```
+
+```{r}
+# Manipulation and visualization of taxonomic data, particularly those from amplicon metagenomics research. (Foster, Sharpton, and Grünwald 2017)
+library(metacoder); packageVersion("metacoder")
+```
+
+```{r}
+# defines taxonomic classes and functions to manipulate them. The goal is to use these classes as low level fundamental taxonomic classes that other R packages can build on and use. This is used by metacoder. 
+library(taxa); packageVersion("taxa")
+```
+
+# Initialization
+
+```{r}
+# ggplot2 package theme set
+theme_set(theme_void())
+
+# control randomization
+set.seed(42)
+
+# save outputs
+save_location = "../data/processed_FCF/"
+```
+
+# Load Phyloseq Data Object
+
+```{r}
+(ps <- readRDS(paste(save_location, "phyloseq.rds", sep="")))
+# convert to taxmap format 
+taxmap <- parse_phyloseq(ps)
+taxmap
+```
+
+# Extract tax_ids
+
+```{r}
+taxmap.key <- merge(
+  as.data.frame(taxon_names(taxmap)), 
+  as.data.frame((taxon_ranks(taxmap))), 
+  by.x=0, by.y=0)
+colnames(taxmap.key) <- c("taxon_id", "taxon_names", "taxon_rank")
+taxmap.key
+```
+
+```{r}
+#Print number of duplicated rows 
+#i.e. taxon not uniquely identified by taxon_name + taxon_rank
+nrow(taxmap.key) - nrow(
+  taxmap.key[!(duplicated(taxmap.key[c("taxon_names","taxon_rank")]) 
+             | duplicated(taxmap.key[c("taxon_names","taxon_rank")],
+            fromLast = TRUE)), ])
+```
+
+# Process DA .csv
+
+```{r}
+get_taxon_id = function(x) {
+  #Get taxrank (finest resolution taxonomy)
+  taxrank <- x[["taxrank"]]
+  #Get tax name from relevant column
+  taxname <- x[[taxrank]]
+  
+  #Query on tax_data
+  if (taxrank == "OTU") {
+    matches <- filter(taxmap$data$tax_data, otu_id == taxname)
+    return(matches[1]$taxon_id)
+  }
+  
+  #Query on taxmap.key
+  matches <- filter(taxmap.key, taxon_names == taxname & taxon_rank == taxrank)
+  return(matches[1]$taxon_id)
+}
+```
+
+## ANCOM-BC
+
+```{r}
+#Read .csv
+ANCOM_results <- read.table(
+  file = paste(save_location, 'ANCOM_results.csv', sep=""),
+  header = TRUE, sep = ',')
+#Get taxon_id
+ANCOM_results <- cbind(ANCOM_results, taxon_id = apply(
+  ANCOM_results, 1, get_taxon_id))
+#Zero effect size for non-significant p-values
+ANCOM_results$ancom_w[ANCOM_results$ancom_q_val > 0.05] <- 0
+#Show final table
+ANCOM_results
+```
+
+```{r}
+unique(ANCOM_results$test_id)
+```
+
+## ALDEx2
+
+```{r}
+#Read .csv
+ALDEx2_results <- read.table(
+  file = paste(save_location, 'ALDEx2_results.csv', sep=""), 
+  header = TRUE, sep = ',')
+#Get taxon_id
+ALDEx2_results <- cbind(ALDEx2_results, taxon_id = apply(
+  ALDEx2_results, 1, get_taxon_id))
+#Zero effect size for non-significant p-values
+ALDEx2_results$aldex2_effect[ALDEx2_results$aldex2_wi.eBH > 0.05] <- 0
+#Show final table
+ALDEx2_results
+```
+
+## Get Differential Abundance Table
+
+```{r}
+get_da_taxmap = function(taxmap, ti, group1, group2) {
+  ANCOM_results_filtered <- filter(ANCOM_results, 
+                                   test_id == ti & taxrank != "OTU")
+  ALDEx2_results_filtered <- filter(ALDEx2_results, 
+                                    test_id == ti & taxrank != "OTU")
+  
+  #If test magnitude is relative to different group than group 1
+  #then negate effect size variable
+  if(nrow(ANCOM_results_filtered) > 0 &
+     ANCOM_results_filtered$ancom_relative_to[1] != group1) {
+      # invert relative_to label
+      ANCOM_results_filtered$ancom_relative_to <- group1
+      # invert results
+      ANCOM_results_filtered$ancom_W <- ANCOM_results_filtered$ancom_W * -1
+  }
+  if(nrow(ALDEx2_results_filtered) > 0 &
+     ALDEx2_results_filtered$aldex2_relative_to[1] != group1) {
+      # invert relative_to label
+      ALDEx2_results_filtered$aldex2_relative_to <- group1
+      # invert results
+      ALDEx2_results_filtered$aldex2_effect <- ALDEx2_results_filtered$aldex2_effect * -1
+  }
+  
+  #Merge Dataframe
+  taxmap$data$da <- taxmap.key %>%
+    merge(ANCOM_results_filtered, by.x = "taxon_id", by.y = "taxon_id", all.x = TRUE) %>%
+    merge(ALDEx2_results_filtered, by.x = "taxon_id", by.y = "taxon_id", all.x = TRUE) %>%
+    select("taxon_id", "aldex2_diff.btw", "aldex2_diff.win", "aldex2_effect", "ancom_relative_to", "ancom_W") %>%
+    mutate_if(is.numeric, ~replace(., is.na(.), 0)) %>%
+    as.tibble()
+  
+  return(taxmap)
+}
+```
+
+# Heat Map Trees
+
+```{r}
+plot_comparative_heat_tree = function(ti, group1, group2) {
+  
+  #Define color key
+  focused.cluster_colors <- c(
+                          "black", "slateblue1", "sienna1",
+                          "springgreen3", "slateblue3", "sienna3", 
+                          "springgreen4", "slateblue4", "sienna4",
+                          "red", "blue")
+  names(focused.cluster_colors) <- c(
+                          "early", "perturbed G", "perturbed M",
+                          "recovering C", "recovering G", "recovering M",
+                          "stable C", "stable G", "stable M",
+                          "recovering", "stable")
+  
+  #Get corresponding colors
+  blank_color <- "oldlace"
+  # blank_color <- "gray"
+  g1_color <- focused.cluster_colors[[group1]]
+  g2_color <- focused.cluster_colors[[group2]]
+  
+  #Get taxmap
+  tmp <- get_da_taxmap(taxmap, ti, group1, group2)
+  
+  #Get min, max
+  ancom_min <- min(tmp$data$da$ancom_W)
+  ancom_max <- max(tmp$data$da$ancom_W)
+  ancom_range <- max(abs(ancom_min), abs(ancom_max))
+  
+  aldex2_min <- min(tmp$data$da$aldex2_effect)
+  aldex2_max <- max(tmp$data$da$aldex2_effect)
+  aldex2_range <- max(abs(aldex2_min), abs(aldex2_max))
+  
+  # ANCOM-BC
+  # control randomization
+  set.seed(42)
+  tmp %>%
+    filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+    heat_tree(node_size = n_obs, # number of OTUs
+              node_size_axis_label = "OTU count",
+              node_color = ancom_W, # difference between groups
+              node_color_interval = c(-1 * ancom_range, ancom_range), # symmetric interval
+              node_color_range = c(g2_color, blank_color, g1_color), # diverging colors
+              node_color_axis_label = "ANCOM Effect Size",
+              # node_label = taxon_names, # comment to remove labels
+              initial_layout = "reingold-tilford",
+              layout = "davidson-harel",
+              title = paste(ti, "positive to", group1, "ANCOM"),
+              output_file = paste(save_location,
+                paste("metacoder_differential_abundance/heat_tree", 
+                ti, "ANCOM.png", sep="_"), sep=""))
+  
+  # ALDEx2
+  # control randomization
+  set.seed(42)
+  tmp %>%
+    filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+    heat_tree(node_size = n_obs, # number of OTUs
+              node_size_axis_label = "OTU count",
+              node_color = aldex2_effect, # difference between groups
+              node_color_interval = c(-1 * aldex2_range, aldex2_range), # symmetric interval
+              node_color_range = c(g2_color, blank_color, g1_color), # diverging colors
+              node_color_axis_label = "ALDEx2 Effect Size",
+              # node_label = taxon_names, # comment to remove labels
+              initial_layout = "reingold-tilford",
+              layout = "davidson-harel",
+              title = paste(ti, "positive to", group1, "ALDEx2"),
+              output_file = paste(save_location,
+                paste("metacoder_differential_abundance/heat_tree", 
+                ti, "ALDEX2.png", sep="_"), sep=""))
+  
+}
+```
+
+```{r}
+unique(ALDEx2_results$test_id)
+```
+
+```{r}
+unique(ALDEx2_results$aldex2_relative_to)
+```
+
+```{r}
+plot_comparative_heat_tree("early_vs_recovering", "early", "recovering")
+```
+```{r}
+plot_comparative_heat_tree("early_vs_stable", "early", "stable")
+```
+
+```{r}
+plot_comparative_heat_tree("stable_vs_recovering", "stable", "recovering")
+```
+
+```{r}
+plot_comparative_heat_tree("pG_vs_pM", "perturbed G", "perturbed M")
+```
+
+```{r}
+plot_comparative_heat_tree("rC_vs_rM", "recovering C", "recovering M")
+```
+
+```{r}
+plot_comparative_heat_tree("rC_vs_rG", "recovering C", "recovering G")
+```
+
+```{r}
+plot_comparative_heat_tree("rG_vs_rM", "recovering G", "recovering M")
+```
+
+```{r}
+plot_comparative_heat_tree("sC_vs_sG", "stable C", "stable G")
+```
+
+```{r}
+plot_comparative_heat_tree("sG_vs_sM", "stable G", "stable M")
+```
+
+```{r}
+plot_comparative_heat_tree("sC_vs_sM", "stable C", "stable M")
+```
+
+## Focused Cluster -- Pair-wise Comparisons to sC
+
+```{r}
+plot_comparative_heat_tree("sC_vs_pG", "stable C", "perturbed G")
+```
+```{r}
+# empty, using as key, don't overwrite
+# plot_comparative_heat_tree("sC_vs_pM", "stable C", "perturbed M")
+```
+
+```{r}
+plot_comparative_heat_tree("sC_vs_rC", "stable C", "recovering C")
+```
+```{r}
+plot_comparative_heat_tree("sC_vs_rG", "stable C", "recovering G")
+```
+```{r}
+plot_comparative_heat_tree("sC_vs_rM", "stable C", "recovering M")
+```
+
+## Get one with labels
+```{r}
+# empty
+# plot_comparative_heat_tree("sC_vs_pM", "stable C", "perturbed M")
+```
+
+# Scatter plots
+
+```{r}
+# ggplot2 package theme set
+theme_set(theme_gray())
+```
+
+```{r}
+unique(ALDEx2_results$test_id)
+```
+
+```{r}
+unique(ALDEx2_results$aldex2_relative_to)
+```
+
+```{r}
+
+```
+
+
+```{r}
+get_da_scatter_ALDEx2 <- function(data, test_ids = c(), taxrank = "genus") {
+  # only use OTU level differential analysis
+  # flag OTU that are significant
+  ALDEx2_results_filtered <- data %>%
+    filter(test_id %in% test_ids) %>% 
+    filter(taxrank == "OTU") %>% 
+    mutate(significant = case_when(
+      aldex2_wi.eBH < 0.05 & aldex2_effect < 0 ~ "other group",
+      aldex2_wi.eBH < 0.05 & aldex2_effect > 0 ~ aldex2_relative_to,
+      TRUE~"not significant"
+  ))
+  
+  ggplot(data = ALDEx2_results_filtered) +
+  aes_string(x = "aldex2_effect", 
+      y = taxrank,
+      colour = "significant") + 
+  scale_colour_manual(name = 'significant', 
+                      values = setNames(c("black", "slateblue1", "sienna1",
+                                          "springgreen3", "slateblue3", "sienna3", 
+                                          "springgreen4", "slateblue4", "sienna4",
+                                          "red", "blue", "firebrick"),
+                                        c("early", "perturbed G", "perturbed M",
+                                          "recovering C", "recovering G", "recovering M",
+                                          "stable C", "stable G", "stable M",
+                                          "recovering", "stable", "other group")
+                          )) + 
+  geom_jitter() + 
+  facet_grid(cols = vars(test_id))
+    
+}
+```
+
+
+```{r}
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = c("early_vs_recovering", "early_vs_stable", "stable_vs_recovering"), taxrank = "genus")
+```
+
+
+
+

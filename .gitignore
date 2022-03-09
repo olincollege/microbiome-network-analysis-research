@@ -197,6 +197,6 @@ po/*~
 # End of https://www.toptal.com/developers/gitignore/api/r
 
 # Large Files
-data/processed/ALDEx2_results*
-data/processed/ANCOM_results*
-img/aldex2_differential_abundance
+data/processed_FCF/ALDEx2_results*
+data/processed_FCF/ANCOM_results*
+data/processed_FCF/aldex2_differential_abundance

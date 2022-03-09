@@ -22,7 +22,7 @@ Image Source: [Microbiome Datasets Are Compositional: And This Is Not Optional (
 
 **Compositional Data Analysis:**  
 * Introduction to CoDA: [Microbiome Datasets Are Compositional: And This Is Not Optional (Gloor 2017)](https://www.frontiersin.org/articles/10.3389/fmicb.2017.02224/full)
-* Support of CoDa (Compositional Data Analysis of Microbiome and Any-Omics Datasets: A Validation of the Additive Logratio Transformation)[https://www.frontiersin.org/articles/10.3389/fmicb.2021.727398/full]
+* Support of CoDa: [Compositional Data Analysis of Microbiome and Any-Omics Datasets: A Validation of the Additive Logratio Transformation](https://www.frontiersin.org/articles/10.3389/fmicb.2021.727398/full)
 * Case Study: [Compositional Data Analysis Approaches to Improve Microbiome Studies: from Collection to Conclusions](https://www.youtube.com/watch?v=j1IbfQrT2Cs)
 * Tutorial: [Introduction to the Statistical Analysis of Microbiome Data in R](https://www.nicholas-ollberding.com/post/introduction-to-the-statistical-analysis-of-microbiome-data-in-r/)
 * Review: [Understanding sequencing data as compositions: an outlook and review](https://academic.oup.com/bioinformatics/article/34/16/2870/4956011?login=false)
@@ -31,10 +31,15 @@ Image Source: [Microbiome Datasets Are Compositional: And This Is Not Optional (
 ](https://www.youtube.com/watch?v=1ETBgbXl-BM)
 * Differential Abundance Method Comparison: [Microbiome differential abundance methods produce different results across 38 datasets](https://www.nature.com/articles/s41467-022-28034-z)
 * ALDEx2 vignette: [ANOVA-Like Differential Expression tool for high throughput sequencing data](https://www.bioconductor.org/packages/devel/bioc/vignettes/ALDEx2/inst/doc/ALDEx2_vignette.html)
+* Use ALDEx2 on small sample sizes: [A reproducible effect size is more useful than an irreproducible hypothesis test to analyze high throughput sequencing datasets](https://arxiv.org/pdf/1809.02623.pdf)
+  * "The Ed statistic is shown to be more reproducible and robust than p-values and requires sample sizes as small as 5 to reproducibly identify differentially abundant features."
 * ANCOM vignette: [ANCOM-BC](http://www.bioconductor.org/packages/release/bioc/vignettes/ANCOMBC/inst/doc/ANCOMBC.html)
 * Metacoder documentation: [Diversity statistics](https://grunwaldlab.github.io/metacoder_documentation/workshop--07--diversity_stats.html)
 * Compositional Analysis Practical Paper: [The Gut Microbiota of Healthy Aged Chinese Is Similar to That of the Healthy Young](https://journals.asm.org/doi/10.1128/mSphere.00327-17)
-* Compositional Analysis Practical Paper: [https://www.dnagenotek.com/us/pdf/PD-WP-00070.pdf](https://www.dnagenotek.com/us/pdf/PD-WP-00070.pdf)
+* Compositional Analysis Practical Paper: [OMNI-GUT](https://www.dnagenotek.com/us/pdf/PD-WP-00070.pdf)
+* Propr Paper: [propr: An R-package for Identifying Proportionally Abundant Features Using Compositional Data Analysis](https://www.nature.com/articles/s41598-017-16520-0)
+* Propr GitHub: [tpq/propr](https://github.com/tpq/propr)
+* Propr Documentation [Package ‘propr’](https://cran.r-project.org/web/packages/propr/propr.pdf)
 
 **Other Resources:**
 * Comparison for methods of variable selection (selbal, clr-lasso, coda-lasso): [Variable selection in microbiome compositional data analysis](https://academic.oup.com/nargab/article/2/2/lqaa029/5836692)

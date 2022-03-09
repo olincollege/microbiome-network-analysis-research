@@ -1,0 +1,676 @@
+---
+title: "differential abundance wilcoxon sum rank"
+output: html_notebook
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+Goal: since there is a significant difference in the composition of clusters, find out who is driving the difference
+
+Groups
+* "stable" vs. "recovering"
+
+* "perturbed M" vs. "perturbed G"
+
+* "recovering C" vs. "recovering G"
+* "recovering C" vs. "recovering M"
+* "recovering G" vs. "recovering M"
+
+* "stable C" vs. "stable G" 
+* "stable C" vs. "stable M"
+* "stable G" vs. "stable M"
+
+Methods:
+* Wilcox Sum Rank Test
+* ALDEx2
+* ANCOM-BC
+
+Levels
+* Phylum
+* Class
+* Order
+* Family
+* Genus
+* Species
+* OTU-level
+
+# Install Packages
+
+```{r}
+# .cran_packages <- c("tidyverse", "cowplot", "picante", "vegan", "HMP", "dendextend", "rms", "devtools")
+# .inst <- .cran_packages %in% installed.packages()
+# if(any(!.inst)) {
+#   install.packages(.cran_packages[!.inst])
+# }
+```
+
+```{r}
+# .bioc_packages <- c("phyloseq", "Biostrings", "DESeq2", "microbiome", "metagenomeSeq", "ALDEx2")
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(.bioc_packages, version = "3.14")
+```
+
+# Loading Required Packages
+
+```{r}
+library("ggplot2"); packageVersion("ggplot2") # plotting
+```
+
+```{r}
+library("tidyverse"); packageVersion("tidyverse") # util              
+```
+
+```{r}
+library("dplyr"); packageVersion("dplyr") # util
+```
+
+```{r}
+library("phyloseq"); packageVersion("phyloseq") # data object                 
+```
+
+```{r}
+library("ape"); packageVersion("ape") # taxa string manipulation
+```
+
+```{r}
+library(microbiome); packageVersion("microbiome") # clr transformation
+```
+
+```{r}
+library(dendextend); packageVersion("dendextend") # extend customization of dendograms
+```
+
+```{r}
+library(vegan); packageVersion("vegan") # bray-curtis and other metrics
+```
+
+```{r}
+# Manipulation and visualization of taxonomic data, particularly those from amplicon metagenomics research. (Foster, Sharpton, and Grünwald 2017)
+library(metacoder); packageVersion("metacoder")
+```
+
+```{r}
+# defines taxonomic classes and functions to manipulate them. The goal is to use these classes as low level fundamental taxonomic classes that other R packages can build on and use. This is used by metacoder. 
+library(taxa); packageVersion("taxa")
+```
+
+# Initialization
+
+```{r}
+# ggplot2 package theme set
+theme_set(theme_bw())
+
+# control randomization
+set.seed(42)
+```
+
+# Load Phyloseq Data Object
+
+```{r}
+(ps <- readRDS("../data/processed/phyloseq.rds"))
+# convert to taxmap format 
+taxmap <- parse_phyloseq(ps)
+```
+
+```{r}
+taxon_names(taxmap)
+```
+
+
+```{r}
+taxon_ranks(taxmap)
+```
+
+# Wilcox Sum Rank Test
+
+```{r}
+save_diff_abund_tax <- function(taxmap, save_to) {
+  sig_taxmap <- filter_obs(taxmap, data = "diff_table", drop_taxa = TRUE, wilcox_p_value < 0.05)
+  
+  sig_wilcoxon <- merge(x=sig_taxmap$data$diff_table, y=sig_taxmap$data$tax_data, by="taxon_id", all.x=TRUE) %>%
+    arrange(log2_median_ratio, wilcox_p_value)
+  
+  write.csv(sig_wilcoxon, save_to, quote = FALSE)
+  
+  return(sig_wilcoxon)
+}
+
+
+wilcoxon_rank_sum_cluster <- function(ps, save_name) {
+  # convert to taxmap object
+  taxmap <- parse_phyloseq(ps)
+
+  # get meta df
+  meta_df <- data.frame(sample_data(ps))
+  row.names(meta_df)
+  
+  # calculate taxon abundance
+  taxmap$data$taxon_abund <- calc_taxon_abund(taxmap, "otu_table", cols = row.names(meta_df))
+
+  # calculate wilcoxon rank sum test
+  taxmap$data$diff_table <- compare_groups(taxmap, dataset = "taxon_abund",
+                                         cols = row.names(meta_df),
+                                         groups = meta_df$cluster)
+
+  # adjust p-values
+  taxmap <- mutate_obs(taxmap, "diff_table",
+                  wilcox_p_value = p.adjust(wilcox_p_value, method = "fdr"))
+
+  # adjust value to zero if not significant p-value
+  taxmap$data$diff_table$log2_median_ratio[taxmap$data$diff_table$wilcox_p_value > 0.05] <- 0
+  
+  # save significant names and values to csv
+  save_diff_abund_tax(taxmap, paste("../data/metacoder_differential_abundance/", save_name, ".csv", sep=""))
+
+  return(taxmap)
+}
+
+wilcoxon_rank_sum_focused_cluster <- function(ps, save_name) {
+  # convert to taxmap object
+  taxmap <- parse_phyloseq(ps)
+
+  # get meta df
+  meta_df <- data.frame(sample_data(ps))
+  row.names(meta_df)
+  
+  # calculate taxon abundance
+  taxmap$data$taxon_abund <- calc_taxon_abund(taxmap, "otu_table", cols = row.names(meta_df))
+
+  # calculate wilcoxon rank sum test
+  taxmap$data$diff_table <- compare_groups(taxmap, dataset = "taxon_abund",
+                                         cols = row.names(meta_df),
+                                         groups = meta_df$focused.cluster)
+
+  # adjust p-values
+  taxmap <- mutate_obs(taxmap, "diff_table",
+                  wilcox_p_value = p.adjust(wilcox_p_value, method = "fdr"))
+
+  # adjust value to zero if not significant p-value
+  taxmap$data$diff_table$log2_median_ratio[taxmap$data$diff_table$wilcox_p_value > 0.05] <- 0
+  
+  # save significant names and values to csv
+  save_diff_abund_tax(taxmap, paste("../data/metacoder_differential_abundance/", save_name, ".csv", sep=""))
+
+  return(taxmap)
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+# Make Subset Cluster Group Tables
+
+-   "stable" vs. "recovering"
+
+```{r}
+(ps_stable_vs_recovering <- phyloseq::subset_samples(ps, cluster == "stable" | cluster == "recovering"))
+(ps_stable_vs_recovering <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable_vs_recovering) > 0, ps_stable_vs_recovering))
+```
+
+-   "perturbed M" vs. "perturbed G"
+
+```{r}
+(ps_perturbedM_vs_perturbedG <- phyloseq::subset_samples(ps, focused.cluster == "perturbed M" | focused.cluster == "perturbed G"))
+(ps_perturbedM_vs_perturbedG <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_perturbedM_vs_perturbedG) > 0, ps_perturbedM_vs_perturbedG))
+```
+
+-   "recovering"
+-   "recovering C" vs. "recovering G"
+-   "recovering C" vs. "recovering M"
+-   "recovering G" vs. "recovering M"
+
+```{r}
+(ps_recovering <- phyloseq::subset_samples(ps, cluster == "recovering"))
+(ps_recovering <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recovering) > 0, ps_recovering))
+
+(ps_recoveringC_vs_recoveringG <- phyloseq::subset_samples(ps, focused.cluster == "recovering C" | focused.cluster == "recovering G"))
+(ps_recoveringC_vs_recoveringG <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recoveringC_vs_recoveringG) > 0, ps_recoveringC_vs_recoveringG))
+
+(ps_recoveringC_vs_recoveringM <- phyloseq::subset_samples(ps, focused.cluster == "recovering C" | focused.cluster == "recovering M"))
+(ps_recoveringC_vs_recoveringM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recoveringC_vs_recoveringM) > 0, ps_recoveringC_vs_recoveringM))
+
+(ps_recoveringG_vs_recoveringM <- phyloseq::subset_samples(ps, focused.cluster == "recovering G" | focused.cluster == "recovering M"))
+(ps_recoveringG_vs_recoveringM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_recoveringG_vs_recoveringM) > 0, ps_recoveringG_vs_recoveringM))
+```
+
+-   "stable"
+-   "stable C" vs. "stable G",
+-   "stable C" vs. "stable M"
+-   "stable G" vs. "stable M"
+
+```{r}
+(ps_stable <- phyloseq::subset_samples(ps, cluster == "stable"))
+(ps_stable <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stable) > 0, ps_stable))
+
+(ps_stableC_vs_stableG <- phyloseq::subset_samples(ps, focused.cluster == "stable C" | focused.cluster == "stable G"))
+(ps_stableC_vs_stableG <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stableC_vs_stableG) > 0, ps_stableC_vs_stableG))
+
+(ps_stableC_vs_stableM <- phyloseq::subset_samples(ps, focused.cluster == "stable C" | focused.cluster == "stable M"))
+(ps_stableC_vs_stableM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stableC_vs_stableM) > 0, ps_stableC_vs_stableM))
+
+(ps_stableG_vs_stableM <- phyloseq::subset_samples(ps, focused.cluster == "stable G" | focused.cluster == "stable M"))
+(ps_stableG_vs_stableM <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_stableG_vs_stableM) > 0, ps_stableG_vs_stableM))
+```
+
+
+```{r}
+WRStaxmap_stable_vs_recovering <- wilcoxon_rank_sum_cluster(ps_stable_vs_recovering, "stable_vs_recovering")
+WRStaxmap_stable_vs_recovering
+```
+
+```{r warning=FALSE}
+WRStaxmap_perturbedM_vs_perturbedG <- wilcoxon_rank_sum_focused_cluster(ps_perturbedM_vs_perturbedG, "perturbedM_vs_perturbedG")
+WRStaxmap_recovering <- wilcoxon_rank_sum_focused_cluster(ps_recovering, "recovering")
+WRStaxmap_recoveringC_vs_recoveringG <- wilcoxon_rank_sum_focused_cluster(ps_recoveringC_vs_recoveringG, "recoveringC_vs_recoveringG")
+WRStaxmap_recoveringC_vs_recoveringM <- wilcoxon_rank_sum_focused_cluster(ps_recoveringC_vs_recoveringM, "recoveringC_vs_recoveringM")
+WRStaxmap_recoveringG_vs_recoveringM <- wilcoxon_rank_sum_focused_cluster(ps_recoveringG_vs_recoveringM, "recoveringG_vs_recoveringM")
+WRStaxmap_stable <- wilcoxon_rank_sum_focused_cluster(ps_stable, "stable")
+WRStaxmap_stableC_vs_stableG <- wilcoxon_rank_sum_focused_cluster(ps_stableC_vs_stableG, "stableC_vs_stableG")
+WRStaxmap_stableC_vs_stableM <- wilcoxon_rank_sum_focused_cluster(ps_stableC_vs_stableM, "stableC_vs_stableM")
+WRStaxmap_stableG_vs_stableM <- wilcoxon_rank_sum_focused_cluster(ps_stableG_vs_stableM, "stableG_vs_stableM")
+```
+
+```{r warning=FALSE}
+# with clr transform
+WRStaxmap_clr_stable_vs_recovering <- wilcoxon_rank_sum_cluster(microbiome::transform(ps_stable_vs_recovering, "clr"), "stable_vs_recovering_clr")
+WRStaxmap_clr_perturbedM_vs_perturbedG <- wilcoxon_rank_sum_focused_cluster(microbiome::transform(ps_perturbedM_vs_perturbedG, "clr"), "perturbedM_vs_perturbedG_clr")
+WRStaxmap_clr_recovering <- wilcoxon_rank_sum_focused_cluster(microbiome::transform(ps_recovering, "clr"), "recovering_clr")
+WRStaxmap_clr_recoveringC_vs_recoveringG <- wilcoxon_rank_sum_focused_cluster(microbiome::transform(ps_recoveringC_vs_recoveringG, "clr"), "recoveringC_vs_recoveringG_clr")
+WRStaxmap_clr_recoveringC_vs_recoveringM <- wilcoxon_rank_sum_focused_cluster(microbiome::transform(ps_recoveringC_vs_recoveringM, "clr"), "recoveringC_vs_recoveringM_clr")
+WRStaxmap_clr_recoveringG_vs_recoveringM <- wilcoxon_rank_sum_focused_cluster(microbiome::transform(ps_recoveringG_vs_recoveringM, "clr"), "recoveringG_vs_recoveringM_clr")
+WRStaxmap_clr_stable <- wilcoxon_rank_sum_focused_cluster(microbiome::transform(ps_stable, "clr"), "stable_clr")
+WRStaxmap_clr_stableC_vs_stableG <- wilcoxon_rank_sum_focused_cluster(microbiome::transform(ps_stableC_vs_stableG, "clr"), "stableC_vs_stableG_clr")
+WRStaxmap_clr_stableC_vs_stableM <- wilcoxon_rank_sum_focused_cluster(microbiome::transform(ps_stableC_vs_stableM, "clr"), "stableC_vs_stableM_clr")
+WRStaxmap_clr_stableG_vs_stableM <- wilcoxon_rank_sum_focused_cluster(microbiome::transform(ps_stableG_vs_stableM, "clr"), "stableG_vs_stableM_clr")
+```
+
+# Visualize Results in Heat Trees
+
+Show counts-based and clr-counts-based
+
+## All
+
+```{r}
+taxmap %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of rows belonging to taxa (and subtaxa) 
+            node_color = n_obs, # number of rows belonging to taxa (and subtaxa) 
+            node_color_axis_label = "OTU Counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "All",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_all.png")
+```
+
+```{r}
+taxmap_clr %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of rows belonging to taxa (and subtaxa) 
+            node_color = n_obs, # number of rows belonging to taxa (and subtaxa) 
+            node_color_axis_label = "OTU Counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "All CLR",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_all_clr.png")
+```
+
+## Pairwise -- Stable vs. Recovering
+
+```{r}
+(WRStaxmap_stable_vs_recovering)
+```
+
+```{r}
+WRStaxmap_stable_vs_recovering %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Stable vs. Recovering Samples",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_stable_vs_recovering.png")
+```
+
+```{r}
+WRStaxmap_clr_stable_vs_recovering %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Stable vs. Recovering Samples CLR",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_stable_vs_recovering_clr.png")
+```
+
+## Pairwise -- Perturbed M vs. Perturbed G
+
+```{r}
+WRStaxmap_perturbedM_vs_perturbedG %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Perturbed M vs. Perturbed G Samples",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_perturbedG_vs_perturbedM.png")
+```
+
+```{r}
+WRStaxmap_clr_perturbedM_vs_perturbedG %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Perturbed M vs. Perturbed G Samples CLR",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_perturbedG_vs_perturbedM_clr.png")
+```
+
+## Heat Trees -- Recovering
+
+```{r}
+WRStaxmap_recoveringC_vs_recoveringM %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Recovering C vs. Recovering M Samples",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_recoveringC_vs_recoveringM.png")
+```
+
+```{r}
+WRStaxmap_clr_recoveringC_vs_recoveringM %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Recovering C vs. Recovering M Samples CLR",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_recoveringC_vs_recoveringM_clr.png")
+```
+
+```{r}
+WRStaxmap_recoveringC_vs_recoveringG %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Recovering C vs. Recovering G Samples",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_recoveringC_vs_recoveringG.png")
+```
+
+```{r}
+WRStaxmap_clr_recoveringC_vs_recoveringG %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Recovering C vs. Recovering G Samples CLR",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_recoveringC_vs_recoveringG_clr.png")
+```
+
+```{r}
+WRStaxmap_recoveringG_vs_recoveringM %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Recovering G vs. Recovering M Samples",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_recoveringG_vs_recoveringM.png")
+```
+
+```{r}
+WRStaxmap_clr_recoveringG_vs_recoveringM %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Recovering G vs. Recovering M Samples CLR",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_recoveringG_vs_recoveringM_clr.png")
+```
+
+## Heat Trees -- Stable
+
+```{r}
+WRStaxmap_stableC_vs_stableM %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Stable C vs. Stable M Samples",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_stableC_vs_stableM.png")
+```
+
+```{r}
+WRStaxmap_clr_stableC_vs_stableM %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Stable C vs. Stable M Samples CLR",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_stableC_vs_stableM_clr.png")
+```
+
+```{r}
+WRStaxmap_stableC_vs_stableG %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Stable C vs. Stable G Samples",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_stableC_vs_stableG.png")
+```
+
+```{r}
+WRStaxmap_clr_stableC_vs_stableG %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Stable C vs. Stable G Samples CLR",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_stableC_vs_stableG_clr.png")
+```
+
+```{r}
+WRStaxmap_stableG_vs_stableM %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Stable G vs. Stable M Samples",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_stableG_vs_stableM.png")
+```
+
+```{r}
+WRStaxmap_clr_stableG_vs_stableM %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree(node_size = n_obs, # number of OTUs
+            node_color = log2_median_ratio, # difference between groups
+            node_color_interval = c(-10, 10), # symmetric interval
+            node_color_range = c("cyan", "gray", "magenta"), # diverging colors
+            node_size_axis_label = "OTU count",
+            node_color_axis_label = "Log 2 ratio of median counts",
+            node_label = taxon_names,
+            initial_layout = "reingold-tilford",
+            layout = "davidson-harel",
+            title = "Stable G vs. Stable M Samples CLR",
+            output_file = "../img/metacoder_differential_abundance/heat_tree_stableG_vs_stableM_clr.png")
+```
+
+## Heat Matrices
+
+```{r}
+theme_set(theme(
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank()))
+```
+
+```{r}
+WRStaxmap_recovering %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree_matrix(data = "diff_table",
+                   node_label = taxon_names,
+                   node_size = n_obs, # number of OTUs
+                   node_color = log2_median_ratio, # difference between groups
+                   node_color_trans = "linear",
+                   node_color_interval = c(-3, 3), # symmetric interval
+                   edge_color_interval = c(-3, 3), # symmetric interval
+                   node_color_range = diverging_palette(), # diverging colors
+                   node_size_axis_label = "OTU count",
+                   node_color_axis_label = "Log 2 ratio of median counts",
+                   layout = "da", initial_layout = "re",
+                   output_file = "../img/metacoder_differential_abundance/heat_tree_matrix_recovering.png"
+                  )
+```
+
+```{r}
+WRStaxmap_clr_recovering %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree_matrix(data = "diff_table",
+                   node_label = taxon_names,
+                   node_size = n_obs, # number of OTUs
+                   node_color = log2_median_ratio, # difference between groups
+                   node_color_trans = "linear",
+                   node_color_interval = c(-3, 3), # symmetric interval
+                   edge_color_interval = c(-3, 3), # symmetric interval
+                   node_color_range = diverging_palette(), # diverging colors
+                   node_size_axis_label = "OTU count",
+                   node_color_axis_label = "Log 2 ratio of median counts",
+                   layout = "da", initial_layout = "re",
+                   output_file = "../img/metacoder_differential_abundance/heat_tree_matrix_recovering_clr.png"
+                  )
+```
+
+```{r}
+WRStaxmap_stable %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree_matrix(data = "diff_table",
+                   node_label = taxon_names,
+                   node_size = n_obs, # number of OTUs
+                   node_color = log2_median_ratio, # difference between groups
+                   node_color_trans = "linear",
+                   node_color_interval = c(-3, 3), # symmetric interval
+                   edge_color_interval = c(-3, 3), # symmetric interval
+                   node_color_range = diverging_palette(), # diverging colors
+                   node_size_axis_label = "OTU count",
+                   node_color_axis_label = "Log 2 ratio of median counts",
+                   layout = "da", initial_layout = "re",
+                   output_file = "../img/metacoder_differential_abundance/heat_tree_matrix_stable.png"
+                  )
+```
+
+```{r}
+WRStaxmap_clr_stable %>%
+  filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+  heat_tree_matrix(data = "diff_table",
+                   node_label = taxon_names,
+                   node_size = n_obs, # number of OTUs
+                   node_color = log2_median_ratio, # difference between groups
+                   node_color_trans = "linear",
+                   node_color_interval = c(-3, 3), # symmetric interval
+                   edge_color_interval = c(-3, 3), # symmetric interval
+                   node_color_range = diverging_palette(), # diverging colors
+                   node_size_axis_label = "OTU count",
+                   node_color_axis_label = "Log 2 ratio of median counts",
+                   layout = "da", initial_layout = "re",
+                   output_file = "../img/metacoder_differential_abundance/heat_tree_matrix_stable_clr.png"
+                  )
+```
