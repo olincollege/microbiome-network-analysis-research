@@ -75,7 +75,13 @@ theme_set(theme_bw())
 set.seed(42)
 
 # save outputs
+raw_location = "../data/raw/FCF/"
 save_location = "../data/processed_FCF/"
+
+# PARAMETERS
+MIN_SAMPLE_RC = 5000 # only keep samples with at least 5k reads
+MIN_PERCENT_IN_ANY_SAMPLE = 0.001 # only keep taxa that occurred at an abundance of greater than 0.1% in any sample
+MIN_OCCURANCES_ACROSS_PERCENTAGE_OF_SAMPLES = 0.20 # only keep taxa that occurred in at least 20% of samples
 ```
 
 # Phyloseq Data Object
@@ -83,14 +89,14 @@ save_location = "../data/processed_FCF/"
 ## Turn CSV into Phyloseq Data Object
 
 ```{r}
-otu_mat <- as.matrix(read.table(file = paste(save_location, 'OTU_counts_clean.tsv', sep = ""), sep = '\t', header = TRUE, row.names = 1))
-tax_mat <- as.matrix(read.table(file = paste(save_location, 'taxonomy_table_clean.tsv', sep = ""), sep = '\t', header = TRUE, row.names = 1))
-sample_meta <- read.table(file = paste(save_location, 'sample_metadata.tsv', sep = ""), header = TRUE, sep = '\t', row.names = 1)
-sample_meta$day <- as.factor(sample_meta$day)
-sample_meta$transfer <- as.factor(sample_meta$transfer)
+otu_mat <- as.matrix(read.table(file = paste(raw_location, 'processed_OTU_counts.tsv', sep = ""), sep = '\t', header = TRUE, row.names = 1))
+tax_mat <- as.matrix(read.table(file = paste(raw_location, 'processed_taxonomy_table.tsv', sep = ""), sep = '\t', header = TRUE, row.names = 1))
+sample_meta <- read.table(file = paste(raw_location, 'processed_sample_metadata.tsv', sep = ""), header = TRUE, sep = '\t', row.names = 1)
+sample_meta$day <- factor(sample_meta$day, levels=c("3", "5", "7", "10", "20"))
+sample_meta$transfer <- factor(sample_meta$transfe, levels=c("0", "1", "2", "3"))
 
 # get phylogenetic tree
-tree <- ape::read.tree("../data/raw/MUSCLE_alignment_ML_tree_all_OTUs")
+tree <- ape::read.tree(paste(raw_location, "MUSCLE_alignment_ML_tree_all_OTUs", sep=""))
 
 class(otu_mat)
 class(tax_mat)
@@ -99,7 +105,6 @@ class(sample_meta)
 ```{r}
 sample_meta
 ```
-
 
 ```{r}
 OTU = otu_table(otu_mat, taxa_are_rows = TRUE)
@@ -111,16 +116,17 @@ ps
 ## Cleaning
 
 ```{r}
-# Sort samples on total read count, remove <5k reads, remove any OTUs seen in only those samples
-# sort(phyloseq::sample_sums(ps))
-
-# Note: this filtering did not remove any samples 
-# (ps <- phyloseq::subset_samples(ps, phyloseq::sample_sums(ps) > 5000))
-
-#remove OTUs with less than total read count threshold
-ps <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps) > 5, ps)
-ps
+# check that all samples have at least 5k reads
+(all(phyloseq::sample_sums(ps) > MIN_SAMPLE_RC))
+# only keep taxa that occurred at an abundance of greater than 0.1% in any sample
+ps_rel_abund = phyloseq::transform_sample_counts(ps, function(x){x / sum(x)})
+(ps <- phyloseq::prune_taxa(rowSums(otu_table(ps_rel_abund) > MIN_PERCENT_IN_ANY_SAMPLE) > 0L
+                           , ps))
+# only keep taxa that occurred in at least 20% of samples
+(ps <- phyloseq::prune_taxa(rowSums(otu_table(ps) > 0L) > length(sample_names(ps)) * MIN_OCCURANCES_ACROSS_PERCENTAGE_OF_SAMPLES
+                           , ps))
 ```
+
 ```{r}
 # Save
 saveRDS(ps, paste(save_location, "phyloseq.rds", sep = ""))
@@ -157,7 +163,6 @@ ps
 ```{r}
 sample_data(ps)
 ```
-
 
 # Visualize Bar Chart Counts
 
@@ -202,6 +207,30 @@ phyloseq::otu_table(ps_rel_abund)[1:5, 1:5]
 ```
 
 ```{r}
+# Plot genus
+phyloseq::plot_bar(ps_rel_abund, fill = "genus") +
+  geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap(~factor(group, levels=c("C0C", "1C", "2C", "1G", "2G", "3G", "1M", "2M", "3M")), scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+
+# Plot family
+phyloseq::plot_bar(ps_rel_abund, fill = "family") +
+  geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap(~factor(group, levels=c("C0C", "1C", "2C", "1G", "2G", "3G", "1M", "2M", "3M")), scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+
+# Plot order
+phyloseq::plot_bar(ps_rel_abund, fill = "order") +
+  geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap(~factor(group, levels=c("C0C", "1C", "2C", "1G", "2G", "3G", "1M", "2M", "3M")), scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+
 # Plot class
 phyloseq::plot_bar(ps_rel_abund, fill = "class") +
   geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
@@ -209,9 +238,7 @@ phyloseq::plot_bar(ps_rel_abund, fill = "class") +
   facet_wrap(~factor(group, levels=c("C0C", "1C", "2C", "1G", "2G", "3G", "1M", "2M", "3M")), scales = "free") +
   theme(panel.background = element_blank(),
         axis.ticks.x=element_blank())
-```
 
-```{r}
 # Plot phylum
 phyloseq::plot_bar(ps_rel_abund, fill = "phylum") +
   geom_bar(aes(color = phylum, fill = phylum), stat = "identity", position = "stack") +
@@ -220,6 +247,7 @@ phyloseq::plot_bar(ps_rel_abund, fill = "phylum") +
   theme(panel.background = element_blank(),
         axis.ticks.x=element_blank())
 ```
+
 ## Visualize CLR Transformed
 
 ```{r}
@@ -323,11 +351,11 @@ plot_pretty_clr_pca <- function(ps, taxrank) {
     coord_fixed(clr2 / clr1) +
     stat_ellipse(aes(group = carbon), linetype = 2) +
     scale_color_manual(values = c(
-    "3" = "#03045e",
-    "5" = "#0077b6",
-    "7" = "#00b4d8",
-    "10" = "#90e0ef",
-    "20" = "#caf0f8"
+    "3" = "#B2E5EA", # lightest
+    "5" = "#00BAE7",
+    "7" = "#0E6FA0",
+    "10" = "#012652",
+    "20" = "#01091C" # darkest
   )) +
     scale_shape_manual(values = c(
     "original" = 4,
@@ -378,20 +406,20 @@ plot_pretty_clr_pca_detailed <- function(ps, taxrank) {
     coord_fixed(clr2 / clr1) +
     stat_ellipse(aes(group = carbon), linetype = 2) +
     scale_color_manual(values = c(
-    "3" = "#03045e",
-    "5" = "#0077b6",
-    "7" = "#00b4d8",
-    "10" = "#90e0ef",
-    "20" = "#caf0f8"
+    "3" = "#B2E5EA", # lightest
+    "5" = "#00BAE7",
+    "7" = "#0E6FA0",
+    "10" = "#012652",
+    "20" = "#01091C" # darkest
   )) +
     scale_shape_manual(values = c(
     "C0C" = 4,
-    "1C" = 16,
-    "2C" = 10,
-    "2G" = 18,
-    "3G" = 9,
-    "2M" = 15,
-    "3M" = 12
+    "1C" = 10,
+    "2C" = 16,
+    "2G" = 9,
+    "3G" = 18,
+    "2M" = 12,
+    "3M" = 15
   )) +
     xlab(sprintf("PC 1 %s%%", round(100 * clr1, 2))) +
     ylab(sprintf("PC 2 %s%%", round(100 * clr2, 2))) +
@@ -458,11 +486,11 @@ get_ward <- function(ps, taxrank) {
   ward %>% plot(main = sprintf("Aitchison on Centered Log-Ratios \ntaxrank: %s", taxrank))
   
   #Plot color by cluster
-  ward %>% set("labels_cex", 1) %>% set("labels_col", value = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), k=9) %>% 
+  ward %>% set("labels_cex", 1) %>% set("labels_col", value = c(1, 2, 3), k=3) %>% 
      plot(main = sprintf("Aitchison: Color labels per cluster \ntaxrank: %s", taxrank))
   
-  #Plot color by cluster (3)
-  ward %>% set("labels_cex", 1) %>% set("labels_col", value = c(1, 2, 3), k=3) %>% 
+  #Plot color by cluster
+  ward %>% set("labels_cex", 1) %>% set("labels_col", value = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), k=9) %>% 
      plot(main = sprintf("Aitchison: Color labels per cluster \ntaxrank: %s", taxrank))
   
   return(ward)
@@ -490,7 +518,7 @@ ward_species <- get_ward(ps, "species")
 
 
 ```{r}
-(clusters <- ward_OTU %>% set("labels_col", value = c("initial", "mid", "late"), k=3) %>% labels_colors)
+(clusters <- ward_cellulose_OTU %>% set("labels_col", value = c("late", "late", "mid"), k=3) %>% labels_colors)
 write.csv(clusters, file=paste(save_location, "cluster_decisions.csv", sep=""), quote=FALSE)
 ```
 

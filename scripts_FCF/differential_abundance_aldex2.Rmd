@@ -133,7 +133,7 @@ ALDEx2_results <- data.frame(matrix(nrow = 0, ncol = 4))
 
 ## Example Output
 ```{r}
-psa <- phyloseq::subset_samples(ps, cluster == "initial" | cluster == "mid")
+psa <- phyloseq::subset_samples(ps, cluster == "perturbed" | cluster == "mid")
 
 aldex2_da <- ALDEx2::aldex(
     data.frame(phyloseq::otu_table(psa)), 
@@ -353,11 +353,11 @@ drive_aldex2_on_focused_cluster <- function(ps, test_id) {
 ### Cluster -- Pair-wise Comparisons
 
 ```{r}
-rows <- drive_aldex2_on_cluster(phyloseq::subset_samples(ps, cluster == "initial" | cluster == "mid"), "i_vs_m")
+rows <- drive_aldex2_on_cluster(phyloseq::subset_samples(ps, cluster == "perturbed" | cluster == "mid"), "p_vs_m")
 ALDEx2_results <- rbind(ALDEx2_results, rows)
 ```
 ```{r}
-rows <- drive_aldex2_on_cluster(phyloseq::subset_samples(ps, cluster == "initial" | cluster == "late"), "i_vs_l")
+rows <- drive_aldex2_on_cluster(phyloseq::subset_samples(ps, cluster == "perturbed" | cluster == "late"), "p_vs_l")
 ALDEx2_results <- rbind(ALDEx2_results, rows)
 ```
 ```{r}
@@ -419,8 +419,6 @@ ALDEx2_results <- rbind(ALDEx2_results, rows)
 rows <- drive_aldex2_on_focused_cluster(phyloseq::subset_samples(ps, focused.cluster == "late C" | focused.cluster == "mid M"), "lC_vs_mM")
 ALDEx2_results <- rbind(ALDEx2_results, rows)
 ```
-
-
 
 ### Save to .csv
 

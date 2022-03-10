@@ -201,23 +201,23 @@ get_da_taxmap = function(taxmap, ti) {
 plot_comparative_heat_tree = function(ti) {
   
   #Define color key
-  focused.cluster_colors <- c(
-                          "black", "slateblue1", "sienna1",
-                          "springgreen3", "slateblue3", "sienna3", 
-                          "springgreen4", "slateblue4", "sienna4",
-                          "black", "red", "green")
-  names(focused.cluster_colors) <- c(
-                          "early", "perturbed G", "perturbed M",
-                          "mid C", "mid G", "mid M",
-                          "late C", "late G", "late M",
-                          "initial", "mid", "late")
-  
+  focused.cluster_levels <- c("late C", "late G", "late M",
+                            "mid C", "mid G", "mid M",
+                            "perturbed G", "perturbed M")
+
+  focused.cluster_colors <- c("springgreen4", "steelblue4", "sienna4",
+                              "springgreen3", "steelblue3", "sienna3",
+                              "steelblue1", "sienna1")
+  names(focused.cluster_colors) <- focused.cluster_levels
+
   #Get taxmap
   tmp <- get_da_taxmap(taxmap, ti)
   group1 <- unique(tmp$data$da$aldex2_positive)
   group1 <- group1[!is.na(group1)][1];
   group2 <- unique(tmp$data$da$aldex2_negative)
   group2 <- group2[!is.na(group2)][1];
+  group1
+  group2
 
   #Get corresponding colors
   blank_color <- "oldlace"
@@ -259,61 +259,20 @@ unique(ALDEx2_results$test_id)
 ```{r}
 unique(ALDEx2_results$aldex2_positive)
 ```
-
 ```{r}
-plot_comparative_heat_tree("i_vs_m")
+for (test_id in unique(ALDEx2_results$test_id)) {
+  tryCatch(
+    {
+      plot_comparative_heat_tree(test_id)
+      print(test_id)
+    },
+    error=function(cond) {
+      message(test_id)
+      message("-failed to run")
+    }
+  )  
+}
 ```
-```{r}
-plot_comparative_heat_tree("i_vs_l")
-```
-```{r}
-plot_comparative_heat_tree("l_vs_m")
-```
-
-```{r}
-plot_comparative_heat_tree("pG_vs_pM")
-```
-
-```{r}
-plot_comparative_heat_tree("mC_vs_mM")
-```
-```{r}
-plot_comparative_heat_tree("mC_vs_mG")
-```
-```{r}
-plot_comparative_heat_tree("mG_vs_mM")
-```
-
-```{r}
-plot_comparative_heat_tree("lC_vs_lG")
-```
-```{r}
-plot_comparative_heat_tree("lG_vs_lM")
-```
-```{r}
-plot_comparative_heat_tree("lC_vs_lM")
-```
-
-## Focused Cluster -- Pair-wise Comparisons to sC
-
-```{r}
-plot_comparative_heat_tree("lC_vs_pG")
-```
-```{r}
-# empty, using as key, don't overwrite
-plot_comparative_heat_tree("lC_vs_pM")
-```
-
-```{r}
-plot_comparative_heat_tree("lC_vs_mC")
-```
-```{r}
-plot_comparative_heat_tree("lC_vs_mG")
-```
-```{r}
-plot_comparative_heat_tree("lC_vs_mM")
-```
-
 ## Get one with labels
 ```{r}
 # empty
@@ -410,7 +369,7 @@ unique(ALDEx2_results$test_id)
 ## Cluster level
 
 ```{r}
-test_ids <- c("i_vs_m", "i_vs_l", "l_vs_m")
+test_ids <- c("p_vs_m", "p_vs_l", "p_vs_m")
 get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "genus")
 get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "order")
 get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "class")

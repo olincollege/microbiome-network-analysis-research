@@ -98,11 +98,17 @@ sample_data(ps)
 # Explore Cluster Relative Abundance Patterns
 
 ```{r}
+# barchart_levels <- c("early", "perturbed G", "perturbed M", "mid C", "mid G", "mid M", "late C", "late G", "late M")
+barchart_levels <- c("perturbed G", "mid G", "late G", "perturbed M",  "mid M", "late M", "mid C",  "late C")
+```
+
+
+```{r}
 # Plot class
 phyloseq::plot_bar(ps, fill = "class") +
   geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
   labs(x = "", y = "Counts\n") +
-  facet_wrap(~factor(focused.cluster, levels=c("early", "perturbed G", "perturbed M", "mid C", "mid G", "mid M", "late C", "late G", "late M")), scales = "free", ncol=3) +
+  facet_wrap(~factor(focused.cluster, levels=barchart_levels), scales = "free", ncol=3) +
   theme(panel.background = element_blank(),
         axis.ticks.x=element_blank())
 ```
@@ -111,7 +117,7 @@ phyloseq::plot_bar(ps, fill = "class") +
 phyloseq::plot_bar(ps_rel_abund, fill = "class") +
   geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
   labs(x = "", y = "Relative Abundance\n") +
-  facet_wrap(~factor(focused.cluster, levels=c("early", "perturbed G", "perturbed M", "mid C", "mid G", "mid M", "late C", "late G", "late M")), scales = "free", ncol=3) +
+  facet_wrap(~factor(focused.cluster, levels=barchart_levels), scales = "free", ncol=3) +
   theme(panel.background = element_blank(),
         axis.ticks.x=element_blank())
 ```
@@ -121,7 +127,7 @@ phyloseq::plot_bar(ps_rel_abund, fill = "class") +
 phyloseq::plot_bar(ps_rel_abund, fill = "phylum") +
   geom_bar(aes(color = phylum, fill = phylum), stat = "identity", position = "stack") +
   labs(x = "", y = "Relative Abundance\n") +
-  facet_wrap(~factor(focused.cluster, levels=c("early", "perturbed G", "perturbed M", "mid C", "mid G", "mid M", "late C", "late G", "late M")), scales = "free", ncol=3) +
+  facet_wrap(~factor(focused.cluster, levels=barchart_levels), scales = "free", ncol=3) +
   theme(panel.background = element_blank(),
         axis.ticks.x=element_blank())
 ```
@@ -192,6 +198,88 @@ plot_clr_pca(ps, "family", "focused.cluster")
 plot_clr_pca(ps, "order", "cluster")
 plot_clr_pca(ps, "order", "focused.cluster")
 ```
+
+# Visualize PERMANOVA
+
+
+## Represent Dispersion Plot
+
+```{r}
+# NOTE: has to be same as levels for betadispr groups
+focused.cluster_levels <- c("late C", "late G", "late M",
+                            "mid C", "mid G", "mid M",
+                            "perturbed G", "perturbed M")
+
+focused.cluster_colors <- c("springgreen4", "steelblue4", "sienna4",
+                            "springgreen3", "steelblue3", "sienna3",
+                            "steelblue1", "sienna1")
+names(focused.cluster_colors) <- focused.cluster_levels
+
+focused.cluster_shapes <- c(15, 15, 15, 
+                            12, 12, 12,
+                            0, 0)
+names(focused.cluster_shapes) <- focused.cluster_levels
+```
+
+
+```{r}
+#Generate distance matrix
+clr_dist_matrix <- phyloseq::distance(ps_clr, method = "euclidean")
+
+all_test <- vegan::adonis(clr_dist_matrix ~ phyloseq::sample_data(ps_clr)$focused.cluster, permutations=10000)
+print(all_test)
+
+#get dispersions
+dispr <- vegan::betadisper(clr_dist_matrix,
+                           group = phyloseq::sample_data(ps_clr)$focused.cluster)
+dispr$group
+
+# plot dispersions distances
+plot(dispr, 
+     main = "Ordination Centroids and Dispersion: Aitchison Distance", 
+     hull=FALSE, ellipse=TRUE, label = TRUE, label.cex=0.60,
+     pch = focused.cluster_shapes,
+     col = focused.cluster_colors
+     )
+
+# plot dispersions distances
+plot(dispr, 
+     main = "Ordination Centroids and Dispersion: Aitchison Distance", 
+     hull=FALSE, ellipse=TRUE, label = FALSE, label.cex=0.60,
+     pch = focused.cluster_shapes,
+     col = focused.cluster_colors
+     )
+```
+
+
+```{r}
+# plot dispersions distances
+plot(dispr, 
+     main = "Ordination Centroids and Dispersion: Aitchison Distance", 
+     hull=FALSE, ellipse=TRUE, label = FALSE, label.cex=0.60,
+     conf = 0.68,
+     pch = focused.cluster_shapes,
+     col = focused.cluster_colors
+     )
+```
+
+
+```{r}
+# order factors
+dispr_df <- data.frame(group = dispr$group, distances = dispr$distances)
+dispr_df$group <- factor(dispr$group, 
+                      levels = rev(focused.cluster_levels))
+
+dispr_df %>%
+  ggplot(aes(x=group, y=distances, colour=group, shape=group)) +
+  geom_violin(trim = FALSE) +
+  geom_jitter(position = position_jitter(0.2)) +
+  scale_color_manual(values = focused.cluster_colors) +
+  scale_shape_manual(values = focused.cluster_shapes) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
 # PERMANOVA
 
 ```{r}
@@ -344,11 +432,11 @@ PERMANOVA_results <- rbind(PERMANOVA_results, rows)
 ### Cluster -- Pair-wise Comparisons
 
 ```{r}
-rows <- drive_permanova_on_cluster(phyloseq::subset_samples(ps, cluster == "initial" | cluster == "mid"), "i_vs_m")
+rows <- drive_permanova_on_cluster(phyloseq::subset_samples(ps, cluster == "perturbed" | cluster == "mid"), "p_vs_m")
 PERMANOVA_results <- rbind(PERMANOVA_results, rows)
 ```
 ```{r}
-rows <- drive_permanova_on_cluster(phyloseq::subset_samples(ps, cluster == "initial" | cluster == "late"), "i_vs_l")
+rows <- drive_permanova_on_cluster(phyloseq::subset_samples(ps, cluster == "perturbed" | cluster == "late"), "p_vs_l")
 PERMANOVA_results <- rbind(PERMANOVA_results, rows)
 ```
 ```{r}
@@ -364,7 +452,7 @@ PERMANOVA_results <- rbind(PERMANOVA_results, rows)
 ```
 
 ```{r}
-rows <- drive_permanova_on_focused_cluster(phyloseq::subset_samples(ps, cluster == "initial"), "i_focused.cluster")
+rows <- drive_permanova_on_focused_cluster(phyloseq::subset_samples(ps, cluster == "perturbed"), "p_focused.cluster")
 PERMANOVA_results <- rbind(PERMANOVA_results, rows)
 ```
 ```{r}
@@ -458,75 +546,4 @@ write.csv(PERMANOVA_results, paste(save_location, "PERMANOVA_results.csv", sep="
 # save significantly TRUE values to csv
 write.csv(PERMANOVA_results[which(PERMANOVA_results$significant), ], paste(save_location, "PERMANOVA_results_TRUE.csv", sep=""), quote = FALSE)
 ```
-
-## Represent Dispersion Plot
-
-```{r}
-focused.cluster_levels <- c("early", "perturbed G", "perturbed M",
-                          "mid C", "mid G", "mid M",
-                          "late C", "late G", "late M")
-
-focused.cluster_colors <- c("gray32", "slateblue1", "sienna1",
-                          "springgreen3", "slateblue3", "sienna3", 
-                          "springgreen4", "slateblue4", "sienna4")
-
-focused.cluster_shapes <- c(0, 0, 0, 12, 12, 12, 15, 15, 15)
-```
-
-
-```{r}
-#Generate distance matrix
-clr_dist_matrix <- phyloseq::distance(ps_clr, method = "euclidean")
-
-all_test <- vegan::adonis(clr_dist_matrix ~ phyloseq::sample_data(ps_clr)$focused.cluster, permutations=10000)
-print(all_test)
-
-#get dispersions
-dispr <- vegan::betadisper(clr_dist_matrix,
-                           group = phyloseq::sample_data(ps_clr)$focused.cluster)
-
-# plot dispersions distances
-plot(dispr, 
-     main = "Ordination Centroids and Dispersion: Aitchison Distance", 
-     hull=FALSE, ellipse=TRUE, label = TRUE, label.cex=0.60,
-     pch = focused.cluster_shapes,
-     col = focused.cluster_colors
-     )
-
-# plot dispersions distances
-plot(dispr, 
-     main = "Ordination Centroids and Dispersion: Aitchison Distance", 
-     hull=FALSE, ellipse=TRUE, label = FALSE, label.cex=0.60,
-     pch = focused.cluster_shapes,
-     col = focused.cluster_colors
-     )
-```
-
-
-```{r}
-# plot dispersions distances
-plot(dispr, 
-     main = "Ordination Centroids and Dispersion: Aitchison Distance", 
-     hull=FALSE, ellipse=TRUE, label = FALSE, label.cex=0.60,
-     conf = 0.68,
-     pch = focused.cluster_shapes,
-     col = focused.cluster_colors
-     )
-```
-
-
-```{r}
-# order factors
-dispr$group <- factor(dispr$group, 
-                      levels = focused.cluster_levels)
-
-boxplot(dispr, main = "", xlab = "")
-stripchart(dispr$distances ~ dispr$group, 
-           vertical = TRUE, 
-           method = "jitter",
-           add = TRUE, 
-           pch = focused.cluster_shapes,
-           col = focused.cluster_colors)
-```
-
 

@@ -40,6 +40,7 @@ Image Source: [Microbiome Datasets Are Compositional: And This Is Not Optional (
 * Propr Paper: [propr: An R-package for Identifying Proportionally Abundant Features Using Compositional Data Analysis](https://www.nature.com/articles/s41598-017-16520-0)
 * Propr GitHub: [tpq/propr](https://github.com/tpq/propr)
 * Propr Documentation [Package ‘propr’](https://cran.r-project.org/web/packages/propr/propr.pdf)
+* Prop Tutorials [Question about how to interpret rho and FDR](https://github.com/tpq/propr/issues/17)
 
 **Other Resources:**
 * Comparison for methods of variable selection (selbal, clr-lasso, coda-lasso): [Variable selection in microbiome compositional data analysis](https://academic.oup.com/nargab/article/2/2/lqaa029/5836692)
@@ -53,7 +54,7 @@ If you have very different group sizes, you may consider analysis of similaritie
 
 ## Code Overview
 
-### Format Data Files (`format.ipynb`)
+### 0. Format Data Files (`format.ipynb`)
 
 **Dependencies:**
 * [skbio](http://scikit-bio.org/)
@@ -80,7 +81,7 @@ If you have very different group sizes, you may consider analysis of similaritie
 * `data/processed/feature_metadata.tsv`
   * OTU ID x Taxonomy
 
-### Ordination (`ordination.Rmd`)
+### 1. Ordination (`ordination.Rmd`)
 
 Bar Chart, sample groups
 * raw counts (class)
@@ -98,7 +99,7 @@ PCA, samples
 From Ward distance hierarchial correlation clustering on CLR values, identified strong clusters
 * top 3 high-level clusters recorded in `data/raw/cluster_decisions.csv`
 
-### Multivariate Comparison (`multivariate_comparison.Rmd`)
+### 2. Multivariate Comparison (`multivariate_comparison.Rmd`)
 
 Bar Chart, sample clusters
 * raw counts (class)
@@ -129,10 +130,20 @@ PERMANOVA
 
 Signif. codes:  0 '\*\*\*' 0.001 '\*\*' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-### Differential Abundance (`differential_abundance.Rmd`)
+### 3. Calculate Differential Abundance (`differential_abundance_aldex2.Rmd`)
 
 Tools
 * ALDEx2
-* ANCOM
+
+### 4. Visualize Differential Abundance (`visualize_differential_abundance.Rmd`)
+
 * metacodr (visualize heat map tree)
+
+### 5. Alpha Diversity and Correlation (`alpha_diversity_and_correlation.Rmd`)
+
+Tools
+* propr
+* shannon diversity
+* loess smoothing
+
 
