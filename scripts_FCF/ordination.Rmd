@@ -80,7 +80,7 @@ save_location = "../data/processed_FCF/"
 
 # PARAMETERS
 MIN_SAMPLE_RC = 5000 # only keep samples with at least 5k reads
-MIN_PERCENT_IN_ANY_SAMPLE = 0.001 # only keep taxa that occurred at an abundance of greater than 0.1% in any sample
+MIN_PERCENT_IN_ANY_SAMPLE = 0.1 / 100 # only keep taxa that occurred at an abundance of greater than 0.1% in any sample
 MIN_OCCURANCES_ACROSS_PERCENTAGE_OF_SAMPLES = 0.20 # only keep taxa that occurred in at least 20% of samples
 ```
 

@@ -120,6 +120,24 @@ taxmap <- parse_phyloseq(ps)
 taxmap
 ```
 
+# Plot metacoder family tree
+
+```{r}
+set.seed(42)
+heat_tree(taxmap,
+          node_label = taxon_names,
+          node_size = n_obs,
+          node_color = n_obs,
+          node_color_axis_label = "OTU count",
+          layout = "da",
+          initial_layout = "re",
+          # output_file = "../data/processed_FCF_53OTUs/metacoder_differential_abundance/FCF.png"
+          title = "FCF")
+```
+
+
+
+
 # Extract tax_ids
 
 ```{r}
