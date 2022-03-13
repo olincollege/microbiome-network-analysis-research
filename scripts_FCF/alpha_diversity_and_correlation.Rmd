@@ -69,18 +69,18 @@ sample_meta$RC <- as.numeric(sample_meta$RC)
 ## Process Sample Metdata Table
 
 ```{r}
-focused.cluster_levels <- c("perturbed G", "perturbed M",
-                          "mid C", "mid G", "mid M",
-                          "late C", "late G", "late M")
+focused.cluster_levels <- c("early", "mid C", "late C", 
+                            "perturbed G", "mid G", "late G", 
+                            "perturbed M", "mid M", "late M")
 
-focused.cluster_colors <- c("steelblue1", "sienna1",
-                          "springgreen2", "steelblue3", "sienna3", 
-                          "springgreen4", "steelblue4", "sienna4")
+focused.cluster_colors <- c("gray50", "springgreen3", "springgreen4",
+                            "steelblue1", "steelblue3", "steelblue4",
+                            "sienna1", "sienna3", "sienna4")
 names(focused.cluster_colors) <- focused.cluster_levels
 
-focused.cluster_shapes <- c(0, 0, 
-                            12, 12, 12, 
-                            15, 15, 15)
+focused.cluster_shapes <- c(1, 10, 16,
+                            1, 10, 16,
+                            1, 10, 16)
 names(focused.cluster_shapes) <- focused.cluster_levels
 
 # for 20 color palette

@@ -1,9 +1,9 @@
 sampleID	group	series	carbon	transfer	day	replicate	cluster	focused cluster	RC	shdiv
 sC0C	C0C	C0C	original	0	10	C0C	late	late C	88135	3.7996015359241424
-s1C03A	1C	C	cellulose	1	3	A	late	late C	72061	3.364793069672942
-s1C03B	1C	C	cellulose	1	3	B	late	late C	117579	3.2360629584797023
+s1C03A	1C	C	cellulose	1	3	A	early	early	72061	3.364793069672942
+s1C03B	1C	C	cellulose	1	3	B	early	early	117579	3.2360629584797023
 s1C05A	1C	C	cellulose	1	5	A	mid	mid C	83646	3.3460744145976196
-s1C05B	1C	C	cellulose	1	5	B	late	late C	123739	3.7980672001013214
+s1C05B	1C	C	cellulose	1	5	B	early	early	123739	3.7980672001013214
 s1C07A	1C	C	cellulose	1	7	A	mid	mid C	111874	3.525642518469975
 s1C07B	1C	C	cellulose	1	7	B	mid	mid C	109082	3.1037208144647415
 s1C10A	1C	C	cellulose	1	10	A	late	late C	75943	3.99107131701596
@@ -28,9 +28,9 @@ s1M07C	1M	M	malate	1	7	C	perturbed	perturbed M	73386	1.3950118081550076
 s1M10A	1M	M	malate	1	10	A	perturbed	perturbed M	132348	2.037897143392147
 s1M10B	1M	M	malate	1	10	B	perturbed	perturbed M	95812	2.1500859414471054
 s1M10C	1M	M	malate	1	10	C	perturbed	perturbed M	125381	1.935009078567734
-s2M03A	2M	M	cellulose	2	3	A	mid	mid M	106765	2.5790407148733405
-s2M03B	2M	M	cellulose	2	3	B	mid	mid M	116427	3.0477604659431927
-s2M03C	2M	M	cellulose	2	3	C	mid	mid M	99306	2.9513819691727154
+s2M03A	2M	M	cellulose	2	3	A	early	early	106765	2.5790407148733405
+s2M03B	2M	M	cellulose	2	3	B	early	early	116427	3.0477604659431927
+s2M03C	2M	M	cellulose	2	3	C	early	early	99306	2.9513819691727154
 s2M05A	2M	M	cellulose	2	5	A	mid	mid M	106415	3.064662814927522
 s2M05B	2M	M	cellulose	2	5	B	mid	mid M	101681	3.173228223826591
 s2M07A	2M	M	cellulose	2	7	A	mid	mid M	114229	3.494358391162397
@@ -62,9 +62,9 @@ s1G07C	1G	G	glucose	1	7	C	perturbed	perturbed G	59814	2.2045148726113037
 s1G10A	1G	G	glucose	1	10	A	perturbed	perturbed G	39318	3.055165405192338
 s1G10B	1G	G	glucose	1	10	B	perturbed	perturbed G	43594	3.102649298783333
 s1G10C	1G	G	glucose	1	10	C	perturbed	perturbed G	75566	3.151104463759807
-s2G03A	2G	G	cellulose	2	3	A	mid	mid G	93285	3.036322854379436
-s2G03B	2G	G	cellulose	2	3	B	mid	mid G	94491	2.969395470169819
-s2G03C	2G	G	cellulose	2	3	C	mid	mid G	122109	3.112094686022401
+s2G03A	2G	G	cellulose	2	3	A	early	early	93285	3.036322854379436
+s2G03B	2G	G	cellulose	2	3	B	early	early	94491	2.969395470169819
+s2G03C	2G	G	cellulose	2	3	C	early	early	122109	3.112094686022401
 s2G05A	2G	G	cellulose	2	5	A	mid	mid G	102671	2.9723713231272835
 s2G05B	2G	G	cellulose	2	5	B	mid	mid G	125635	3.0677167877970555
 s2G05C	2G	G	cellulose	2	5	C	mid	mid G	127890	3.0550168681044507

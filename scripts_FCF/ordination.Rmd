@@ -76,7 +76,7 @@ set.seed(42)
 
 # save outputs
 raw_location = "../data/raw/FCF/"
-save_location = "../data/processed_FCF/"
+save_location = "../data/processed_FCF_53OTUs//"
 
 # PARAMETERS
 MIN_SAMPLE_RC = 5000 # only keep samples with at least 5k reads
@@ -94,6 +94,9 @@ tax_mat <- as.matrix(read.table(file = paste(raw_location, 'processed_taxonomy_t
 sample_meta <- read.table(file = paste(raw_location, 'processed_sample_metadata.tsv', sep = ""), header = TRUE, sep = '\t', row.names = 1)
 sample_meta$day <- factor(sample_meta$day, levels=c("3", "5", "7", "10", "20"))
 sample_meta$transfer <- factor(sample_meta$transfe, levels=c("0", "1", "2", "3"))
+# cluster
+sample_meta$cluster <- factor(sample_meta$cluster, levels=c("early", "mid", "late", "perturbed"))
+sample_meta$focused.cluster <- factor(sample_meta$focused.cluster, levels=c("early", "mid C", "late C", "perturbed G", "mid G", "late G", "perturbed M", "mid M", "late M"))
 
 # get phylogenetic tree
 tree <- ape::read.tree(paste(raw_location, "MUSCLE_alignment_ML_tree_all_OTUs", sep=""))

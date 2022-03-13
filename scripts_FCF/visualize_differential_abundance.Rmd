@@ -108,8 +108,26 @@ theme_set(theme_void())
 set.seed(42)
 
 # save outputs
-save_location = "../data/processed_FCF/"
+save_location = "../data/processed_FCF_53OTUs/"
 ```
+
+```{r}
+# color key
+all_cluster_levels <- c("early", "mid C", "late C", 
+                        "perturbed G", "mid G", "late G", 
+                        "perturbed M", "mid M", "late M",
+                        "perturbed", "mid", "late",
+                        "not significant")
+
+all_cluster_colors <- c("black", "springgreen3", "springgreen4",
+                        "steelblue1", "steelblue3", "steelblue4",
+                        "sienna1", "sienna3", "sienna4",
+                        "red", "blue", "green",
+                        "gray60"
+                        )
+names(all_cluster_colors) <- all_cluster_levels
+```
+
 
 # Load Phyloseq Data Object
 
@@ -131,7 +149,7 @@ heat_tree(taxmap,
           node_color_axis_label = "OTU count",
           layout = "da",
           initial_layout = "re",
-          # output_file = "../data/processed_FCF_53OTUs/metacoder_differential_abundance/FCF.png"
+          output_file = "../data/processed_FCF_53OTUs/metacoder_differential_abundance/FCF.png",
           title = "FCF")
 ```
 
@@ -218,16 +236,6 @@ get_da_taxmap = function(taxmap, ti) {
 ```{r}
 plot_comparative_heat_tree = function(ti) {
   
-  #Define color key
-  focused.cluster_levels <- c("late C", "late G", "late M",
-                            "mid C", "mid G", "mid M",
-                            "perturbed G", "perturbed M")
-
-  focused.cluster_colors <- c("springgreen4", "steelblue4", "sienna4",
-                              "springgreen3", "steelblue3", "sienna3",
-                              "steelblue1", "sienna1")
-  names(focused.cluster_colors) <- focused.cluster_levels
-
   #Get taxmap
   tmp <- get_da_taxmap(taxmap, ti)
   group1 <- unique(tmp$data$da$aldex2_positive)
@@ -240,8 +248,8 @@ plot_comparative_heat_tree = function(ti) {
   #Get corresponding colors
   blank_color <- "oldlace"
   # blank_color <- "gray"
-  g1_color <- focused.cluster_colors[[group1]]
-  g2_color <- focused.cluster_colors[[group2]]
+  g1_color <- all_cluster_colors[[group1]]
+  g2_color <- all_cluster_colors[[group2]]
   
   #Get min, max
   aldex2_min <- min(tmp$data$da$aldex2_effect)
@@ -275,7 +283,12 @@ unique(ALDEx2_results$test_id)
 ```
 
 ```{r}
-unique(ALDEx2_results$aldex2_positive)
+unique(ALDEx2_results$level)
+```
+ 
+
+```{r}
+unique(c(ALDEx2_results$aldex2_positive, ALDEx2_results$aldex2_negative))
 ```
 ```{r}
 for (test_id in unique(ALDEx2_results$test_id)) {
@@ -300,6 +313,34 @@ for (test_id in unique(ALDEx2_results$test_id)) {
 # Scatter plots
 
 ```{r}
+min(ALDEx2_results$aldex2_effect)
+```
+
+```{r}
+max(ALDEx2_results$aldex2_effect)
+```
+```{r}
+ALDEx2_results %>%
+  ggplot(aes(x=aldex2_effect)) + 
+  geom_histogram(binwidth=.5, colour="black", fill="white")
+
+ALDEx2_results %>%
+  filter(level == "cluster") %>%
+  ggplot(aes(x=aldex2_effect)) + 
+  geom_histogram(binwidth=.5, colour="black", fill="white")
+
+ALDEx2_results %>%
+  filter(level == "focused.cluster") %>%
+  ggplot(aes(x=aldex2_effect)) + 
+  geom_histogram(binwidth=.5, colour="black", fill="white")
+```
+
+```{r}
+all_cluster_colors["not significant"]
+```
+
+
+```{r}
 get_da_scatter_ALDEx2 <- function(data, test_ids = c(), taxrank = "genus", plot_name="x") {
   # only use OTU level differential analysis
   # filter and color data points
@@ -308,12 +349,12 @@ get_da_scatter_ALDEx2 <- function(data, test_ids = c(), taxrank = "genus", plot_
     filter(taxrank == "OTU") %>% 
     # only plot significant OTUs
     filter(aldex2_effect != 0) %>%
+    # color scheme
     mutate(significant = case_when(
       aldex2_wi.eBH < 0.05 & aldex2_effect > 1 ~ aldex2_positive,
       aldex2_wi.eBH < 0.05 & aldex2_effect < -1 ~ aldex2_negative,
       TRUE~"not significant"))
-  
-  
+    
   # get number of y-axis categories
   num_categories <- length(unique(ALDEx2_results_filtered[[taxrank]]))
   
@@ -331,7 +372,7 @@ get_da_scatter_ALDEx2 <- function(data, test_ids = c(), taxrank = "genus", plot_
            y_position = rev(1:nrow(.)),
            ymin = y_position - 0.5,
            ymax = y_position + 0.5,
-           fill = rep(c("red", "blue"), length.out=nrow(strip_data)))
+           fill = rep(c("zebra_a", "zebra_b"), length.out=nrow(strip_data)))
   
   # map taxrank to strip position
   refer_y_pos <- as.numeric(strip_data$y_position)
@@ -343,40 +384,34 @@ get_da_scatter_ALDEx2 <- function(data, test_ids = c(), taxrank = "genus", plot_
   strip_data <- strip_data %>%
     pivot_longer(cols=c(xmin, xmax), values_to="x", names_to="xmin_xmax") %>%
     dplyr::select(-xmin_xmax)
-
+  
   # plot pretty
-  g <- ALDEx2_results_filtered %>%
+  ALDEx2_results_filtered %>%
     ggplot(axes = FALSE, show.legend = FALSE,
-           aes_string(x = "aldex2_effect", y = "y_position", colour = "significant", group="y_position", alpha=0.01)) +
+           aes_string(x = "aldex2_effect", 
+                      y = "y_position", 
+                      colour = "significant",
+                      group="y_position")) +
     # zebra stripe background for readability
     geom_ribbon(data=strip_data,
-                inherit.aes = FALSE, show.legend = FALSE,
+                inherit.aes = FALSE, 
+                show.legend = FALSE,
                 aes(x=x, ymin=ymin, ymax=ymax, group=y_position, fill=fill)) +
     scale_fill_manual(name = 'fill', values = c("gray100", "gray95")) +
-    scale_colour_manual(name = 'significant', 
-                        values = setNames(c("gray50", 
-                                            "black", "blue", "green",
-                                            "black", "slateblue1", "sienna1",
-                                            "springgreen3", "slateblue3", "sienna3", 
-                                            "springgreen4", "slateblue4", "sienna4"),
-                                          c("not significant", 
-                                            "initial", "mid", "late",
-                                            "early", "perturbed G", "perturbed M",
-                                            "mid C", "mid G", "mid M",
-                                            "late C", "late G", "late M")
-                            )) + 
-    geom_jitter(width = 0, height = 0.10) + 
+    scale_colour_manual(name = 'significant', values = all_cluster_colors) +
+    geom_jitter(width = 0, height = 0.10, alpha = 0.3) + 
     facet_grid(cols = vars(test_id)) + 
     scale_y_discrete(taxrank, limits=rev(names(refer_y_pos))) +
-    scale_x_discrete("Effect Size", limits=c(-1, 0, 1)) + 
+    scale_x_continuous("Effect Size", breaks = c(-1, 0, 1)) + 
     geom_vline(xintercept=1, linetype="dotted", color="gray70", size=1) +
     geom_vline(xintercept=-1, linetype="dotted", color="gray70", size=1) +
     theme_set(theme_classic()) + 
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    theme(strip.text.x = element_text(angle = 90)) +
     theme(legend.position = "none",
-          panel.spacing = unit(0.5, "lines"),
-          panel.border = element_rect(color = "black", fill = NA, size = 1.5), 
+          panel.spacing = unit(0.1, "lines"),
+          panel.border = element_rect(color = "black", fill = NA, size = 1.0), 
           strip.background = element_rect(color = "black", size = 1))
-  print(g)  
 }
 ```
 
@@ -387,7 +422,7 @@ unique(ALDEx2_results$test_id)
 ## Cluster level
 
 ```{r}
-test_ids <- c("p_vs_m", "p_vs_l", "p_vs_m")
+test_ids <- c("l_vs_e", "l_vs_m", "l_vs_p", "e_vs_m", "e_vs_p", "m_vs_p")
 get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "genus")
 get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "order")
 get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "class")
@@ -395,14 +430,40 @@ get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "cla
 ## Focused Cluster level
 
 ```{r}
-test_ids <- c("pG_vs_pM", "mC_vs_mM", "mC_vs_mG", "mG_vs_mM", "lC_vs_lM", "lC_vs_lG", "lG_vs_lM")
+test_ids <- c("lC_vs_e", "lC_vs_mC", "lC_vs_pM", "lC_vs_mM", "lC_vs_lM", "lC_vs_pG", "lC_vs_mG", "lC_vs_lG", 
+              "e_vs_mC", "e_vs_pM", "e_vs_mM", "e_vs_lM", "e_vs_pG", "e_vs_mG", "e_vs_lG", 
+              "mC_vs_pM", "mC_vs_mM", "mC_vs_lM", "mC_vs_mG", "mC_vs_lG", 
+              "pM_vs_mM", "pM_vs_pG", "pM_vs_mG", "pM_vs_lG", 
+              "mM_vs_lM", "mM_vs_pG", "mM_vs_mG", "mM_vs_lG", 
+              "lM_vs_pG", "lM_vs_mG", "lM_vs_lG", 
+              "pG_vs_mG", "pG_vs_lG", 
+              "mG_vs_lG")
 get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "genus", plot_name=plot_name)
 get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "order", plot_name=plot_name)
 get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "class", plot_name=plot_name)
 ```
 
 ```{r}
-test_ids <- c("lC_vs_lM", "lC_vs_lG", "lC_vs_pM", "lC_vs_pG", "lC_vs_mC", "lC_vs_mG", "lC_vs_mM")
+test_ids <- c("lC_vs_e", "lC_vs_mC", "lC_vs_pM", "lC_vs_mM", "lC_vs_lM", "lC_vs_pG", "lC_vs_mG", "lC_vs_lG",
+              "mC_vs_pM", "mC_vs_mM", "mC_vs_lM", "mC_vs_mG", "mC_vs_lG")
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "genus", plot_name=plot_name)
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "order", plot_name=plot_name)
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "class", plot_name=plot_name)
+```
+
+```{r}
+test_ids <- c("lC_vs_e", "e_vs_mC", "e_vs_pM", "e_vs_mM", "e_vs_lM", "e_vs_pG", "e_vs_mG", "e_vs_lG")
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "genus", plot_name=plot_name)
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "order", plot_name=plot_name)
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "class", plot_name=plot_name)
+```
+
+```{r}
+test_ids <- c("pM_vs_mM", "pM_vs_pG", "pM_vs_mG", "pM_vs_lG", 
+              "mM_vs_lM", "mM_vs_pG", "mM_vs_mG", "mM_vs_lG", 
+              "lM_vs_pG", "lM_vs_mG", "lM_vs_lG", 
+              "pG_vs_mG", "pG_vs_lG", 
+              "mG_vs_lG")
 get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "genus", plot_name=plot_name)
 get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "order", plot_name=plot_name)
 get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "class", plot_name=plot_name)
