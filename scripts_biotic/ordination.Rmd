@@ -1,0 +1,910 @@
+---
+title: "Ordination"
+output: html_notebook
+author: Gati Aher
+date: 02/12/2022
+---
+
+Goal: explore sample gradient patterns and identify strong clusters
+
+References
+General
+* Follow Professor Nicholas Ollberding's [Introduction to the Statistical Analysis of Microbiome Data in R](https://www.nicholas-ollberding.com/post/introduction-to-the-statistical-analysis-of-microbiome-data-in-r/)
+
+Phyloseq:
+* [Importing phyloseq Data](https://joey711.github.io/phyloseq/import-data.html)
+* [How to save the phyloseq object generated in dada2' tutorial for later use #107](https://github.com/benjjneb/dada2/issues/107)
+* [Functions for Accessing and (Pre)Processing Dat](https://joey711.github.io/phyloseq/preprocess.html)
+* [Bonus: Handoff to phyloseq](http://benjjneb.github.io/dada2/tutorial.html)
+
+# Install Packages
+
+```{r}
+# .cran_packages <- c("tidyverse", "cowplot", "picante", "vegan", "HMP", "dendextend", "rms", "devtools")
+# .inst <- .cran_packages %in% installed.packages()
+# if(any(!.inst)) {
+#   install.packages(.cran_packages[!.inst])
+# }
+```
+
+```{r}
+# .bioc_packages <- c("phyloseq", "Biostrings", "DESeq2", "microbiome", "metagenomeSeq", "ALDEx2")
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(.bioc_packages, version = "3.14")
+```
+
+# Loading Required Packages
+
+```{r}
+library("ggplot2"); packageVersion("ggplot2") # plotting
+```
+```{r}
+library("tidyverse"); packageVersion("tidyverse") # util              
+```
+```{r}
+library("dplyr"); packageVersion("dplyr") # util
+```
+```{r}
+library("phyloseq"); packageVersion("phyloseq") # data object                 
+```
+```{r}
+library("ape"); packageVersion("ape") # taxa string manipulation
+```
+```{r}
+library(microbiome); packageVersion("microbiome") # clr transformation
+```
+
+```{r}
+library(dendextend); packageVersion("dendextend") # extend customization of dendograms
+```
+
+```{r}
+library(vegan); packageVersion("vegan") # bray-curtis and other metrics
+```
+
+```{r}
+# Manipulation and visualization of taxonomic data, particularly those from amplicon metagenomics research. (Foster, Sharpton, and Grünwald 2017)
+library(metacoder); packageVersion("metacoder")
+```
+
+
+```{r}
+# defines taxonomic classes and functions to manipulate them. The goal is to use these classes as low level fundamental taxonomic classes that other R packages can build on and use. This is used by metacoder. 
+library(taxa); packageVersion("taxa")
+```
+
+---
+
+# Initialization
+
+```{r}
+# ggplot2 package theme set
+theme_set(theme_bw())
+
+# control randomization
+set.seed(42)
+
+# save outputs
+raw_location = "../data/raw/biotic/"
+save_location = "../data/processed_biotic_49OTUs/"
+
+# PARAMETERS
+MIN_SAMPLE_RC = 5000 # only keep samples with at least 5k reads
+MIN_PERCENT_IN_ANY_SAMPLE = 0.1 / 100 # only keep taxa that occurred at an abundance of greater than 0.1% in any sample
+MIN_OCCURANCES_ACROSS_PERCENTAGE_OF_SAMPLES = 0.20 # only keep taxa that occurred in at least 20% of samples
+```
+
+# Phyloseq Data Object
+
+## Turn CSV into Phyloseq Data Object
+
+```{r}
+otu_mat <- as.matrix(read.table(file = paste(raw_location, 'processed_OTU_counts.tsv', sep = ""), sep = '\t', header = TRUE, row.names = 1))
+tax_mat <- as.matrix(read.table(file = paste(raw_location, 'processed_taxonomy_table.tsv', sep = ""), sep = '\t', header = TRUE, row.names = 1))
+sample_meta <- read.table(file = paste(raw_location, 'processed_sample_metadata.tsv', sep = ""), header = TRUE, sep = '\t', row.names = 1)
+sample_meta
+```
+
+```{r}
+unique(sample_meta$day)
+```
+```{r}
+unique(sample_meta$series)
+```
+
+```{r}
+# data types
+sample_meta$numerical_day <- sample_meta$day
+sample_meta$day <- factor(sample_meta$day, levels=c("0", "3", "4", "5", "7", "10", "11", "14", "15", 
+                                                    "50", "100", "200"))
+
+sample_meta$series <- factor(sample_meta$series, levels=c("F", "Fa", "Fn",
+                                                          "D", "FD", "D_start", 
+                                                          "LF", "LFa", "LF_start"))
+sample_meta
+```
+
+```{r}
+# # cluster
+# sample_meta$cluster <- factor(sample_meta$cluster, levels=c("early", "mid", "late", "perturbed"))
+# # growth phase
+# sample_meta$growth.phase <- factor(sample_meta$growth.phase, levels=c("early", "mid C:C", "late C:C", 
+#                                                         "perturbed G", "mid G:C", "late G:C", 
+#                                                         "perturbed M", "mid M:C", "late M:C"))
+# 
+# # get phylogenetic tree
+# tree <- ape::read.tree(paste(raw_location, "MUSCLE_alignment_ML_tree_all_OTUs", sep=""))
+
+class(otu_mat)
+class(tax_mat)
+class(sample_meta)
+```
+```{r}
+sample_meta
+```
+
+```{r}
+OTU = otu_table(otu_mat, taxa_are_rows = TRUE)
+TAX = tax_table(tax_mat)
+ps_all = phyloseq(OTU, TAX)
+sample_data(ps_all) <- sample_meta
+ps_all
+```
+
+```{r}
+sample_data(ps_all)
+```
+
+## Cleaning
+
+```{r}
+# check that all samples have at least 5k reads
+(all(phyloseq::sample_sums(ps_all) > MIN_SAMPLE_RC))
+# only keep taxa that occurred at an abundance of greater than 0.1% in any sample
+ps_rel_abund = phyloseq::transform_sample_counts(ps_all, function(x){x / sum(x)})
+(ps_all <- phyloseq::prune_taxa(rowSums(otu_table(ps_rel_abund) > MIN_PERCENT_IN_ANY_SAMPLE) > 0L
+                           , ps_all))
+# only keep taxa that occurred in at least 20% of samples
+(ps_all <- phyloseq::prune_taxa(rowSums(otu_table(ps_all) > 0L) > length(sample_names(ps_all)) * MIN_OCCURANCES_ACROSS_PERCENTAGE_OF_SAMPLES
+                           , ps_all))
+
+# Save
+saveRDS(ps_all, paste(save_location, "phyloseq_all.rds", sep = ""))
+```
+
+## Filter out odd one sampleID == "F_000A"
+
+```{r}
+(ps <- phyloseq::subset_samples(ps_all, RC != 47411)) # read count for F_000A
+(ps <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps) > 0, ps))
+
+# Save
+saveRDS(ps, paste(save_location, "phyloseq.rds", sep = ""))
+```
+
+```{r}
+# Get CLR transform values
+(ps_clr <- microbiome::transform(ps, "clr"))
+# Save
+phyloseq::otu_table(ps_clr)[1:5, 1:5]
+write.csv(phyloseq::otu_table(ps_clr), paste(save_location, "OTU_counts_clean_clr.csv", sep = ""))
+```
+
+## Filter out starts
+
+```{r}
+unique(sample_meta$series)
+```
+```{r}
+unique(sample_meta$experiment)
+```
+
+```{r}
+# Get a subsection of only samples of perturbation experiments (not starts)
+(ps_perturbed <- phyloseq::subset_samples(ps, experiment == "none" | 
+                                            experiment == "native_Rhodobacter" | 
+                                            experiment == "new_Rubrivivax"))
+(ps_perturbed <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_perturbed) > 0, ps_perturbed))
+
+ps_perturbed %>%
+  sample_data %>%
+  dplyr::count(series)
+
+saveRDS(ps_perturbed, paste(save_location, "phyloseq_perturbed.rds", sep=""))
+```
+
+```{r}
+# Get a subsection of only samples of F and D perturbation experiments (not LF)
+(ps_perturbed_FD <- phyloseq::subset_samples(ps_perturbed, series == "D" | 
+                                            series == "F" | 
+                                            series == "Fn" |
+                                            series == "Fa" |
+                                            series == "FD"))
+(ps_perturbed_FD <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_perturbed_FD) > 0, ps_perturbed_FD))
+
+ps_perturbed_FD %>%
+  sample_data %>%
+  dplyr::count(series)
+
+saveRDS(ps_perturbed_FD, paste(save_location, "phyloseq_perturbed_FD.rds", sep=""))
+```
+
+---
+
+# Aes
+
+```{r}
+# color - days
+color_day = c(
+    "0" = "#B2E5EA", # lightest
+    "3" = "#59D0E9", 
+    "4" = "#00BAE7",
+    "5" = "#00BAE7",
+    "7" = "#0E6FA0",
+    "10" = "#012652",
+    "11" = "#012652",
+    "14" = "#01091C",
+    "15" = "#01091C"
+    )
+
+# # color - growth.phase
+# color_growth.phase = c(
+#   "early" = "black",
+#   "mid C:C" = "springgreen3",
+#   "late C:C" = "springgreen4",
+#   "perturbed G" = "steelblue1",
+#   "mid G:C" = "steelblue3",
+#   "late G:C" = "steelblue4",
+#   "perturbed M" = "sienna1",
+#   "mid M:C" = "sienna3",
+#   "late M:C" = "sienna4"
+#   )
+
+# shape - series
+shape_series = c(
+  "F" = 17, # triangle
+  "Fa" = 8, # star
+  "Fn" = 16, # circle
+  "D" = 15, # square
+  "FD" = 18 # rhombus
+  )
+
+
+# # shape - carbon
+# shape_carbon = c(
+#   "original" = 4,
+#   "cellulose" = 16,
+#   "glucose" = 18,
+#   "malate" = 15
+# )
+# # shape - transfer
+# shape_transfer = c(
+#     "C0C" = 4,
+#     "1C" = 10,
+#     "2C" = 16,
+#     "1G" = 0,
+#     "2G" = 12,
+#     "3G" = 15,
+#     "1M" = 5,
+#     "2M" = 9,
+#     "3M" = 18
+#   )
+# # shape - growth phase
+# shape_growth.phase = c(
+#   "early" = 1,
+#   "mid C:C" = 16,
+#   "late C:C" = 16,
+#   "perturbed G" = 15,
+#   "mid G:C" = 15,
+#   "late G:C" = 15,
+#   "perturbed M" = 17,
+#   "mid M:C" = 17,
+#   "late M:C" = 17
+#   )
+
+# color - genus
+```
+
+# Load Phyloseq Data Object
+
+```{r}
+ps <- readRDS(paste(save_location, "phyloseq.rds", sep=""))
+ps
+```
+```{r}
+# write.csv2(phyloseq::tax_table(ps), file = paste(save_location, "/filt_tax.csv", sep = ""))
+```
+
+```{r}
+sample_data(ps)
+```
+
+# Visualize Metacoder 
+
+## Plot metacoder - all
+
+```{r}
+# convert to taxmap format 
+taxmap <- parse_phyloseq(ps)
+taxmap
+```
+
+
+```{r}
+set.seed(42)
+taxmap %>%
+heat_tree(node_label = taxon_names,
+          node_size = n_obs,
+          node_color = n_obs,
+          node_color_axis_label = "OTU count",
+          layout = "da",
+          initial_layout = "re",
+          output_file = paste(save_location, "/metacoder_differential_abundance/biotic_all.png", sep = ""),
+          title = "Biotic - All")
+```
+
+```{r}
+# convert to taxmap format 
+taxmap_perturbed <- parse_phyloseq(ps_perturbed_FD)
+set.seed(42)
+taxmap_perturbed %>%
+heat_tree(node_label = taxon_names,
+          node_size = n_obs,
+          node_color = n_obs,
+          node_color_axis_label = "OTU count",
+          layout = "da",
+          initial_layout = "re",
+          output_file = paste(save_location, "/metacoder_differential_abundance/biotic_perturbed_FD.png", sep = ""),
+          title = "Biotic - Perturbed FD")
+```
+
+# Visualize Bar Chart Counts
+
+```{r}
+ps %>% 
+  sample_data %>%
+  dplyr::count(series)
+```
+
+## Visualize Raw Counts
+
+```{r}
+# Plot class
+phyloseq::plot_bar(ps, fill = "class") +
+  geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
+  labs(x = "", y = "Counts\n") +
+  facet_wrap("series", scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+## Visualize Relative Abundances
+
+```{r}
+#Get count of genus
+table(phyloseq::tax_table(ps)[, "genus"])
+```
+
+```{r}
+length(unique((phyloseq::tax_table(ps)[, "genus"])))
+```
+
+```{r}
+#Get count of family
+table(phyloseq::tax_table(ps)[, "family"])
+```
+
+```{r}
+length(unique((phyloseq::tax_table(ps)[, "family"])))
+```
+```{r}
+#Get count of order
+table(phyloseq::tax_table(ps)[, "order"])
+```
+
+
+```{r}
+#Get count of class
+table(phyloseq::tax_table(ps)[, "class"])
+```
+
+```{r}
+#Transform to relative abundance
+ps_rel_abund = phyloseq::transform_sample_counts(ps, function(x){x / sum(x)})
+phyloseq::otu_table(ps)[1:5, 1:5]
+phyloseq::otu_table(ps_rel_abund)[1:5, 1:5]
+```
+
+```{r}
+# Plot genus
+phyloseq::plot_bar(ps_rel_abund, fill = "genus") +
+  geom_bar(aes(color = genus, fill = genus), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap("series", scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+
+# Plot family
+phyloseq::plot_bar(ps_rel_abund, fill = "family") +
+  geom_bar(aes(color = family, fill = family), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap("series", scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+
+# Plot order
+phyloseq::plot_bar(ps_rel_abund, fill = "order") +
+  geom_bar(aes(color = order, fill = order), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap("series", scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+
+# Plot class
+phyloseq::plot_bar(ps_rel_abund, fill = "class") +
+  geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap("series", scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+
+# Plot phylum
+phyloseq::plot_bar(ps_rel_abund, fill = "phylum") +
+  geom_bar(aes(color = phylum, fill = phylum), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap("series", scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+## Visualize CLR Transformed
+
+```{r}
+# Plot class
+phyloseq::plot_bar(ps_clr, fill = "class") +
+  geom_bar(aes(color = class, fill = class), stat = "identity", position = "stack") +
+  labs(x = "", y = "Centered Log Ratio\n") +
+  facet_wrap("series", scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+# Correlation Clustering
+
+## Aitchison Distance PCA
+
+```{r}
+plot_clr_pca <- function(ps, taxrank="none", color="cluster") {
+  #PCA via phyloseq
+  if (taxrank == "none") {
+    ord_clr <- ps %>%
+      microbiome::transform("clr") %>%
+      phyloseq::ordinate("RDA")
+  } else {
+    ord_clr <- ps %>%
+      tax_glom(taxrank = taxrank, NArm = TRUE) %>% 
+      microbiome::transform("clr") %>%
+      phyloseq::ordinate("RDA")
+  }
+  
+  #Scale axes and plot ordination
+  clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
+  clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
+  phyloseq::plot_ordination(ps, ord_clr, type="samples", color=color) +
+    geom_point(size = 2) +
+    coord_fixed(clr2 / clr1) +
+    stat_ellipse(aes(group = series), linetype = 2)
+  
+  # #Plot scree plot
+  # phyloseq::plot_scree(ord_clr) + 
+  #   geom_bar(stat="identity", fill = "blue") +
+  #   labs(x = "\nAxis", y = "Proportion of Variance\n")
+}
+```
+
+```{r}
+plot_clr_pca(ps, "none", color="series")
+plot_clr_pca(ps, "none", color="day")
+plot_clr_pca(ps, "none", color="numerical_day")
+```
+```{r}
+plot_clr_pca(ps_perturbed, "none", color="series")
+plot_clr_pca(ps_perturbed, "none", color="day")
+plot_clr_pca(ps_perturbed, "none", color="numerical_day")
+```
+
+```{r}
+plot_clr_pca(ps_perturbed_FD, "none", color="series")
+plot_clr_pca(ps_perturbed_FD, "none", color="day")
+plot_clr_pca(ps_perturbed_FD, "none", color="numerical_day")
+```
+
+
+```{r}
+# LF and LF alien alone
+ps_LFs <- phyloseq::subset_samples(ps, series == "LF" | series == "LFa")
+ps_LFs <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_LFs) > 0, ps_LFs)
+plot_clr_pca(ps_LFs, "none", color="series")
+plot_clr_pca(ps_LFs, "none", color="day")
+plot_clr_pca(ps_LFs, "none", color="numerical_day")
+```
+
+```{r}
+# LF alone
+ps_LF <- phyloseq::subset_samples(ps, series == "LF")
+ps_LF <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_LF) > 0, ps_LF)
+plot_clr_pca(ps_LF, "none", color="series")
+plot_clr_pca(ps_LF, "none", color="day")
+plot_clr_pca(ps_LF, "none", color="numerical_day")
+```
+
+```{r}
+# LF alien alone
+ps_LFa <- phyloseq::subset_samples(ps, series == "LFa")
+ps_LFa <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_LFa) > 0, ps_LFa)
+plot_clr_pca(ps_LFa, "none", color="series")
+plot_clr_pca(ps_LFa, "none", color="day")
+plot_clr_pca(ps_LFa, "none", color="numerical_day")
+```
+
+```{r}
+# D and FD alone
+ps_Ds <- phyloseq::subset_samples(ps, series == "D" | series == "FD")
+ps_Ds <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_Ds) > 0, ps_Ds)
+plot_clr_pca(ps_Ds, "none", color="series")
+plot_clr_pca(ps_Ds, "none", color="day")
+plot_clr_pca(ps_Ds, "none", color="numerical_day")
+```
+
+```{r}
+# D alone
+ps_D <- phyloseq::subset_samples(ps, series == "D")
+ps_D <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_D) > 0, ps_D)
+plot_clr_pca(ps_D, "none", color="series")
+plot_clr_pca(ps_D, "none", color="day")
+plot_clr_pca(ps_D, "none", color="numerical_day")
+```
+
+```{r}
+# merged FD alone
+ps_FD <- phyloseq::subset_samples(ps, series == "FD")
+ps_FD <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_FD) > 0, ps_FD)
+plot_clr_pca(ps_FD, "none", color="series")
+plot_clr_pca(ps_FD, "none", color="day")
+plot_clr_pca(ps_FD, "none", color="numerical_day")
+```
+
+```{r}
+# F Fa Fn alone
+ps_Fs <- phyloseq::subset_samples(ps, series == "F" | series == "Fa" | series == "Fn")
+ps_Fs <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_Fs) > 0, ps_Fs)
+plot_clr_pca(ps_Fs, "none", color="series")
+plot_clr_pca(ps_Fs, "none", color="day")
+plot_clr_pca(ps_Fs, "none", color="numerical_day")
+```
+
+```{r}
+# F alone
+ps_F <- phyloseq::subset_samples(ps, series == "F")
+ps_F <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_F) > 0, ps_F)
+plot_clr_pca(ps_F, "none", color="series")
+plot_clr_pca(ps_F, "none", color="day")
+plot_clr_pca(ps_F, "none", color="numerical_day")
+```
+
+```{r}
+# Fa alone
+ps_Fa <- phyloseq::subset_samples(ps, series == "Fa")
+ps_Fa <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_Fa) > 0, ps_Fa)
+plot_clr_pca(ps_Fa, "none", color="series")
+plot_clr_pca(ps_Fa, "none", color="day")
+plot_clr_pca(ps_Fa, "none", color="numerical_day")
+```
+
+```{r}
+# Fn alone
+ps_Fn <- phyloseq::subset_samples(ps, series == "Fn")
+ps_Fn <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_Fn) > 0, ps_Fn)
+plot_clr_pca(ps_Fn, "none", color="series")
+plot_clr_pca(ps_Fn, "none", color="day")
+plot_clr_pca(ps_Fn, "none", color="numerical_day")
+```
+
+```{r}
+# just for comparison: all F alone (includes sample F_000A)
+ps_all_F <- phyloseq::subset_samples(ps_all, series == "F" | series == "Fa" | series == "Fn")
+ps_all_F <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_all_F) > 0, ps_all_F)
+plot_clr_pca(ps_all_F, "none", color="series")
+plot_clr_pca(ps_all_F, "none", color="day")
+plot_clr_pca(ps_all_F, "none", color="numerical_day")
+```
+```{r}
+sample_data(ps_Fs)$numerical_day
+```
+
+
+## Pretty PCA Plots
+
+```{r}
+plot_pretty_clr_pca <- function(ps, taxrank="none") {
+  #PCA via phyloseq
+  if (taxrank == "none") {
+    ord_clr <- ps %>%
+      microbiome::transform("clr") %>%
+      phyloseq::ordinate("RDA")
+  } else {
+    ord_clr <- ps %>%
+      tax_glom(taxrank = taxrank, NArm = TRUE) %>% 
+      microbiome::transform("clr") %>%
+      phyloseq::ordinate("RDA")
+  }
+  
+  # make data frame
+  clr_pca.data <- data.frame(PC1=ord_clr$CA$u[,1], PC2=ord_clr$CA$u[,2])
+  meta <- data.frame(phyloseq::sample_data(ps))
+  clr_pca.data <- merge(clr_pca.data, meta, by="row.names")
+  clr_pca.data$day <- as.numeric(clr_pca.data$numerical_day)
+  
+  #Scale axes and plot ordination
+  clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
+  clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
+  ggplot(clr_pca.data, aes(x = PC1, y = PC2)) + 
+    theme_classic() + 
+    geom_point(
+      mapping = aes(colour = day, shape = series),
+      size = 3,
+      alpha = 5/6
+    ) +
+    coord_fixed(clr2 / clr1) +
+    stat_ellipse(aes(group = series), linetype = 2) +
+    scale_colour_gradientn(limits = c(0,15),
+      colours = c("#B2E5EA", "#59D0E9", "#00BAE7",
+                  "#0E6FA0", "#012652", "#01091C")) +
+    # scale_colour_distiller(direction = -1) +
+    # scale_color_manual(values = color_day) +
+    scale_shape_manual(values = shape_series, breaks = unique(clr_pca.data$series)) +
+    xlab(sprintf("PC 1 %s%%", round(100 * clr1, 2))) +
+    ylab(sprintf("PC 2 %s%%", round(100 * clr2, 2))) # +
+    # ggtitle(sprintf("PCA taxrank: %s", taxrank))
+  
+  # #Plot scree plot
+  # phyloseq::plot_scree(ord_clr) + 
+  #   geom_bar(stat="identity", fill = "blue") +
+  #   labs(x = "\nAxis", y = "Proportion of Variance\n")
+}
+```
+
+```{r}
+plot_clr_pca <- function(ps, taxrank="none") {
+  #PCA via phyloseq
+  if (taxrank == "none") {
+    ord_clr <- ps %>%
+      microbiome::transform("clr") %>%
+      phyloseq::ordinate("RDA")
+  } else {
+    ord_clr <- ps %>%
+      tax_glom(taxrank = taxrank, NArm = TRUE) %>% 
+      microbiome::transform("clr") %>%
+      phyloseq::ordinate("RDA")
+  }
+  
+  # make data frame
+  clr_pca.data <- data.frame(PC1=ord_clr$CA$u[,1], PC2=ord_clr$CA$u[,2])
+  meta <- data.frame(phyloseq::sample_data(ps))
+  clr_pca.data <- merge(clr_pca.data, meta, by="row.names")
+  clr_pca.data$day <- as.numeric(clr_pca.data$numerical_day)
+  
+  #Scale axes and plot ordination
+  clr1 <- ord_clr$CA$eig[1] / sum(ord_clr$CA$eig)
+  clr2 <- ord_clr$CA$eig[2] / sum(ord_clr$CA$eig)
+  ggplot(clr_pca.data, aes(x = PC1, y = PC2)) + 
+    theme_classic() + 
+    geom_point(
+      mapping = aes(colour = series),
+      size = 3,
+      alpha = 5/6
+    ) +
+    coord_fixed(clr2 / clr1) +
+    # stat_ellipse(aes(group = series), linetype = 2) +
+    xlab(sprintf("PC 1 %s%%", round(100 * clr1, 2))) +
+    ylab(sprintf("PC 2 %s%%", round(100 * clr2, 2))) # +
+    # ggtitle(sprintf("PCA taxrank: %s", taxrank))
+  
+  # #Plot scree plot
+  # phyloseq::plot_scree(ord_clr) + 
+  #   geom_bar(stat="identity", fill = "blue") +
+  #   labs(x = "\nAxis", y = "Proportion of Variance\n")
+}
+```
+
+```{r}
+plot_pretty_clr_pca(ps_Fs, taxrank = "none")
+```
+
+```{r}
+plot_pretty_clr_pca(ps_F, taxrank = "none")
+```
+
+```{r}
+plot_pretty_clr_pca(ps_Fa, taxrank = "none")
+```
+
+```{r}
+plot_pretty_clr_pca(ps_Fn, taxrank = "none")
+```
+
+
+```{r}
+plot_pretty_clr_pca(ps_D, taxrank = "none")
+```
+
+```{r}
+plot_pretty_clr_pca(ps_FD, taxrank = "none")
+```
+
+
+```{r}
+plot_pretty_clr_pca(ps_perturbed_FD, taxrank = "none")
+plot_clr_pca(ps_perturbed_FD, taxrank = "none")
+```
+
+## CLR --> Ward Distance --> Clustering Dendogram
+
+```{r}
+get_ward <- function(ps, taxrank) {
+  #PCA via phyloseq
+  if (taxrank == "none") {
+    ps_clr <- ps %>%
+      microbiome::transform("clr")
+  } else {
+    ps_clr <- ps %>%
+      tax_glom(taxrank = taxrank, NArm = TRUE) %>% 
+      microbiome::transform("clr")
+  }
+  
+  #Get Aitchison distance matrix
+  ps_clr_otu <- data.frame(phyloseq::otu_table(ps_clr))
+  ps_clr_otu <- t(ps_clr_otu)
+  a_dist_clr <- vegan::vegdist(ps_clr_otu,  method = "euclidean")
+  
+  #Save as dendrogram
+  ward <- as.dendrogram(hclust(a_dist_clr, method = "ward.D2"))
+  
+  # #Provide color codes
+  # meta <- data.frame(phyloseq::sample_data(ps))
+  # colorCode <- c(C = "green", M = "orange", G = "blue")
+  # labels_colors(ward) <- colorCode[meta$series][order.dendrogram(ward)]
+  # 
+  # #Plot color by code
+  # par(cex = 0.4)
+  # ward %>% plot(main = sprintf("Aitchison on Centered Log-Ratios \ntaxrank: %s", taxrank))
+  
+  #Plot color by cluster
+  ward %>% set("labels_cex", 1) %>% set("labels_col", value = c(1, 2), k=2) %>% 
+     plot(main = sprintf("Aitchison: Color labels per cluster \ntaxrank: %s", taxrank))
+  
+  # #Plot color by cluster
+  # ward %>% set("labels_cex", 1) %>% set("labels_col", value = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), k=9) %>% 
+  #    plot(main = sprintf("Aitchison: Color labels per cluster \ntaxrank: %s", taxrank))
+  
+  return(ward)
+}
+```
+
+```{r}
+(ward_OTU <- get_ward(ps_Fs, "none"))
+```
+
+```{r}
+# (clusters <- ward_cellulose_OTU %>% set("labels_col", value = c("late", "late", "mid"), k=3) %>% labels_colors)
+# write.csv(clusters, file=paste(save_location, "cluster_decisions.csv", sep=""), quote=FALSE)
+```
+
+# Appendix
+
+## Relative Abundance --> Bray-Curtis Distance --> PCoA & Dendogram
+
+```{r}
+#PCA via phyloseq
+ord_bc <- phyloseq::ordinate(ps_rel_abund, "PCoA", "bray")
+bc_pca.data <- data.frame(PC1=ord_bc$vectors[,1], PC2=ord_bc$vectors[,2])
+meta <- data.frame(phyloseq::sample_data(ps_rel_abund))
+(bc_pca.data <- merge(bc_pca.data, meta, by="row.names"))
+bc_pca.data$day <- as.factor(bc_pca.data$day)
+#Plot scree plot
+phyloseq::plot_scree(ord_bc) + 
+  geom_bar(stat="identity", fill = "blue") +
+  labs(x = "\nAxis", y = "Proportion of Variance\n")
+
+# Examine eigenvalues and % prop. variance explained
+head(ord_bc$values$Eigenvalues)   
+sapply(ord_bc$values$Eigenvalues[1:5], function(x) x / sum(ord_bc$values$Eigenvalues))
+
+# plot
+clr1 <- ord_bc$values$Eigenvalues[1] / sum(ord_bc$values$Eigenvalues)
+clr2 <- ord_bc$values$Eigenvalues[2] / sum(ord_bc$values$Eigenvalues)
+ggplot(bc_pca.data, aes(x = PC1, y = PC2)) + 
+  theme_classic() + 
+  geom_point(
+    mapping = aes(colour = day, shape = carbon),
+    size = 2,
+    alpha = 5/6
+  ) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2) +
+  scale_color_manual(values = color_day) +
+  scale_shape_manual(values = shape_carbon) +
+  xlab(sprintf("PC 1 [%s%%]", round(100 * clr1, 2))) +
+  ylab(sprintf("PC 2 [%s%%]", round(100 * clr2, 2)))
+```
+
+
+```{r}
+# Generate distance matrix
+ps_cellulose_rel_abund <- phyloseq::subset_samples(ps, carbon =="cellulose")
+ps_cellulose_rel_abund <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps_cellulose_rel_abund) > 0, ps_cellulose_rel_abund)
+ord_bc_cellulose <- phyloseq::ordinate(ps_cellulose_rel_abund, "PCoA", "bray")
+bc_pca_cellulose.data <- data.frame(PC1=ord_bc_cellulose$vectors[,1], PC2=ord_bc_cellulose$vectors[,2])
+meta <- data.frame(phyloseq::sample_data(ps_cellulose_rel_abund))
+(bc_pca_cellulose.data <- merge(bc_pca_cellulose.data, meta, by="row.names"))
+bc_pca_cellulose.data$day <- as.factor(bc_pca_cellulose.data$day)
+#Plot scree plot
+phyloseq::plot_scree(ord_bc_cellulose) + 
+  geom_bar(stat="identity", fill = "blue") +
+  labs(x = "\nAxis", y = "Proportion of Variance\n")
+
+# plot
+clr1 <- ord_bc_cellulose$values$Eigenvalues[1] / sum(ord_bc_cellulose$values$Eigenvalues)
+clr2 <- ord_bc_cellulose$values$Eigenvalues[2] / sum(ord_bc_cellulose$values$Eigenvalues)
+
+ggplot(bc_pca_cellulose.data, aes(x = PC1, y = PC2)) + 
+  theme_classic() + 
+  geom_point(
+    mapping = aes(colour = day, shape = transfer),
+    size = 3,
+    alpha = 5/6
+  ) +
+  coord_fixed(clr2 / clr1) +
+  stat_ellipse(aes(group = carbon), linetype = 2) +
+  scale_color_manual(values = color_day) +
+  scale_shape_manual(values = shape_transfer) +
+  xlab(sprintf("PC 1 [%s%%]", round(100 * clr1, 2))) +
+  ylab(sprintf("PC 2 [%s%%]", round(100 * clr2, 2)))
+```
+
+```{r}
+#Extract OTU table and compute BC
+ps_rel_otu <- data.frame(phyloseq::otu_table(ps_rel_abund))
+ps_rel_otu <- t(ps_rel_otu)
+bc_dist <- vegan::vegdist(ps_rel_otu, method = "bray")
+as.matrix(bc_dist)[1:5, 1:5]
+```
+
+```{r}
+#Save as dendrogram
+ward <- as.dendrogram(hclust(bc_dist, method = "ward.D2"))
+#Provide color codes
+meta <- data.frame(phyloseq::sample_data(ps_rel_abund))
+colorCode <- c(sC = "green", sM = "orange", sG = "blue")
+labels_colors(ward) <- colorCode[meta$series][order.dendrogram(ward)]
+#Plot
+par(cex = 0.4)
+ward %>% plot(main = "Bray-Curtis on Relative Abundance")
+
+# color by cluster
+ward %>% set("labels_cex", 1) %>% set("labels_col", value = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), k=9) %>% 
+   plot(main = "Bray-Curtis: Color labels \nper cluster")
+```
+
+## Using UniFrac
+
+```{r}
+#Generate distances
+ord_unifrac <- ordinate(ps_cellulose, method = "PCoA", distance = "wunifrac") 
+ord_unifrac_un <- ordinate(ps_cellulose, method = "PCoA", distance = "unifrac")   
+#Plot ordinations
+a <- plot_ordination(ps, ord_unifrac, color = "day") + geom_point(size = 2)
+b <- plot_ordination(ps, ord_unifrac_un, color = "day") + geom_point(size = 2)
+cowplot::plot_grid(a, b, nrow = 1, ncol = 2, scale = .9, labels = c("Weighted", "Unweighted"))
+```

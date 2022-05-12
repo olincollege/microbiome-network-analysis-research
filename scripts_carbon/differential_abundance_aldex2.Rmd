@@ -1,0 +1,512 @@
+---
+title: "differential abundance aldex2"
+output: html_notebook
+---
+
+Goal: since there is a significant difference in the composition of clusters, find out who is driving the difference
+
+Methods:
+* Wilcox Sum Rank Test
+* ALDEx2
+* ANCOM-BC
+
+Levels
+* Phylum
+* Class
+* Order
+* Family
+* Genus
+* Species
+* OTU
+
+# Install Packages
+
+```{r}
+# .cran_packages <- c("tidyverse", "cowplot", "picante", "vegan", "HMP", "dendextend", "rms", "devtools")
+# .inst <- .cran_packages %in% installed.packages()
+# if(any(!.inst)) {
+#   install.packages(.cran_packages[!.inst])
+# }
+```
+
+```{r}
+# .bioc_packages <- c("phyloseq", "Biostrings", "DESeq2", "microbiome", "metagenomeSeq", "ALDEx2", "ANCOMBC")
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(.bioc_packages, version = "3.14")
+```
+
+# Loading Required Packages
+
+```{r}
+library("ggplot2"); packageVersion("ggplot2") # plotting
+```
+```{r}
+library("tidyverse"); packageVersion("tidyverse") # util              
+```
+```{r}
+library("dplyr"); packageVersion("dplyr") # util
+```
+```{r}
+library("phyloseq"); packageVersion("phyloseq") # data object                 
+```
+```{r}
+library("ape"); packageVersion("ape") # taxa string manipulation
+```
+```{r}
+library(microbiome); packageVersion("microbiome") # clr transformation
+```
+```{r}
+library(dendextend); packageVersion("dendextend") # extend customization of dendograms
+```
+```{r}
+library(vegan); packageVersion("vegan") # bray-curtis and other metrics
+```
+
+```{r}
+library(ALDEx2); packageVersion("ALDEx2") # aldex2 test (compositional differential abundance)
+```
+# Initialization
+
+```{r}
+# ggplot2 package theme set
+theme_set(theme_bw())
+
+# control randomization
+set.seed(42)
+
+# save outputs
+save_location = "../data/processed_carbon_53OTUs/"
+```
+
+# Aes
+
+```{r}
+# color - days
+color_day = c(
+    "3" = "#B2E5EA", # lightest
+    "5" = "#00BAE7",
+    "7" = "#0E6FA0",
+    "10" = "#012652",
+    "20" = "#01091C"
+    )
+
+# color - growth.phase
+color_growth.phase = c(
+  "early" = "black",
+  "mid C:C" = "springgreen3",
+  "late C:C" = "springgreen4",
+  "perturbed G" = "steelblue1",
+  "mid G:C" = "steelblue3",
+  "late G:C" = "steelblue4",
+  "perturbed M" = "sienna1",
+  "mid M:C" = "sienna3",
+  "late M:C" = "sienna4"
+  )
+
+# shape - series
+shape_series = c(
+  "C0C" = 4,
+  "C" = 16,
+  "G" = 15,
+  "M" = 17
+  )
+# shape - carbon
+shape_carbon = c(
+  "original" = 4,
+  "cellulose" = 16,
+  "glucose" = 18,
+  "malate" = 15
+)
+# shape - transfer
+shape_transfer = c(
+    "C0C" = 4,
+    "1C" = 10,
+    "2C" = 16,
+    "1G" = 0,
+    "2G" = 12,
+    "3G" = 15,
+    "1M" = 5,
+    "2M" = 9,
+    "3M" = 18
+  )
+# shape - growth phase
+shape_growth.phase = c(
+  "early" = 1,
+  "mid C:C" = 16,
+  "late C:C" = 16,
+  "perturbed G" = 15,
+  "mid G:C" = 15,
+  "late G:C" = 15,
+  "perturbed M" = 17,
+  "mid M:C" = 17,
+  "late M:C" = 17
+  )
+
+# color - genus
+```
+
+# Load Phyloseq Data Object
+```{r}
+(ps <- readRDS(paste(save_location, "phyloseq.rds", sep="")))
+
+# Get Relative Abundance transform values
+ps_rel_abund = phyloseq::transform_sample_counts(ps, function(x){x / sum(x)})
+
+# Get CLR transform values
+ps_clr <- microbiome::transform(ps, "clr")
+```
+
+# ALDEx2 Test
+
+```{r}
+# data frame to store test results
+ALDEx2_results <- data.frame(matrix(nrow = 0, ncol = 4))
+
+# ALDEx2_results <- read.csv2(paste(save_location, "ALDEx2_results.csv", sep=""),
+#                            header=TRUE,
+#                            sep=",")
+# ALDEx2_results$X <- NULL
+# ALDEx2_results
+```
+
+
+## Example Output
+```{r}
+psa <- phyloseq::subset_samples(ps, cluster == "perturbed" | cluster == "mid")
+
+aldex2_da <- ALDEx2::aldex(
+    data.frame(phyloseq::otu_table(psa)), 
+    phyloseq::sample_data(psa)$cluster, 
+    mc.samples = 1000,
+    test="t", 
+    effect = TRUE, 
+    denom="iqlr")
+```
+
+## Helper Functions
+
+```{r}
+aldex2_on_cluster <- function(ps, test_id) {
+  #Run ALDEx2
+  aldex2_da <- ALDEx2::aldex(
+    data.frame(phyloseq::otu_table(ps)), 
+    phyloseq::sample_data(ps)$cluster, 
+    mc.samples = 1000,
+    test="t", 
+    effect = TRUE, 
+    denom="iqlr")
+  
+  #Note positive and negative treatment variable 
+  positive <- substr(
+    colnames(aldex2_da)[2], 
+    start = 9, 
+    stop = nchar(colnames(aldex2_da)[2])
+  )
+  
+  negative <- substr(
+    colnames(aldex2_da)[3], 
+    start = 9, 
+    stop = nchar(colnames(aldex2_da)[3])
+  )
+  
+  #Plot effect sizes
+  png(file=paste(save_location, "aldex2_differential_abundance/", 
+                 test_id, ".png", sep=""))
+  par(mfrow=c(1,2))
+  ALDEx2::aldex.plot(aldex2_da, type="MA", test="wilcox")
+  ALDEx2::aldex.plot(aldex2_da, type="MW", test="wilcox")
+  dev.off()
+  
+  #Clean up presentation
+  colnames(aldex2_da) <- paste("aldex2", colnames(aldex2_da), sep = "_")
+  sig_aldex2 <- aldex2_da %>%
+    rownames_to_column(var = "OTU") %>%
+    dplyr::select(OTU, aldex2_diff.btw, aldex2_diff.win, 
+                  aldex2_effect, aldex2_wi.ep, aldex2_wi.eBH)
+  
+  #Get significant names and values to data frame
+  sig_aldex2 <- merge(
+    x=sig_aldex2, 
+    y=phyloseq::tax_table(ps), 
+    by.x="OTU", by.y=0, all.x=TRUE)
+  
+  #Save treatment variable
+  sig_aldex2$aldex2_positive <- positive
+  sig_aldex2$aldex2_negative <- negative
+  
+  return(sig_aldex2)
+}
+
+aldex2_on_growth_phase <- function(ps, test_id) {
+  #Run ALDEx2
+  aldex2_da <- ALDEx2::aldex(
+    data.frame(phyloseq::otu_table(ps)), 
+    phyloseq::sample_data(ps)$growth.phase,
+    mc.samples = 1000,
+    test="t", 
+    effect = TRUE, 
+    denom="iqlr")
+  
+  #Note positive and negative treatment variable 
+  positive <- substr(
+    colnames(aldex2_da)[2], 
+    start = 9, 
+    stop = nchar(colnames(aldex2_da)[2])
+  )
+  
+  negative <- substr(
+    colnames(aldex2_da)[3], 
+    start = 9, 
+    stop = nchar(colnames(aldex2_da)[3])
+  )
+  
+  #Plot effect sizes
+  png(file=paste(save_location, "aldex2_differential_abundance/", 
+                 test_id, ".png", sep=""))
+  par(mfrow=c(1,2))
+  ALDEx2::aldex.plot(aldex2_da, type="MA", test="wilcox")
+  ALDEx2::aldex.plot(aldex2_da, type="MW", test="wilcox")
+  dev.off()
+  
+  #Clean up presentation
+  colnames(aldex2_da) <- paste("aldex2", colnames(aldex2_da), sep = "_")
+  sig_aldex2 <- aldex2_da %>%
+    rownames_to_column(var = "OTU") %>%
+    dplyr::select(OTU, aldex2_diff.btw, aldex2_diff.win, 
+                  aldex2_effect, aldex2_wi.ep, aldex2_wi.eBH)
+  
+  #Get significant names and values to data frame
+  sig_aldex2 <- merge(
+    x=sig_aldex2, 
+    y=phyloseq::tax_table(ps), 
+    by.x="OTU", by.y=0, all.x=TRUE)
+  
+  #Save treatment variable
+  sig_aldex2$aldex2_positive <- positive
+  sig_aldex2$aldex2_negative <- negative
+  
+  return(sig_aldex2)
+}
+```
+
+## Drivers
+* test at each taxrank
+
+```{r}
+rank_names(ps)
+```
+
+```{r}
+drive_aldex2_on_cluster <- function(ps, test_id) {
+  # data frame to store test results
+  results <- data.frame(matrix(nrow = 0, ncol = 4))
+  
+  # prune empty taxa
+  ps <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps) > 0, ps)
+  
+  tryCatch(
+      {
+        # perform once at OTU level
+        rows <- aldex2_on_cluster(ps, paste(test_id, "OTU", sep="_"))
+        if (nrow(rows) > 0) {
+          rows$taxrank <- "OTU"
+          results <- rbind(results, rows) 
+        }
+        print("OTU") # logging
+      },
+      error = function(cond) {
+        message("OTU-level TEST FAILED!")
+        message(cond)
+      }
+    )
+  
+  # aggregate at each taxrank
+  for (taxrank in rev(rank_names(ps)[-1])) {
+    ps.taxa <- tax_glom(ps, taxrank = taxrank, NArm = TRUE)
+    # skip if less than 10 taxa
+    if (nrow(tax_table(ps.taxa)) < 11) {
+      next
+    }
+    tryCatch(
+      {
+        # get result of test
+        rows <- aldex2_on_cluster(ps.taxa, paste(test_id, taxrank, sep="_"))
+        if (nrow(rows) > 0) {
+          rows$taxrank <- taxrank
+          results <- rbind(results, rows) 
+        }
+        print(taxrank) # logging
+      },
+      error = function(cond) {
+        message("TEST FAILED!")
+        message(cond)
+      }
+    )
+  }
+  
+  if (nrow(results) > 0) {
+    results$test_id <- test_id
+    results$level <- "cluster"
+  }
+  
+  return(results)
+}
+```
+
+
+```{r}
+drive_aldex2_on_growth_phase <- function(ps, test_id) {
+  # data frame to store test results
+  results <- data.frame(matrix(nrow = 0, ncol = 4))
+  
+  # prune empty taxa
+  ps <- phyloseq::prune_taxa(phyloseq::taxa_sums(ps) > 0, ps)
+  
+  tryCatch(
+      {
+        # perform once at OTU level
+        rows <- aldex2_on_growth_phase(ps, paste(test_id, "OTU", sep="_"))
+        if (nrow(rows) > 0) {
+          rows$taxrank <- "OTU"
+          results <- rbind(results, rows) 
+        }
+        print("OTU") # logging
+      },
+      error = function(cond) {
+        message("OTU-level TEST FAILED!")
+        message(cond)
+      }
+    )
+  
+  # aggregate at each taxrank
+  for (taxrank in rev(rank_names(ps)[-1])) {
+    ps.taxa <- tax_glom(ps, taxrank = taxrank, NArm = TRUE)
+    # skip if less than 10 taxa
+    if (nrow(tax_table(ps.taxa)) < 11) {
+      next
+    }
+    tryCatch(
+      {
+        # get result of test
+        rows <- aldex2_on_growth_phase(ps.taxa, paste(test_id, taxrank, sep="_"))
+        if (nrow(rows) > 0) {
+          rows$taxrank <- taxrank
+          results <- rbind(results, rows) 
+        }
+        print(taxrank) # logging
+      },
+      error = function(cond) {
+        message("TEST FAILED!")
+        message(cond)
+      }
+    )
+  }
+  
+  if (nrow(results) > 0) {
+    results$test_id <- test_id
+    results$level <- "growth.phase" 
+  }
+  
+  return(results)
+}
+```
+
+## Cluster -- Pair-wise Comparisons
+
+```{r}
+set.seed(42)
+combs <- combn(unique(sample_data(ps)$cluster), m=2, simplify=FALSE)
+for (c in combs) {
+  # get pair-wise combination
+  g1 <- as.character(c[1])
+  g2 <- as.character(c[2])
+  test_id <- paste(substr(g1, 1, 1), substr(g2, 1, 1), sep="_vs_")
+  # filter and run test
+  print(test_id)
+  rows <- drive_aldex2_on_cluster(
+    phyloseq::subset_samples(ps, cluster == g1 | cluster == g2), 
+    test_id)
+  if (nrow(rows) > 0) {
+    ALDEx2_results <- rbind(ALDEx2_results, rows)
+  }
+}
+```
+
+```{r}
+ALDEx2_results
+```
+
+```{r}
+unique(ALDEx2_results$test_id)
+```
+
+```{r}
+unique(ALDEx2_results$level)
+```
+
+```{r}
+ALDEx2_results_backup <- ALDEx2_results
+```
+
+## Focused Cluster -- Pair-wise Comparisons
+
+```{r}
+# rows <- drive_aldex2_on_growth_phase(
+#           phyloseq::subset_samples(ps, growth.phase == "mid C" | growth.phase == "perturbed G"),
+#           "test")
+# rows
+```
+
+```{r}
+set.seed(42)
+combs <- combn(unique(sample_data(ps)$growth.phase), m=2, simplify=FALSE)
+for (c in combs) {
+  # get pair-wise combination
+  g1 <- as.character(c[1])
+  g2 <- as.character(c[2])
+  test_id <- paste(g1, g2, sep=" vs ")
+  # # filter and run test
+  print(test_id)
+  # get result of test
+  rows <- drive_aldex2_on_growth_phase(
+          phyloseq::subset_samples(ps, growth.phase == g1 | growth.phase == g2), 
+          test_id)
+  
+  if (nrow(rows) > 0) {
+    ALDEx2_results <- rbind(ALDEx2_results, rows)
+  }
+}
+```
+
+### Save to .csv
+
+```{r}
+nrow(ALDEx2_results_backup)
+nrow(ALDEx2_results)
+```
+```{r}
+ALDEx2_results
+```
+
+
+```{r}
+unique(ALDEx2_results$test_id)
+```
+
+```{r}
+unique(ALDEx2_results$level)
+```
+
+```{r}
+# save to csv
+write.csv(ALDEx2_results, paste(save_location, "ALDEx2_results.csv", sep=""), quote = FALSE)
+```
+
+```{r}
+# save only significantly differentially abundant taxa
+ALDEx2_results %>%
+  filter(aldex2_wi.eBH < 0.05) %>%
+  write.csv(paste(save_location, "ALDEx2_results_TRUE.csv", sep=""), quote = FALSE)
+```
+

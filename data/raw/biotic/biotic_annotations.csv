@@ -1,0 +1,75 @@
+sampleID,sample_name,series,day,replicate,experiment,replicate (original)
+D_start_200A,LAZ_OLIN_Bv4v5--Olin_FCD_200A_Bv4v5,D_start,200,A,start 200,A
+D_start_200B,LAZ_OLIN_Bv4v5--Olin_FCD_200B_Bv4v5,D_start,200,B,start 200,B
+D_start_200C,LAZ_OLIN_Bv4v5--Olin_FCD_200C_Bv4v5,D_start,200,C,start 200,C
+D_011A,LAZ_OLIN_Bv4v5--Olin_FCD_Day_11A_Bv4v5,D,11,A,none,A
+D_011B,LAZ_OLIN_Bv4v5--Olin_FCD_Day_11B_Bv4v5,D,11,B,none,B
+D_003A,LAZ_OLIN_Bv4v5--Olin_FCD_Day_3A_Bv4v5,D,3,A,none,A
+D_003B,LAZ_OLIN_Bv4v5--Olin_FCD_Day_3B_Bv4v5,D,3,B,none,B
+D_005A,LAZ_OLIN_Bv4v5--Olin_FCD_Day_5A_Bv4v5,D,5,A,none,A
+D_005B,LAZ_OLIN_Bv4v5--Olin_FCD_Day_5B_Bv4v5,D,5,B,none,B
+D_007A,LAZ_OLIN_Bv4v5--Olin_FCD_Day_7A_Bv4v5,D,7,A,none,A
+D_007B,LAZ_OLIN_Bv4v5--Olin_FCD_Day_7B_Bv4v5,D,7,B,none,B
+F_000A,LAZ_OLIN_Bv4v5--Olin_FCF_0_Bv4v5r,F,0,A,none,A
+LF_start_100A,LAZ_OLIN_Bv4v5--Olin_FCF_100a_415_Bv4v5,LF_start,100,A,start 100,A
+LF_start_100B,LAZ_OLIN_Bv4v5--Olin_FCF_100b_415_Bv4v5,LF_start,100,B,start 100,B
+LF_start_100C,LAZ_OLIN_Bv4v5--Olin_FCF_100c_415_Bv4v5,LF_start,100,C,start 100,C
+LF_start_200A,LAZ_OLIN_Bv4v5--Olin_FCF_200a_513_Bv4v5,LF_start,200,A,start 200,A
+LF_start_200B,LAZ_OLIN_Bv4v5--Olin_FCF_200b_513_Bv4v5,LF_start,200,B,start 200,B
+LF_start_200B2,LAZ_OLIN_Bv4v5--Olin_FCF_200b_Bv4v5,LF_start,200,B2,start 200,B
+LF_start_200C,LAZ_OLIN_Bv4v5--Olin_FCF_200c_513_Bv4v5,LF_start,200,C,start 200,C
+LF_start_200C2,LAZ_OLIN_Bv4v5--Olin_FCF_200c_Bv4v5,LF_start,200,C2,start 200,C
+LF_start_050A,LAZ_OLIN_Bv4v5--Olin_FCF_50a_417_Bv4v5,LF_start,50,A,start 50,A
+LF_start_050B,LAZ_OLIN_Bv4v5--Olin_FCF_50b_415_Bv4v5,LF_start,50,B,start 50,B
+LF_start_050B2,LAZ_OLIN_Bv4v5--Olin_FCF_50b_417_Bv4v5,LF_start,50,B2,start 50,B
+LF_000B,LAZ_OLIN_Bv4v5--Olin_FCF_day_0B_Bv4v5,LF,0,B,none,B
+LF_011A,LAZ_OLIN_Bv4v5--Olin_FCF_day_11A_Bv4v5,LF,11,A,none,A
+LF_011B,LAZ_OLIN_Bv4v5--Olin_FCF_day_11B_Bv4v5,LF,11,B,none,B
+LF_003A,LAZ_OLIN_Bv4v5--Olin_FCF_day_3A_Bv4v5,LF,3,A,none,A
+LF_003B,LAZ_OLIN_Bv4v5--Olin_FCF_day_3B_Bv4v5,LF,3,B,none,B
+LF_005A,LAZ_OLIN_Bv4v5--Olin_FCF_day_5A_Bv4v5,LF,5,A,none,A
+LF_005B,LAZ_OLIN_Bv4v5--Olin_FCF_day_5B_Bv4v5,LF,5,B,none,B
+LF_007A,LAZ_OLIN_Bv4v5--Olin_FCF_day_7A_Bv4v5,LF,7,A,none,A
+LF_007B,LAZ_OLIN_Bv4v5--Olin_FCF_day_7B_Bv4v5,LF,7,B,none,B
+FD_004A,LAZ_OLIN_Bv4v5--Olin_FCF_FCD_A_513_Bv4v5,FD,4,A,none,A
+FD_010A,LAZ_OLIN_Bv4v5--Olin_FCF_FCD_A_520_Bv4v5,FD,10,A,none,A
+FD_015A,LAZ_OLIN_Bv4v5--Olin_FCF_FCD_A_525_Bv4v5,FD,15,A,none,A
+FD_004B,LAZ_OLIN_Bv4v5--Olin_FCF_FCD_B_513_Bv4v5,FD,4,B,none,B
+FD_010B,LAZ_OLIN_Bv4v5--Olin_FCF_FCD_B_520_Bv4v5,FD,10,B,none,B
+FD_015B,LAZ_OLIN_Bv4v5--Olin_FCF_FCD_B_525_Bv4v5,FD,15,B,none,B
+FD_004C,LAZ_OLIN_Bv4v5--Olin_FCF_FCD_C_513_Bv4v5,FD,4,C,none,C
+FD_010C,LAZ_OLIN_Bv4v5--Olin_FCF_FCD_C_520_Bv4v5,FD,10,C,none,C
+FD_015C,LAZ_OLIN_Bv4v5--Olin_FCF_FCD_C_525_Bv4v5,FD,15,C,none,C
+LFa_000A,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_0A_Bv4v5,LFa,0,A,new_Rubrivivax,A
+LFa_000B,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_0B_Bv4v5,LFa,0,B,new_Rubrivivax,B
+LFa_011A,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_11A_Bv4v5,LFa,11,A,new_Rubrivivax,A
+LFa_011B,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_11B_Bv4v5,LFa,11,B,new_Rubrivivax,B
+LFa_003A,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_3A_Bv4v5,LFa,3,A,new_Rubrivivax,A
+LFa_003B,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_3B_Bv4v5,LFa,3,B,new_Rubrivivax,B
+LFa_003C,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_3C_Bv4v5,LFa,3,C,new_Rubrivivax,C
+LFa_005A,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_5A_Bv4v5,LFa,5,A,new_Rubrivivax,A
+LFa_005B,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_5B_Bv4v5,LFa,5,B,new_Rubrivivax,B
+LFa_005C,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_5C_Bv4v5,LFa,5,C,new_Rubrivivax,C
+LFa_007A,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_7A_Bv4v5,LFa,7,A,new_Rubrivivax,A
+LFa_007B,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_7B_Bv4v5,LFa,7,B,new_Rubrivivax,B
+LFa_007C,LAZ_OLIN_Bv4v5--Olin_FCF_New_Day_7C_Bv4v5,LFa,7,C,new_Rubrivivax,C
+F_000D,LAZ_OLIN_Bv4v5--OlinTC3_1,F,0,D,none,O
+F_005D,LAZ_OLIN_Bv4v5--OlinTC3_11,F,5,D,none,O
+Fa_005D,LAZ_OLIN_Bv4v5--OlinTC3_12,Fa,5,D,new_Rubrivivax,O
+Fn_005D,LAZ_OLIN_Bv4v5--OlinTC3_13,Fn,5,D,native_Rhodobacter,O
+F_007D,LAZ_OLIN_Bv4v5--OlinTC3_16,F,7,D,none,O
+Fa_007D,LAZ_OLIN_Bv4v5--OlinTC3_17,Fa,7,D,new_Rubrivivax,O
+Fn_007D,LAZ_OLIN_Bv4v5--OlinTC3_18,Fn,7,D,native_Rhodobacter,O
+Fa_000D,LAZ_OLIN_Bv4v5--OlinTC3_2,Fa,0,D,new_Rubrivivax,O
+F_011D,LAZ_OLIN_Bv4v5--OlinTC3_21,F,11,D,none,O
+Fa_011D,LAZ_OLIN_Bv4v5--OlinTC3_22,Fa,11,D,new_Rubrivivax,O
+Fn_000D,LAZ_OLIN_Bv4v5--OlinTC3_3,Fn,0,D,native_Rhodobacter,O
+F_014D,LAZ_OLIN_Bv4v5--OlinTC3_30,F,14,D,none,O
+F_014E,LAZ_OLIN_Bv4v5--OlinTC3_31,F,14,E,none,P
+Fa_014D,LAZ_OLIN_Bv4v5--OlinTC3_32,Fa,14,D,new_Rubrivivax,O
+Fa_014E,LAZ_OLIN_Bv4v5--OlinTC3_33,Fa,14,E,new_Rubrivivax,P
+Fn_014D,LAZ_OLIN_Bv4v5--OlinTC3_34,Fn,14,D,native_Rhodobacter,O
+Fn_014E,LAZ_OLIN_Bv4v5--OlinTC3_35,Fn,14,E,native_Rhodobacter,P
+F_003D,LAZ_OLIN_Bv4v5--OlinTC3_6,F,3,D,none,O
+Fa_003D,LAZ_OLIN_Bv4v5--OlinTC3_7,Fa,3,D,new_Rubrivivax,O
+Fn_003D,LAZ_OLIN_Bv4v5--OlinTC3_8,Fn,3,D,native_Rhodobacter,O

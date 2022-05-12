@@ -1,0 +1,837 @@
+---
+title: "alpha_diversity_and_correlation"
+output: html_notebook
+---
+
+Goal: track Alpha Diversity and Proportionality over samples and establish sample ordering
+
+# Installation
+
+```{r}
+# devtools::install_github("tpq/propr")
+# install.packages('ggdendro')
+```
+
+```{r}
+# devtools::install_github("jrnold/ggthemes")
+# install.packages("ggthemes") # has tableau_tableau20 color palette
+```
+
+
+# Loading Required Packages
+
+```{r}
+library("ggplot2"); packageVersion("ggplot2") # plotting
+```
+```{r}
+library("tidyverse"); packageVersion("tidyverse") # util              
+```
+```{r}
+library("dplyr"); packageVersion("dplyr") # util
+```
+```{r}
+library("phyloseq"); packageVersion("phyloseq") # data object                 
+```
+```{r}
+library("propr"); packageVersion("propr") # proportionality: compositional correlation
+```
+# Initialization
+
+```{r}
+# ggplot2 package theme set
+theme_set(theme_bw())
+
+# control randomization
+set.seed(42)
+
+# save outputs
+save_location = "../data/processed_carbon_53OTUs/"
+```
+
+# Aes
+```{r}
+# color - days
+color_day = c(
+    "3" = "#B2E5EA", # lightest
+    "5" = "#00BAE7",
+    "7" = "#0E6FA0",
+    "10" = "#012652",
+    "20" = "#01091C"
+    )
+
+# color - growth.phase
+color_growth.phase = c(
+  "early" = "black",
+  "mid C:C" = "springgreen3",
+  "late C:C" = "springgreen4",
+  "perturbed G" = "steelblue1",
+  "mid G:C" = "steelblue3",
+  "late G:C" = "steelblue4",
+  "perturbed M" = "sienna1",
+  "mid M:C" = "sienna3",
+  "late M:C" = "sienna4"
+  )
+
+# shape - series
+shape_series = c(
+  "C0C" = 4,
+  "C" = 16,
+  "G" = 15,
+  "M" = 17
+  )
+# shape - carbon
+shape_carbon = c(
+  "original" = 4,
+  "cellulose" = 16,
+  "glucose" = 18,
+  "malate" = 15
+)
+# shape - transfer
+shape_transfer = c(
+    "C0C" = 4,
+    "1C" = 10,
+    "2C" = 16,
+    "1G" = 0,
+    "2G" = 12,
+    "3G" = 15,
+    "1M" = 5,
+    "2M" = 9,
+    "3M" = 18
+  )
+# shape - growth phase
+shape_growth.phase = c(
+  "early" = 1,
+  "mid C:C" = 16,
+  "late C:C" = 16,
+  "perturbed G" = 15,
+  "mid G:C" = 15,
+  "late G:C" = 15,
+  "perturbed M" = 17,
+  "mid M:C" = 17,
+  "late M:C" = 17
+  )
+
+# color - genus
+```
+
+## Extra Aes
+
+```{r}
+# for 20 color palette
+tableau_20_colors <- ggthemes::ggthemes_data[["tableau"]][["color-palettes"]][["regular"]][["Tableau 20"]]$value
+```
+
+# Load Phyloseq Data Object
+
+```{r}
+ps <- readRDS(paste(save_location, "phyloseq.rds", sep=""))
+ps
+```
+
+```{r}
+sample_data(ps)
+```
+
+```{r}
+sample_meta <- data.frame(sample_data(ps))
+sample_meta
+```
+
+```{r}
+# make C0C part of C series
+sample_meta$series[1] <- "C"
+# make variable to store each time point (tp)
+sample_meta <- sample_meta %>%
+  mutate(tp = paste(series, numerical_transfer, sprintf("%02d", numerical_day), sep="-"))
+# reorder data frame
+sample_meta <- sample_meta[with(sample_meta, order(series, numerical_transfer, numerical_day)),]
+# make tp an ordered factor
+sample_meta$tp <- factor(sample_meta$tp, levels = unique(sample_meta$tp))
+# make variable to store tp_order (as numeric value)
+tp_order_map <- 1:length(unique(sample_meta$tp))
+names(tp_order_map) <- unique(sample_meta$tp)
+sample_meta <- sample_meta %>%
+  mutate(tp_order = tp_order_map[as.character(tp)])
+# final sample_meta
+sample_meta
+```
+# Alpha Diversity
+
+## ShDiv vs. RC
+
+```{r}
+ggplot(sample_meta, aes(x=RC, y=shdiv, colour=growth.phase)) +
+  geom_point() +
+  geom_vline(xintercept = 70000, linetype = "dotted") +
+  geom_vline(xintercept = 120000, linetype = "dotted") +
+  scale_color_manual(values=color_growth.phase) +
+  theme_set(theme_classic()) +
+  ggtitle("RC vs. ShDiv")
+
+ggplot(sample_meta, aes(x=RC, y=shdiv, alpha=0.3)) +
+  geom_point(show.legend = FALSE) +
+  geom_vline(xintercept = 70000, linetype = "dotted") +
+  geom_vline(xintercept = 120000, linetype = "dotted") +
+  theme_set(theme_classic()) +
+  ggtitle("RC vs. ShDiv")
+
+ggplot(sample_meta, aes(x=RC, y="", alpha=0.3)) +
+  geom_jitter(show.legend = FALSE, width = 0) +
+  theme_set(theme_classic()) +
+  ggtitle("jitter (example of no correlation)")
+```
+
+## ShDiv vs. Time Points
+
+```{r}
+sample_meta$tp
+```
+
+```{r}
+sample_meta %>% 
+  ggplot(aes(x=tp_order, y=shdiv)) +
+    geom_smooth(method = "loess", se = FALSE, colour="red") +
+    # geom_smooth(method = lm, se = FALSE, linetype = "dashed") +
+    geom_vline(xintercept = 2, linetype = "dotted") +
+    geom_vline(xintercept = 7, linetype = "dotted") +
+    geom_vline(xintercept = 10, linetype = "dotted") +
+    geom_vline(xintercept = 14, linetype = "dotted") +
+    geom_vline(xintercept = 18, linetype = "dotted") +
+    geom_vline(xintercept = 22, linetype = "dotted") +
+    geom_vline(xintercept = 26, linetype = "dotted") +
+    geom_vline(xintercept = 30, linetype = "dotted") +
+    geom_point(aes(x=tp_order, y=shdiv, colour=growth.phase)) +
+    scale_color_manual(values=color_growth.phase) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_x_discrete(name = "time points", 
+                     limits=unique(sample_meta$tp)) + 
+    ggtitle("all")
+```
+
+## Mid-Band ShDiv vs. Time Points
+
+```{r}
+sample_meta %>%
+  filter(RC > 70000 & RC < 120000) %>%
+  ggplot(aes(x=tp_order, y=shdiv)) +
+    geom_smooth(method = "loess", se = FALSE, colour="red") +
+    # geom_smooth(method = lm, se = FALSE, linetype = "dashed") +
+    geom_vline(xintercept = 2, linetype = "dotted") +
+    geom_vline(xintercept = 7, linetype = "dotted") +
+    geom_vline(xintercept = 10, linetype = "dotted") +
+    geom_vline(xintercept = 14, linetype = "dotted") +
+    geom_vline(xintercept = 18, linetype = "dotted") +
+    geom_vline(xintercept = 22, linetype = "dotted") +
+    geom_vline(xintercept = 26, linetype = "dotted") +
+    geom_vline(xintercept = 30, linetype = "dotted") +
+    geom_point(aes(x=tp_order, y=shdiv, colour=growth.phase)) +
+    scale_color_manual(values=color_growth.phase) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_x_discrete(name = "time points", 
+                     limits=unique(sample_meta$tp)) + 
+    ggtitle("mid-band")
+```
+
+# Correlation (propr - rho)
+
+```{r}
+# # only do correlation on cellulose samples --> no we want to capture corr. when perturbed and recover because overall it is same
+# ps_cellulose <- readRDS(paste(save_location, "phyloseq_cellulose.rds", sep=""))
+# ps_cellulose_clr <- microbiome::transform(ps_cellulose, "clr")
+```
+
+```{r}
+ps
+(ps_clr <- microbiome::transform(ps, "clr"))
+```
+
+## Calculate Proportionality, Indentify Cutoff
+
+* Typically FDR of 0.1 means that there is a chance that 10% of the genes are not false positive i.e. if 100 genes are called DEGs then about 10 genes are false positive.
+* 5% is usually a good cutoff
+* I want a false discovery rate of 1% (0.01)
+
+
+```{r}
+counts <- t(as(otu_table(ps), "matrix"))
+(pr <- propr(counts, # rows as samples, like it should be
+            metric = "rho", # or "phi", "phs", "cor", "vlr"
+            ivar = "clr", # or can use "iqlr" instead
+            alpha = NA, # use to handle zeros
+            p = 100)) # used by updateCutoffs
+# Choose the largest cutoff with an acceptable FDR.
+updateCutoffs(pr,
+              cutoff = seq(0, 1, .05), # cutoffs at which to estimate FDR
+              ncores = 1) # parallelize here
+# narrow down range to find FDR ~0.05
+updateCutoffs(pr,
+              cutoff = seq(0.25, 0.30, .01), # cutoffs at which to estimate FDR
+              ncores = 1) # parallelize here
+```
+## Get Cluster Propr
+* identify a highly proportional transcript module that happens to show differential abundance across the experimental groups
+* take an unsupervised approach by hierarchically clustering the highly proportional feature pairs based on the matrix 1−|ρp|.
+* when clustering, we call two features co-clustered if they belong to the cluster after cutting the dendrogram. 
+
+```{r}
+# Parameters
+CUTOFF = 0.29 # rho cutoff
+N <- 12 # number of clusters
+```
+
+```{r}
+# subsetting propr object to the @pairs slot
+pr_best <- pr[">", CUTOFF]
+pr_best@pairs
+# pr_best <- simplify(pr_best)
+```
+Look at the prism and bokeh functions for visualizing the co-clustering of proportional features. These plots share some key similarities:
+* they are all “index-naive”
+* they identify the feature pairs where both constituents co-cluster (with the total number of clusters toggled by k).
+* they return a vector of cluster memberships for all features in the propr object.
+
+The prism function plots the variance of the ratio of the log-ratio transformed feature pair (VLR) versus the sum of the individual variances of each log-ratio transformed feature (VLS). The ratio of the VLR to the VLS equals 1−ρ. As such, we use here seven rainbow colored lines to indicate where ρ=[.01, .05, .50, 0, 1.50, 1.95, 1.99], going from red to violet. A low VLR with a high VLS suggests that the feature pair remains in an equilibrium despite high variability among the individual features.
+
+```{r}
+pr_prism <- propr::prism(pr, k = N)
+```
+
+The bokeh function plots pairs across the individual variances of the constituent log-ratio transformed features. For clarity of visualization, this figure projects the data on a log-fold scale. Therefore, the highly variable co-clusters appear in the top-right of the figure while the lowly variable co-clusters appear in the bottom-left. Meanwhile, highly proportional pairs tend to aggregate around the y=x diagonal.
+
+```{r}
+bokeh(pr, k = N)
+```
+
+
+
+
+```{r}
+unique(pr_prism)
+```
+
+# Get list of higly correlated OTUs
+
+```{r}
+# create new data frame of OTU cluster membership
+df_c <- data.frame(pr_prism)
+colnames(df_c) <- c("cluster")
+df_c$cluster <- as.factor(df_c$cluster)
+# create new data frame of OTU taxonomy, OTU clr
+df_c_tax <- as.data.frame(as.matrix(tax_table(ps)))
+df_c_clr <- as.data.frame(as(otu_table(ps_clr), "matrix"))
+# merge with data frame of cluster membership
+df_c <- df_c %>%
+  merge(df_c_tax, by.x=0, by.y=0, all = TRUE) %>%
+  column_to_rownames("Row.names") %>%
+  merge(df_c_clr, by.x=0, by.y=0) %>%
+  column_to_rownames("Row.names") 
+
+# build list of valid OTUs (within-cluster pairwise rho > cutoff)
+otu_c <- c()
+otu_c_cluster_counts <- c()
+for (x in 1:N) {
+  subset_c <- rownames(filter(df_c, cluster == x))
+  if ("AsIs" %in% class(subset_c)) {
+    class(subset_c) <- class(subset_c)[-match("AsIs", class(subset_c))]
+  }
+  # get pairs with rho > cutoff AND both members in cluster n
+  res_c <- getResults(pr, 
+             cutoff = CUTOFF, # minimum rho value
+             include = subset_c,
+             or = FALSE)
+  # append valid OTUs (across both Partner and Pair)
+  otu_union <- union(res_c$Partner, res_c$Pair)
+  otu_c_cluster_counts <- c(otu_c_cluster_counts, length(otu_union))
+  otu_c <- c(otu_c, otu_union)
+}
+
+# name counts of valid OTUs per cluster
+names(otu_c_cluster_counts) <- 1:N
+# only keep subset of valid OTUs
+df_c <- df_c[otu_c, ]
+# de-index OTU column
+df_c <- cbind(OTU = rownames(df_c), df_c)
+rownames(df_c) <- 1:nrow(df_c)
+df_c
+```
+
+```{r}
+otu_c_cluster_counts
+```
+```{r}
+length(unique(df_c$kingdom))
+length(unique(df_c$phylum))
+length(unique(df_c$class))
+length(unique(df_c$order))
+length(unique(df_c$family))
+length(unique(df_c$genus))
+length(unique(df_c$species))
+```
+
+# Save to .csv
+
+```{r}
+# save
+write.csv(df_c, paste(save_location, "propr.csv", sep=""), quote = FALSE)
+```
+
+
+### Plot, x=tp, real fit
+
+```{r}
+df_c_longer <- df_c %>%
+  # pivot data so each row has x=sampleID, y=clr
+  pivot_longer(phyloseq::sample_names(ps_clr),
+               names_to = "sampleID",
+               values_to = "clr") %>%
+  # add variable series
+  mutate(series = sample_meta[sampleID, "series"]) %>%
+  # add variable growth.phase
+  mutate(growth.phase = sample_meta[sampleID, "growth.phase"]) %>%
+  # add variable tp
+  mutate(tp = sample_meta[sampleID, "tp"]) %>%
+  # add variable tp_order
+  mutate(tp_order = sample_meta[sampleID, "tp_order"])
+# establish that tp is an ordered factor
+df_c_longer$tp <- factor(df_c_longer$tp, levels = unique(sample_meta$tp))
+# reorder data frame
+df_c_longer <- df_c_longer[with(df_c_longer, order(tp)),]
+df_c_longer
+```
+
+```{r}
+# line plot, faceted by cluster, colored by taxrank
+df_c_longer %>%
+  ggplot(aes(x=tp, y=clr, group=OTU, color=genus), alpha=0.3) +
+    geom_line() +
+    geom_vline(xintercept = "C-1-03", linetype = "dotted") +
+    geom_vline(xintercept = "C-2-03", linetype = "dotted") +
+    geom_vline(xintercept = "G-1-03", linetype = "dotted") +
+    geom_vline(xintercept = "G-2-03", linetype = "dotted") +
+    geom_vline(xintercept = "G-3-03", linetype = "dotted") +
+    geom_vline(xintercept = "M-1-03", linetype = "dotted") +
+    geom_vline(xintercept = "M-2-03", linetype = "dotted") +
+    geom_vline(xintercept = "M-3-03", linetype = "dotted") +
+    scale_colour_manual(values = tableau_20_colors) +
+    guides(color=guide_legend(ncol=2)) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    ggtitle("all") +
+    facet_wrap( ~ cluster)
+
+# line plot, faceted by cluster, colored by taxrank
+df_c_longer %>%
+  filter(series == "C") %>%
+  ggplot(aes(x=tp, y=clr, group=OTU, color=genus), alpha=0.3) +
+    geom_line() +
+    geom_vline(xintercept = "C-1-03", linetype = "dotted") +
+    geom_vline(xintercept = "C-2-03", linetype = "dotted") +
+    scale_colour_manual(values = tableau_20_colors) +
+    guides(color=guide_legend(ncol=2)) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    ggtitle("cellulose series") +
+    facet_wrap( ~ cluster)
+
+# line plot, faceted by cluster, colored by taxrank
+df_c_longer %>%
+  filter(series == "G") %>%
+  ggplot(aes(x=tp, y=clr, group=OTU, color=genus), alpha=0.3) +
+    geom_line() +
+    geom_vline(xintercept = "G-1-03", linetype = "dotted") +
+    geom_vline(xintercept = "G-2-03", linetype = "dotted") +
+    geom_vline(xintercept = "G-3-03", linetype = "dotted") +
+    scale_colour_manual(values = tableau_20_colors) +
+    guides(color=guide_legend(ncol=2)) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    ggtitle("glucose series") +
+    facet_wrap( ~ cluster)
+
+# line plot, faceted by cluster, colored by taxrank
+df_c_longer %>%
+  filter(series == "M") %>%
+  ggplot(aes(x=tp, y=clr, group=OTU, color=genus), alpha=0.3) +
+    geom_line() +
+    geom_vline(xintercept = "M-1-03", linetype = "dotted") +
+    geom_vline(xintercept = "M-2-03", linetype = "dotted") +
+    geom_vline(xintercept = "M-3-03", linetype = "dotted") +
+    scale_colour_manual(values = tableau_20_colors) +
+    guides(color=guide_legend(ncol=2)) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    ggtitle("malate series") +
+    facet_wrap( ~ cluster)
+```
+
+### Plot (genus), x=tp_order, loess line of best fit
+ * less jagged
+ * loess lines require x_axis to be continuous
+ 
+
+```{r}
+tp_order_map
+```
+
+```{r}
+color_growth.phase
+```
+
+
+```{r dpi = 200}
+df_c_longer %>%
+  ggplot(aes(x=tp_order, y=clr, group=OTU, color=genus), alpha=0.3) +
+    geom_smooth(method = "loess", se = FALSE, lwd=2.0) +
+    # geom_point(alpha = 0.3) +
+    geom_vline(xintercept = 2, linetype = "solid", colour=color_growth.phase["mid C:C"]) +
+    geom_vline(xintercept = 7, linetype = "dotted") +
+    geom_vline(xintercept = 10, linetype = "solid", colour=color_growth.phase["perturbed G"]) +
+    geom_vline(xintercept = 14, linetype = "dotted") +
+    geom_vline(xintercept = 18, linetype = "dotted") +
+    geom_vline(xintercept = 22, linetype = "solid", colour=color_growth.phase["perturbed M"]) +
+    geom_vline(xintercept = 26, linetype = "dotted") +
+    geom_vline(xintercept = 30, linetype = "dotted") +
+    scale_colour_manual(values = tableau_20_colors) +
+    guides(color=guide_legend(ncol=1)) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_y_continuous(name = "log2 rAB",
+                       limits = c(-7, 7),
+                       breaks=c(-5, 0, 5)
+                       ) +
+    scale_x_discrete(name = "time points", 
+                     limits=unique(df_c_longer$tp)) +
+    ggtitle("all") +
+    facet_wrap( ~ cluster)
+```
+
+
+```{r}
+df_c_longer %>%
+  filter(series == "C") %>%
+  ggplot(aes(x=tp_order, y=clr, group=OTU, color=genus), alpha=0.3) +
+    geom_smooth(method = "loess", se = FALSE) +
+    geom_vline(xintercept = 2, linetype = "solid", colour=color_growth.phase["mid C:C"]) +
+    geom_vline(xintercept = 7, linetype = "dotted") +
+    scale_colour_manual(values = tableau_20_colors) +
+    guides(color=guide_legend(ncol=2)) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_y_continuous(name = "log2 rAB",
+                       limits = c(-7, 7),
+                       breaks=c(-5, 0, 5)
+                       ) +
+    scale_x_discrete(name = "time points", 
+                     limits=1:10,
+                     labels=names(tp_order_map)[1:10]) +
+    ggtitle("cellulose series") +
+    facet_wrap( ~ cluster)
+
+df_c_longer %>%
+  filter(series == "G") %>%
+  ggplot(aes(x=tp_order, y=clr, group=OTU, color=genus), alpha=0.3) +
+    geom_smooth(method = "loess", se = FALSE) +
+    geom_vline(xintercept = 10, linetype = "dotted") +
+    geom_vline(xintercept = 14, linetype = "solid", colour=color_growth.phase["mid C:C"]) +
+    geom_vline(xintercept = 18, linetype = "dotted") +
+    scale_colour_manual(values = tableau_20_colors) +
+    guides(color=guide_legend(ncol=2)) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_y_continuous(name = "log2 rAB",
+                       limits = c(-7, 7),
+                       breaks=c(-5, 0, 5)
+                       ) +
+    scale_x_discrete(name = "time points", 
+                     limits=11:21,
+                     labels=names(tp_order_map)[11:21]) +
+    ggtitle("glucose series") +
+    facet_wrap( ~ cluster)
+
+df_c_longer %>%
+  filter(series == "M") %>%
+  ggplot(aes(x=tp_order, y=clr, group=OTU, color=genus), alpha=0.3) +
+    geom_smooth(method = "loess", se = FALSE) +
+    geom_vline(xintercept = 22, linetype = "dotted") +
+    geom_vline(xintercept = 26, linetype = "solid", colour=color_growth.phase["mid C:C"]) +
+    geom_vline(xintercept = 30, linetype = "dotted") +
+    scale_colour_manual(values = tableau_20_colors) +
+    guides(color=guide_legend(ncol=2)) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_y_continuous(name = "log2 rAB",
+                       limits = c(-7, 7),
+                       breaks=c(-5, 0, 5)
+                       ) +
+    scale_x_discrete(name = "time points", 
+                     limits=22:33,
+                     labels=names(tp_order_map)[22:33]) +
+    ggtitle("malate series") +
+    facet_wrap( ~ cluster)
+```
+
+
+### Plot (family) x=tp_order, loess line of best fit
+ 
+```{r}
+df_c_longer %>%
+  ggplot(aes(x=tp_order, y=clr, group=OTU, color=family), alpha=0.3) +
+    geom_smooth(method = "loess", se = FALSE) +
+    geom_vline(xintercept = 2, linetype = "dotted") +
+    geom_vline(xintercept = 7, linetype = "dotted") +
+    geom_vline(xintercept = 10, linetype = "dotted") +
+    geom_vline(xintercept = 14, linetype = "dotted") +
+    geom_vline(xintercept = 18, linetype = "dotted") +
+    geom_vline(xintercept = 22, linetype = "dotted") +
+    geom_vline(xintercept = 26, linetype = "dotted") +
+    geom_vline(xintercept = 30, linetype = "dotted") +
+    scale_colour_manual(values = tableau_20_colors) +
+    guides(color=guide_legend(ncol=2)) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_y_continuous(name = "log2 rAB", breaks=c(0, 5, 10)) +
+    scale_x_discrete(name = "time points", 
+                     limits=unique(df_c_longer$tp)) +
+    ggtitle("all") +
+    facet_wrap( ~ cluster)
+
+df_c_longer %>%
+  filter(series == "C") %>%
+  ggplot(aes(x=tp_order, y=clr, group=OTU, color=family), alpha=0.3) +
+    geom_smooth(method = "loess", se = FALSE) +
+    geom_vline(xintercept = 2, linetype = "dotted") +
+    geom_vline(xintercept = 7, linetype = "dotted") +
+    scale_colour_manual(values = tableau_20_colors) +
+    guides(color=guide_legend(ncol=2)) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_y_continuous(name = "log2 rAB", breaks=c(0, 5, 10)) +
+    scale_x_discrete(name = "time points", 
+                     limits=1:10,
+                     labels=names(tp_order_map)[1:10]) +
+    ggtitle("cellulose series") +
+    facet_wrap( ~ cluster)
+
+df_c_longer %>%
+  filter(series == "G") %>%
+  ggplot(aes(x=tp_order, y=clr, group=OTU, color=family), alpha=0.3) +
+    geom_smooth(method = "loess", se = FALSE) +
+    geom_vline(xintercept = 10, linetype = "dotted") +
+    geom_vline(xintercept = 14, linetype = "dotted") +
+    geom_vline(xintercept = 18, linetype = "dotted") +
+    scale_colour_manual(values = tableau_20_colors) +
+    guides(color=guide_legend(ncol=2)) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_y_continuous(name = "log2 rAB", breaks=c(0, 5, 10)) +
+    scale_x_discrete(name = "time points", 
+                     limits=11:21,
+                     labels=names(tp_order_map)[11:21]) +
+    ggtitle("glucose series") +
+    facet_wrap( ~ cluster)
+
+df_c_longer %>%
+  filter(series == "M") %>%
+  ggplot(aes(x=tp_order, y=clr, group=OTU, color=family), alpha=0.3) +
+    geom_smooth(method = "loess", se = FALSE) +
+    geom_vline(xintercept = 22, linetype = "dotted") +
+    geom_vline(xintercept = 26, linetype = "dotted") +
+    geom_vline(xintercept = 30, linetype = "dotted") +
+    scale_colour_manual(values = tableau_20_colors) +
+    guides(color=guide_legend(ncol=2)) +
+    theme_set(theme_classic()) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_y_continuous(name = "log2 rAB", breaks=c(0, 5, 10)) +
+    scale_x_discrete(name = "time points", 
+                     limits=22:33,
+                     labels=names(tp_order_map)[22:33]) +
+    ggtitle("malate series") +
+    facet_wrap( ~ cluster)
+```
+
+### Plot corr per transfer
+* Plot each prev day + transfer separately
+* Facet by cluster
+
+Plots:
+A: C0C - C1
+B: C1-20 - C1
+
+C: C0C - G1
+D: G1-10 - G2
+E: G2-10 - G3
+
+F: C0C - M1
+G: M1-10 - M2
+H: M2-10 - M3
+
+```{r}
+unique(sample_meta$tp)
+```
+
+```{r}
+sample_meta$transfer
+```
+
+
+```{r}
+# new data frame
+df_d_longer <- df_c %>%
+  # pivot data so each row has x=sampleID, y=clr
+  pivot_longer(phyloseq::sample_names(ps_clr),
+               names_to = "sampleID",
+               values_to = "clr") %>%
+  # add variable transfer
+  mutate(transfer = sample_meta[sampleID, "transfer"]) %>%
+  # add variable tp
+  mutate(tp = sample_meta[sampleID, "tp"])
+# establish that tp is an ordered factor
+df_d_longer$tp <- factor(df_d_longer$tp, levels = unique(sample_meta$tp))
+# reorder data frame
+df_d_longer <- df_d_longer[with(df_d_longer, order(tp)),]
+df_d_longer
+```
+```{r}
+plot_corr_per_transfer <- function(df_d_longer, tp_order_map, title, legend_pos="right") {
+  df_d_longer %>%
+  # filter data
+  filter(tp %in% names(tp_order_map)) %>%
+  # numerical ordered x-axis
+  mutate(tp_order = tp_order_map[as.character(tp)]) %>%
+  # plot
+  ggplot(aes(x=tp_order, y=clr, group=OTU, color=genus), alpha=0.3) +
+    geom_point() +
+    geom_smooth(method = "loess", se = FALSE) +
+    geom_vline(xintercept = 2, linetype = "dotted", alpha=0.3) +
+    geom_hline(yintercept = 5, linetype = "dotted", alpha=0.3) +
+    geom_hline(yintercept = 0, linetype = "dashed", alpha=0.3) +
+    geom_hline(yintercept = -5, linetype = "dotted", alpha=0.3) +
+    theme_set(theme_classic()) +
+    scale_colour_manual(values = tableau_20_colors) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1),
+          legend.position = legend_pos) +
+    guides(color=guide_legend(ncol=2)) +
+    scale_y_continuous(name = "log2 rAB",
+                       limits = c(-7, 7),
+                       breaks=c(-5, 0, 5)) +
+    # x-axis labeling
+    scale_x_discrete(name = "time points",
+                     limits=1:length(tp_order_map),
+                     labels=names(tp_order_map)) +
+    facet_wrap( ~ cluster) +
+    ggtitle(title)
+}
+```
+
+```{r}
+unique(df_d_longer$tp)
+```
+
+
+```{r}
+# 1C
+plot_corr_per_transfer(df_d_longer,
+                       tp_order_map = c(
+                         "C-0-10" = 1,
+                         "C-1-03" = 2,
+                         "C-1-05" = 3,
+                         "C-1-07" = 4,
+                         "C-1-10" = 5,
+                         "C-1-20" = 6),
+                       title = "first transfer onto cellulose (1C)")
+```
+
+```{r}
+# 2C
+plot_corr_per_transfer(df_d_longer,
+                       tp_order_map = c(
+                         "C-1-20" = 1,
+                         "C-2-03" = 2,
+                         "C-2-05" = 3,
+                         "C-2-10" = 4),
+                       title = "second transfer onto cellulose (2C)")
+```
+
+
+```{r}
+# 1G
+plot_corr_per_transfer(df_d_longer,
+                       tp_order_map = c(
+                         "C-0-10" = 1,
+                         "G-1-03" = 2,
+                         "G-1-05" = 3,
+                         "G-1-07" = 4,
+                         "G-1-10" = 5),
+                       title = "perturbation transfer onto glucose (1G)")
+```
+
+
+```{r}
+# 2G
+plot_corr_per_transfer(df_d_longer,
+                       tp_order_map = c(
+                         "G-1-10" = 1,
+                         "G-2-03" = 2,
+                         "G-2-05" = 3,
+                         "G-2-07" = 4,
+                         "G-2-10" = 5),
+                       title = "first transfer back onto cellulose (2G)")
+```
+
+
+```{r}
+# 3G
+plot_corr_per_transfer(df_d_longer,
+                       tp_order_map = c(
+                         "G-2-10" = 1,
+                         "G-3-03" = 2,
+                         "G-3-05" = 3,
+                         "G-3-07" = 4,
+                         "G-3-10" = 5),
+                       title = "second transfer back onto cellulose (3G)")
+```
+
+
+```{r}
+# 1M
+plot_corr_per_transfer(df_d_longer,
+                       tp_order_map = c(
+                         "C-0-10" = 1,
+                         "M-1-03" = 2,
+                         "M-1-05" = 3,
+                         "M-1-07" = 4,
+                         "M-1-10" = 5),
+                       title = "perturbation transfer onto malate (1M)")
+```
+
+
+```{r}
+# 2M
+plot_corr_per_transfer(df_d_longer,
+                       tp_order_map = c(
+                         "M-1-10" = 1,
+                         "M-2-03" = 2,
+                         "M-2-05" = 3,
+                         "M-2-07" = 4,
+                         "M-2-10" = 5),
+                       title = "first transfer back onto cellulose (2M)")
+```
+
+
+```{r}
+# 3M
+plot_corr_per_transfer(df_d_longer,
+                       tp_order_map = c(
+                         "M-2-10" = 1,
+                         "M-3-03" = 2,
+                         "M-3-05" = 3,
+                         "M-3-07" = 4,
+                         "M-3-10" = 5),
+                       title = "second transfer back onto cellulose (3M)")
+
+```
+
+
+

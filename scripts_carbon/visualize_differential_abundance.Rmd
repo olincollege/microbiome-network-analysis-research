@@ -1,0 +1,549 @@
+---
+title: "visualize differential abundance"
+output: html_notebook
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+Goal: since there is a significant difference in the composition of clusters, find out who is driving the difference
+
+Groups
+* "late" vs. "mid"
+
+* "perturbed M" vs. "perturbed G"
+
+* "mid C" vs. "mid G"
+* "mid C" vs. "mid M"
+* "mid G" vs. "mid M"
+
+* "late C" vs. "late G" 
+* "late C" vs. "late M"
+* "late G" vs. "late M"
+
+* "late C" vs. all the others
+
+Methods:
+* Wilcox Sum Rank Test
+* ALDEx2
+* ANCOM-BC
+
+Levels
+* Phylum
+* Class
+* Order
+* Family
+* Genus
+* Species
+* OTU-level
+
+# Install Packages
+
+```{r}
+# .cran_packages <- c("tidyverse", "cowplot", "picante", "vegan", "HMP", "dendextend", "rms", "devtools")
+# .inst <- .cran_packages %in% installed.packages()
+# if(any(!.inst)) {
+#   install.packages(.cran_packages[!.inst])
+# }
+```
+
+```{r}
+# .bioc_packages <- c("phyloseq", "Biostrings", "DESeq2", "microbiome", "metagenomeSeq", "ALDEx2")
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(.bioc_packages, version = "3.14")
+```
+
+
+# Loading Required Packages
+
+```{r}
+library("ggplot2"); packageVersion("ggplot2") # plotting
+```
+```{r}
+library("tidyverse"); packageVersion("tidyverse") # util    
+```
+
+```{r}
+library("dplyr"); packageVersion("dplyr") # util
+```
+
+```{r}
+library("phyloseq"); packageVersion("phyloseq") # data object                 
+```
+
+```{r}
+library("ape"); packageVersion("ape") # taxa string manipulation
+```
+
+```{r}
+library(microbiome); packageVersion("microbiome") # clr transformation
+```
+
+```{r}
+library(dendextend); packageVersion("dendextend") # extend customization of dendograms
+```
+
+```{r}
+library(vegan); packageVersion("vegan") # bray-curtis and other metrics
+```
+
+```{r}
+# Manipulation and visualization of taxonomic data, particularly those from amplicon metagenomics research. (Foster, Sharpton, and Grünwald 2017)
+library(metacoder); packageVersion("metacoder")
+```
+
+```{r}
+# defines taxonomic classes and functions to manipulate them. The goal is to use these classes as low level fundamental taxonomic classes that other R packages can build on and use. This is used by metacoder. 
+library(taxa); packageVersion("taxa")
+```
+
+# Initialization
+
+```{r}
+# ggplot2 package theme set
+theme_set(theme_void())
+
+# control randomization
+set.seed(42)
+
+# save outputs
+save_location = "../data/processed_carbon_53OTUs"
+```
+
+# Aes
+
+```{r}
+# color - days
+color_day = c(
+    "3" = "#B2E5EA", # lightest
+    "5" = "#00BAE7",
+    "7" = "#0E6FA0",
+    "10" = "#012652",
+    "20" = "#01091C"
+    )
+
+# color - growth.phase
+color_growth.phase = c(
+  "early" = "black",
+  "mid C:C" = "springgreen3",
+  "late C:C" = "springgreen4",
+  "perturbed G" = "steelblue1",
+  "mid G:C" = "steelblue3",
+  "late G:C" = "steelblue4",
+  "perturbed M" = "sienna1",
+  "mid M:C" = "sienna3",
+  "late M:C" = "sienna4"
+  )
+
+# shape - series
+shape_series = c(
+  "C0C" = 4,
+  "C" = 16,
+  "G" = 15,
+  "M" = 17
+  )
+# shape - carbon
+shape_carbon = c(
+  "original" = 4,
+  "cellulose" = 16,
+  "glucose" = 18,
+  "malate" = 15
+)
+# shape - transfer
+shape_transfer = c(
+    "C0C" = 4,
+    "1C" = 10,
+    "2C" = 16,
+    "1G" = 0,
+    "2G" = 12,
+    "3G" = 15,
+    "1M" = 5,
+    "2M" = 9,
+    "3M" = 18
+  )
+# shape - growth phase
+shape_growth.phase = c(
+  "early" = 1,
+  "mid C:C" = 16,
+  "late C:C" = 16,
+  "perturbed G" = 15,
+  "mid G:C" = 15,
+  "late G:C" = 15,
+  "perturbed M" = 17,
+  "mid M:C" = 17,
+  "late M:C" = 17
+  )
+
+# color - genus
+```
+
+# Load Phyloseq Data Object
+
+```{r}
+(ps <- readRDS(paste(save_location, "phyloseq.rds", sep="")))
+# convert to taxmap format 
+taxmap <- parse_phyloseq(ps)
+taxmap
+```
+
+# Plot metacoder family tree
+
+```{r}
+set.seed(42)
+heat_tree(taxmap,
+          node_label = taxon_names,
+          node_size = n_obs,
+          node_color = n_obs,
+          node_color_axis_label = "OTU count",
+          layout = "da",
+          initial_layout = "re",
+          output_file = paste(save_location, "/metacoder_differential_abundance/carbon_all.png", sep = ""),
+          title = "Carbon - All")
+```
+
+# Extract tax_ids
+
+```{r}
+taxmap.key <- merge(
+  as.data.frame(taxon_names(taxmap)), 
+  as.data.frame((taxon_ranks(taxmap))), 
+  by.x=0, by.y=0)
+colnames(taxmap.key) <- c("taxon_id", "taxon_names", "taxon_rank")
+taxmap.key
+```
+
+```{r}
+#Print number of duplicated rows 
+#i.e. taxon not uniquely identified by taxon_name + taxon_rank
+nrow(taxmap.key) - nrow(
+  taxmap.key[!(duplicated(taxmap.key[c("taxon_names","taxon_rank")]) 
+             | duplicated(taxmap.key[c("taxon_names","taxon_rank")],
+            fromLast = TRUE)), ])
+```
+
+# Process DA .csv
+
+```{r}
+get_taxon_id = function(x) {
+  #Get taxrank (finest resolution taxonomy)
+  taxrank <- x[["taxrank"]]
+  #Get tax name from relevant column
+  taxname <- x[[taxrank]]
+  
+  #Query on tax_data
+  if (taxrank == "OTU") {
+    matches <- filter(taxmap$data$tax_data, otu_id == taxname)
+    return(matches[1]$taxon_id)
+  }
+  
+  #Query on taxmap.key
+  matches <- filter(taxmap.key, taxon_names == taxname & taxon_rank == taxrank)
+  return(matches[1]$taxon_id)
+}
+```
+
+## ALDEx2
+
+```{r}
+#Read .csv
+ALDEx2_results <- read.table(
+  file = paste(save_location, '/ALDEx2_results.csv', sep=""), 
+  header = TRUE, sep = ',')
+#Get taxon_id
+ALDEx2_results <- cbind(ALDEx2_results, taxon_id = apply(
+  ALDEx2_results, 1, get_taxon_id))
+```
+
+Check which ALDEx2 has effect size > 1 but p-value > 0.05
+```{r}
+ALDEx2_results$aldex2_effect[ALDEx2_results$aldex2_wi.eBH > 0.05 & ALDEx2_results$aldex2_effect > 1]
+```
+
+Check which ALDEx2 has effect size < -1 but p-value > 0.05
+```{r}
+ALDEx2_results$aldex2_effect[ALDEx2_results$aldex2_wi.eBH > 0.05 & ALDEx2_results$aldex2_effect < -1]
+```
+
+```{r}
+#Zero effect size for non-significant p-values
+# ALDEx2_results$aldex2_effect[ALDEx2_results$aldex2_wi.eBH > 0.05] <- 0
+#Show final table
+ALDEx2_results
+```
+
+## Get Differential Abundance Table
+
+```{r}
+get_da_taxmap = function(taxmap, ti) {
+  ALDEx2_results_filtered <- filter(ALDEx2_results, 
+                                    test_id == ti & taxrank != "OTU")
+  
+  #Merge Dataframe
+  taxmap$data$da <- taxmap.key %>%
+    merge(ALDEx2_results_filtered, by.x = "taxon_id", by.y = "taxon_id", all.x = TRUE) %>%
+    dplyr::select("taxon_id", "aldex2_diff.btw", "aldex2_diff.win", "aldex2_effect", "aldex2_positive", "aldex2_negative") %>%
+    mutate_if(is.numeric, ~replace(., is.na(.), 0)) %>%
+    as.tibble()
+  
+  return(taxmap)
+}
+```
+
+# Heat Map Trees
+
+```{r}
+# plot_comparative_heat_tree = function(ti) {
+#   
+#   #Get taxmap
+#   tmp <- get_da_taxmap(taxmap, ti)
+#   group1 <- unique(tmp$data$da$aldex2_positive)
+#   group1 <- group1[!is.na(group1)][1];
+#   group2 <- unique(tmp$data$da$aldex2_negative)
+#   group2 <- group2[!is.na(group2)][1];
+#   group1
+#   group2
+# 
+#   #Get corresponding colors
+#   blank_color <- "oldlace"
+#   # blank_color <- "gray"
+#   g1_color <- color_growth.phase[[group1]]
+#   g2_color <- color_growth.phase[[group2]]
+#   
+#   #Get min, max
+#   aldex2_min <- min(tmp$data$da$aldex2_effect)
+#   aldex2_max <- max(tmp$data$da$aldex2_effect)
+#   aldex2_range <- max(abs(aldex2_min), abs(aldex2_max))
+#   
+#   # ALDEx2
+#   # control randomization
+#   set.seed(42)
+#   tmp %>%
+#     filter_taxa(taxon_names %in% c("bacteria"), subtaxa = TRUE) %>%
+#     heat_tree(node_size = n_obs, # number of OTUs
+#               node_size_axis_label = "OTU count",
+#               node_color = aldex2_effect, # difference between groups
+#               node_color_interval = c(-1 * aldex2_range, aldex2_range), # symmetric interval
+#               node_color_range = c(g2_color, blank_color, g1_color), # diverging colors
+#               node_color_axis_label = "ALDEx2 Effect Size",
+#               # node_label = taxon_names, # comment to remove labels
+#               initial_layout = "reingold-tilford",
+#               layout = "davidson-harel",
+#               title = paste(ti, "positive to", group1, "ALDEx2"),
+#               output_file = paste(save_location,
+#                 paste("metacoder_differential_abundance/heat_tree", 
+#                 ti, "ALDEX2.png", sep="_"), sep=""))
+#   
+# }
+```
+
+```{r}
+unique(ALDEx2_results$test_id)
+```
+
+```{r}
+unique(ALDEx2_results$level)
+```
+ 
+
+```{r}
+unique(c(ALDEx2_results$aldex2_positive, ALDEx2_results$aldex2_negative))
+```
+
+```{r}
+# for (test_id in unique(ALDEx2_results$test_id)) {
+#   tryCatch(
+#     {
+#       plot_comparative_heat_tree(test_id)
+#       print(test_id)
+#     },
+#     error=function(cond) {
+#       message(test_id)
+#       message("-failed to run")
+#     }
+#   )  
+# }
+```
+
+```{r}
+## Get empty one with labels
+# plot_comparative_heat_tree("mG_vs_mM")
+```
+
+# Scatter plots
+
+```{r}
+min(ALDEx2_results$aldex2_effect)
+```
+
+```{r}
+max(ALDEx2_results$aldex2_effect)
+```
+```{r}
+ALDEx2_results %>%
+  ggplot(aes(x=aldex2_effect)) + 
+  geom_histogram(binwidth=.5, colour="black", fill="white")
+
+ALDEx2_results %>%
+  filter(level == "cluster") %>%
+  ggplot(aes(x=aldex2_effect)) + 
+  geom_histogram(binwidth=.5, colour="black", fill="white")
+
+ALDEx2_results %>%
+  filter(level == "growth.phase") %>%
+  ggplot(aes(x=aldex2_effect)) + 
+  geom_histogram(binwidth=.5, colour="black", fill="white")
+```
+## Extra Aes
+
+```{r}
+color_growth.phase["not significant"] <- "gray50"
+
+# for 20 color palette
+tableau_20_colors <- ggthemes::ggthemes_data[["tableau"]][["color-palettes"]][["regular"]][["Tableau 20"]]$value
+```
+
+
+```{r}
+get_da_scatter_ALDEx2 <- function(data, test_ids = c(), taxrank = "genus", plot_name="x") {
+  # only use OTU level differential analysis
+  # filter and color data points
+  ALDEx2_results_filtered <- data %>%
+    filter(test_id %in% test_ids) %>% 
+    filter(taxrank == "OTU") %>% 
+    # only plot significant OTUs
+    # filter(aldex2_effect != 0) %>%
+    # color scheme
+    # mutate(significant = case_when(
+    #   aldex2_wi.eBH < 0.05 & aldex2_effect > 1 ~ aldex2_positive,
+    #   aldex2_wi.eBH < 0.05 & aldex2_effect < -1 ~ aldex2_negative,
+    #   TRUE~"not significant"))
+    mutate(significant = case_when(
+      aldex2_effect > 1 ~ aldex2_positive,
+      aldex2_effect < -1 ~ aldex2_negative,
+      TRUE~"not significant"))
+    
+  # get number of y-axis categories
+  num_categories <- length(unique(ALDEx2_results_filtered[[taxrank]]))
+  taxrank_colors <- rep("black", num_categories)
+  if (taxrank == "genus") {
+    taxrank_colors <- c(tableau_20_colors, "black")
+  }
+  
+  # get range of x-axis
+  min_effect <- max(ALDEx2_results_filtered$aldex2_effect)
+  max_effect <- min(ALDEx2_results_filtered$aldex2_effect)
+  range_effect <- max(abs(min_effect), abs(max_effect))
+  
+  # divide taxrank categories into strips (for zebra striped background)
+  strip_data <- data.frame(unique(ALDEx2_results_filtered[[taxrank]]))
+  colnames(strip_data) <- c("taxrank")
+  strip_data <- strip_data %>%
+    arrange(desc(taxrank)) %>%
+    mutate(xmin = -1 * range_effect, xmax = range_effect,
+           y_position = rev(1:nrow(.)),
+           ymin = y_position - 0.5,
+           ymax = y_position + 0.5,
+           fill = rep(c("zebra_a", "zebra_b"), length.out=nrow(strip_data)))
+  
+  # map taxrank to strip position
+  refer_y_pos <- as.numeric(strip_data$y_position)
+  names(refer_y_pos) <- strip_data$taxrank
+  ALDEx2_results_filtered$y_position <- as.numeric(refer_y_pos[ALDEx2_results_filtered[[taxrank]]])
+  ALDEx2_results_filtered
+  
+  # pivot strip data table
+  strip_data <- strip_data %>%
+    pivot_longer(cols=c(xmin, xmax), values_to="x", names_to="xmin_xmax") %>%
+    dplyr::select(-xmin_xmax)
+  
+  # plot pretty
+  ALDEx2_results_filtered %>%
+    ggplot(axes = FALSE, show.legend = FALSE,
+           aes_string(x = "aldex2_effect", 
+                      y = "y_position", 
+                      colour = "significant",
+                      group="y_position")) +
+    # zebra stripe background for readability
+    geom_ribbon(data=strip_data,
+                inherit.aes = FALSE, 
+                show.legend = FALSE,
+                aes(x=x, ymin=ymin, ymax=ymax, group=y_position, fill=fill)) +
+    scale_fill_manual(name = 'fill', values = c("gray100", "gray95")) +
+    scale_colour_manual(name = 'significant', values = color_growth.phase) +
+    geom_jitter(width = 0, height = 0.10, alpha = 0.3) + 
+    facet_grid(cols = vars(test_id)) + 
+    scale_y_discrete(taxrank, limits=names(refer_y_pos)) +
+    scale_x_continuous("Effect Size", breaks = c(-1, 0, 1)) + 
+    geom_vline(xintercept=1, linetype="dotted", color="gray70", size=1) +
+    geom_vline(xintercept=-1, linetype="dotted", color="gray70", size=1) +
+    theme_set(theme_classic()) + 
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    theme(strip.text.x = element_text(angle = 90)) +
+    theme(legend.position = "none",
+          panel.spacing = unit(0.1, "lines"),
+          panel.border = element_rect(color = "black", fill = NA, size = 1.0), 
+          strip.background = element_rect(color = "black", size = 1))
+}
+```
+
+## Cluster level
+
+```{r}
+test_ids <- c("l_vs_e", "l_vs_m", "l_vs_p", "e_vs_m", "e_vs_p", "m_vs_p")
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "genus")
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "order")
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "class")
+```
+
+## Focused Cluster level
+
+```{r}
+ unique(ALDEx2_results$test_id)
+```
+```{r}
+test_ids <- c("late C:C vs early", "late C:C vs mid C:C", "late C:C vs perturbed M", "late C:C vs mid M:C", "late C:C vs late M:C", "late C:C vs perturbed G", "late C:C vs mid G:C", "late C:C vs late G:C", 
+              "early vs mid C:C", "early vs perturbed M", "early vs mid M:C", "early vs late M:C", "early vs perturbed G", "early vs mid G:C", "early vs late G:C", 
+              "mid C:C vs perturbed M", "mid C:C vs mid M:C", "mid C:C vs late M:C", "mid C:C vs mid G:C", "mid C:C vs late G:C", 
+              "perturbed M vs mid M:C", "perturbed M vs perturbed G", "perturbed M vs mid G:C", "perturbed M vs late G:C",
+              "mid M:C vs late M:C", "mid M:C vs perturbed G", "mid M:C vs mid G:C", "mid M:C vs late G:C", 
+              "late M:C vs perturbed G", "late M:C vs mid G:C", "late M:C vs late G:C", 
+              "perturbed G vs mid G:C", "perturbed G vs late G:C",
+              "mid G:C vs late G:C")
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "genus", plot_name=plot_name)
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "order", plot_name=plot_name)
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "class", plot_name=plot_name)
+```
+
+```{r}
+test_ids <- c("late C:C vs early", "late C:C vs mid C:C", "late C:C vs perturbed M", "late C:C vs mid M:C", "late C:C vs late M:C", "late C:C vs perturbed G", "late C:C vs mid G:C", "late C:C vs late G:C", 
+              "mid C:C vs perturbed M", "mid C:C vs mid M:C", "mid C:C vs late M:C", "mid C:C vs mid G:C", "mid C:C vs late G:C")
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "genus", plot_name=plot_name)
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "order", plot_name=plot_name)
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "class", plot_name=plot_name)
+```
+
+```{r}
+test_ids <- c("early vs mid C:C", "early vs perturbed M", "early vs mid M:C", "early vs late M:C", "early vs perturbed G", "early vs mid G:C", "early vs late G:C")
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "genus", plot_name=plot_name)
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "order", plot_name=plot_name)
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "class", plot_name=plot_name)
+```
+
+```{r}
+test_ids <- c("perturbed M vs mid M:C", "perturbed M vs perturbed G", "perturbed M vs mid G:C", "perturbed M vs late G:C",
+              "mid M:C vs late M:C", "mid M:C vs perturbed G", "mid M:C vs mid G:C", "mid M:C vs late G:C", 
+              "late M:C vs perturbed G", "late M:C vs mid G:C", "late M:C vs late G:C", 
+              "perturbed G vs mid G:C", "perturbed G vs late G:C",
+              "mid G:C vs late G:C")
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "genus", plot_name=plot_name)
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "order", plot_name=plot_name)
+get_da_scatter_ALDEx2(data = ALDEx2_results, test_ids = test_ids, taxrank = "class", plot_name=plot_name)
+```
+
+
+
+
+
+
+
